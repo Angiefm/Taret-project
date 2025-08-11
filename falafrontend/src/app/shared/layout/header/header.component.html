@@ -1,1 +1,111 @@
-<p>header works!</p>
+<header class="header">
+  <div class="header-container">
+    <div class="logo">
+      <a routerLink="/" class="logo-link" (click)="closeMobileMenu()">
+        <div class="logo-icon">
+          <img src="assets/fala-logo.png" alt="El Refugi Fala Logo" class="logo-image">
+        </div>
+        <div class="logo-text">
+          <h1>EL REFUGI</h1>
+          <p>FALA</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Desktop -->
+    <nav class="navigation hidden-mobile">
+      <a 
+        *ngFor="let item of navigationItems"
+        [routerLink]="item.route" 
+        class="nav-link" 
+        routerLinkActive="active" 
+        [routerLinkActiveOptions]="{exact: item.exact}"
+        (click)="onNavigate(item.route)">
+        {{ item.label }}
+      </a>
+    </nav>
+
+    <!-- Right side - Language, Currency, Login -->
+    <div class="header-right">
+      <!-- Language & Currency -->
+      <div class="locale-info hidden-mobile">
+        <!-- Language Dropdown -->
+        <div class="language-selector" (click)="toggleLanguageDropdown()">
+          <div class="language">
+            <span class="globe-icon">🌐</span>
+            <span>{{ selectedLanguage.code }}</span>
+            <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
+          </div>
+          
+          <!-- Language Dropdown Menu -->
+          <div class="language-dropdown" *ngIf="isLanguageDropdownOpen">
+            <div 
+              *ngFor="let language of languages"
+              class="language-option"
+              [class.selected]="language.code === selectedLanguage.code"
+              (click)="selectLanguage(language); $event.stopPropagation()">
+              {{ language.name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div class="currency" (click)="cycleCurrency()" title="Cambiar moneda">
+          {{ selectedCurrency.code }}
+        </div>
+      </div>
+      
+      <!-- Login Button -->
+      <button routerLink="/login" class="login-btn btn-secondary" (click)="onLoginClick()">
+        iniciar sesión
+      </button>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-btn visible-mobile" (click)="toggleMobileMenu()">
+        <span class="hamburger-icon" [class.open]="isMobileMenuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-navigation" [class.open]="isMobileMenuOpen">
+    <div class="mobile-nav-content">
+      <!-- Mobile Navigation Links -->
+      <div class="mobile-nav-links">
+        <a 
+          *ngFor="let item of navigationItems"
+          [routerLink]="item.route" 
+          class="mobile-nav-link" 
+          routerLinkActive="active" 
+          [routerLinkActiveOptions]="{exact: item.exact}"
+          (click)="onNavigate(item.route)">
+          {{ item.label }}
+        </a>
+      </div>
+
+      <!-- Mobile Locale Info -->
+      <div class="mobile-locale-info">
+        <div class="mobile-language" (click)="toggleLanguageDropdown()">
+          <span class="globe-icon">🌐</span>
+          <span>{{ selectedLanguage.name }}</span>
+          <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
+        </div>
+        
+        <div class="mobile-currency" (click)="cycleCurrency()">
+          Moneda: {{ selectedCurrency.code }}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Overlay -->
+  <div 
+    class="mobile-overlay" 
+    *ngIf="isMobileMenuOpen" 
+    (click)="closeMobileMenu()">
+  </div>
+</header>
