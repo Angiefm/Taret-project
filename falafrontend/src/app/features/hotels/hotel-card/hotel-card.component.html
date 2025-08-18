@@ -1,1 +1,50 @@
-<p>hotel-card works!</p>
+<div class="hotel-card" (click)="onCardClick()">
+  <!-- placeholder de imagen del hotel -->
+  <div class="image-container">
+    <div class="image-placeholder">
+      <div class="placeholder-content">
+        <div class="placeholder-icon"></div>
+        <p>imagen del hotel</p>
+      </div>
+    </div>
+    
+    <!-- badge de rating -->
+    <div class="rating-badge">
+      <span class="star">⭐</span>
+      <span class="rating-value">{{ hotel.rating }}</span>
+    </div>
+  </div>
+
+  <!-- información del hotel -->
+  <div class="hotel-info">
+    <!-- nombre del hotel -->
+    <h3 class="hotel-name">{{ hotel.name }}</h3>
+    
+    <!-- ubicación -->
+    <div class="location">
+      <span class="location-icon">📍</span>
+      <span class="location-text">{{ hotel.location }}</span>
+    </div>
+
+    <!-- amenidades -->
+    <div class="amenities">
+      <div class="amenity-tag" *ngFor="let amenity of getDisplayAmenities()">
+        <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
+        <span class="amenity-text">{{ amenity }}</span>
+      </div>
+    </div>
+
+    <!-- precio y botón de reserva -->
+    <div class="bottom-section">
+      <div class="price-section">
+        <span class="price">${{ formatPrice(hotel.price) }}</span>
+        <span class="price-period">cop / noche</span>
+      </div>
+      <button 
+        class="reserve-btn" 
+        (click)="onReserveClick($event)">
+        reservar
+      </button>
+    </div>
+  </div>
+</div>

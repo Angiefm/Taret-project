@@ -1,0 +1,391 @@
+<!-- src/app/pages/booking/booking.component.html -->
+<div class="booking-container">
+  <div class="booking-header">
+    <h1 class="booking-title">
+      <mat-icon>hotel</mat-icon>
+      Realizar Reserva
+    </h1>
+    <p class="booking-subtitle">Complete el formulario para reservar su estadía en {{ selectedHotel()?.name || 'nuestro hotel' }}</p>
+  </div>
+
+  <div class="booking-content">
+    <mat-horizontal-stepper [linear]="true" #stepper class="booking-stepper">
+      
+      <!-- Paso 1: Información del Huésped -->
+      <mat-step [stepControl]="guestForm" label="Información del Huésped">
+        <form [formGroup]="guestForm" class="step-form">
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>person</mat-icon>
+              Datos del Huésped Principal
+            </h3>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input 
+                  matInput 
+                  formControlName="firstName" 
+                  placeholder="Ingrese su nombre"
+                  maxlength="50">
+                <mat-icon matSuffix>person</mat-icon>
+                @if (guestForm.get('firstName')?.hasError('required') && guestForm.get('firstName')?.touched) {
+                  <mat-error>El nombre es requerido</mat-error>
+                }
+                @if (guestForm.get('firstName')?.hasError('minlength')) {
+                  <mat-error>El nombre debe tener al menos 2 caracteres</mat-error>
+                }
+                @if (guestForm.get('firstName')?.hasError('pattern')) {
+                  <mat-error>El nombre solo puede contener letras</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input 
+                  matInput 
+                  formControlName="lastName" 
+                  placeholder="Ingrese su apellido"
+                  maxlength="50">
+                <mat-icon matSuffix>person_outline</mat-icon>
+                @if (guestForm.get('lastName')?.hasError('required') && guestForm.get('lastName')?.touched) {
+                  <mat-error>El apellido es requerido</mat-error>
+                }
+                @if (guestForm.get('lastName')?.hasError('minlength')) {
+                  <mat-error>El apellido debe tener al menos 2 caracteres</mat-error>
+                }
+                @if (guestForm.get('lastName')?.hasError('pattern')) {
+                  <mat-error>El apellido solo puede contener letras</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono de Contacto</mat-label>
+                <input 
+                  matInput 
+                  formControlName="phone" 
+                  placeholder="+57 300 123 4567"
+                  maxlength="15">
+                <mat-icon matSuffix>phone</mat-icon>
+                @if (guestForm.get('phone')?.hasError('required') && guestForm.get('phone')?.touched) {
+                  <mat-error>El teléfono es requerido</mat-error>
+                }
+                @if (guestForm.get('phone')?.hasError('pattern')) {
+                  <mat-error>Formato de teléfono inválido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Correo Electrónico</mat-label>
+                <input 
+                  matInput 
+                  formControlName="email" 
+                  type="email"
+                  placeholder="ejemplo@correo.com"
+                  maxlength="100">
+                <mat-icon matSuffix>email</mat-icon>
+                @if (guestForm.get('email')?.hasError('required') && guestForm.get('email')?.touched) {
+                  <mat-error>El correo electrónico es requerido</mat-error>
+                }
+                @if (guestForm.get('email')?.hasError('email')) {
+                  <mat-error>Formato de correo electrónico inválido</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            @if (isAuthenticated() && !userDataLoaded()) {
+              <div class="auto-fill-section">
+                <button 
+                  type="button" 
+                  mat-stroked-button 
+                  color="primary"
+                  (click)="fillUserData()">
+                  <mat-icon>account_circle</mat-icon>
+                  Usar mis datos guardados
+                </button>
+              </div>
+            }
+          </div>
+
+          <div class="step-actions">
+            <button mat-raised-button color="primary" matStepperNext [disabled]="!guestForm.valid">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Paso 2: Detalles de la Reserva -->
+      <mat-step [stepControl]="bookingForm" label="Detalles de la Reserva">
+        <form [formGroup]="bookingForm" class="step-form">
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>hotel_class</mat-icon>
+              Información de la Reserva
+            </h3>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Hotel</mat-label>
+                <mat-select formControlName="hotelId" (selectionChange)="onHotelChange($event.value)">
+                  @for (hotel of availableHotels(); track hotel.id) {
+                    <mat-option [value]="hotel.id">
+                      {{ hotel.name }} - {{ hotel.location }}
+                    </mat-option>
+                  }
+                </mat-select>
+                <mat-icon matSuffix>hotel</mat-icon>
+                @if (bookingForm.get('hotelId')?.hasError('required') && bookingForm.get('hotelId')?.touched) {
+                  <mat-error>Debe seleccionar un hotel</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de Habitación</mat-label>
+                <mat-select formControlName="roomType">
+                  <mat-option value="single-1">Individual (1 persona)</mat-option>
+                  <mat-option value="single-2">Doble (2 personas)</mat-option>
+                  <mat-option value="single-3">Triple (3 personas)</mat-option>
+                  <mat-option value="suite">Suite (4 personas)</mat-option>
+                  <mat-option value="suite-kid">Suite Familiar (5+ personas)</mat-option>
+                </mat-select>
+                <mat-icon matSuffix>bed</mat-icon>
+                @if (bookingForm.get('roomType')?.hasError('required') && bookingForm.get('roomType')?.touched) {
+                  <mat-error>Debe seleccionar el tipo de habitación</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de Llegada</mat-label>
+                <input 
+                  matInput 
+                  [matDatepicker]="checkInPicker" 
+                  formControlName="checkInDate"
+                  [min]="minDate"
+                  (dateChange)="onDateChange()">
+                <mat-datepicker-toggle matSuffix [for]="checkInPicker"></mat-datepicker-toggle>
+                <mat-datepicker #checkInPicker></mat-datepicker>
+                @if (bookingForm.get('checkInDate')?.hasError('required') && bookingForm.get('checkInDate')?.touched) {
+                  <mat-error>La fecha de llegada es requerida</mat-error>
+                }
+                @if (bookingForm.get('checkInDate')?.hasError('matDatepickerMin')) {
+                  <mat-error>La fecha debe ser futura</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de Salida</mat-label>
+                <input 
+                  matInput 
+                  [matDatepicker]="checkOutPicker" 
+                  formControlName="checkOutDate"
+                  [min]="minCheckOutDate()"
+                  (dateChange)="onDateChange()">
+                <mat-datepicker-toggle matSuffix [for]="checkOutPicker"></mat-datepicker-toggle>
+                <mat-datepicker #checkOutPicker></mat-datepicker>
+                @if (bookingForm.get('checkOutDate')?.hasError('required') && bookingForm.get('checkOutDate')?.touched) {
+                  <mat-error>La fecha de salida es requerida</mat-error>
+                }
+                @if (bookingForm.get('checkOutDate')?.hasError('matDatepickerMin')) {
+                  <mat-error>Debe ser posterior a la fecha de llegada</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Número de Huéspedes</mat-label>
+                <mat-select formControlName="numberOfGuests">
+                  @for (num of [1,2,3,4,5,6,7,8]; track num) {
+                    <mat-option [value]="num">{{ num }} {{ num === 1 ? 'persona' : 'personas' }}</mat-option>
+                  }
+                </mat-select>
+                <mat-icon matSuffix>people</mat-icon>
+                @if (bookingForm.get('numberOfGuests')?.hasError('required') && bookingForm.get('numberOfGuests')?.touched) {
+                  <mat-error>Debe indicar el número de huéspedes</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Solicitudes Especiales (Opcional)</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="specialRequests"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Ej: Cama extra, accesibilidad, alergias alimentarias..."></textarea>
+                <mat-icon matSuffix>note_add</mat-icon>
+                <mat-hint>{{ getSpecialRequestsLength() }}/500 caracteres</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <!-- Resumen de reserva -->
+            @if (showBookingSummary()) {
+              <div class="booking-summary">
+                <h4>Resumen de la Reserva</h4>
+                <div class="summary-details">
+                  <div class="summary-item">
+                    <span class="label">Hotel:</span>
+                    <span class="value">{{ selectedHotel()?.name }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Fechas:</span>
+                    <span class="value">{{ formatDateRange() }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Noches:</span>
+                    <span class="value">{{ numberOfNights() }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Huéspedes:</span>
+                    <span class="value">{{ bookingForm.get('numberOfGuests')?.value }} personas</span>
+                  </div>
+                  @if (estimatedPrice()) {
+                    <div class="summary-item price-item">
+                      <span class="label">Precio estimado:</span>
+                      <span class="value price">{{ estimatedPrice() | currency:'COP':'symbol':'1.0-0' }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious>
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button mat-raised-button color="primary" matStepperNext [disabled]="!bookingForm.valid">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <!-- Paso 3: Confirmación y Envío -->
+      <mat-step label="Confirmación">
+        <div class="confirmation-step">
+          <div class="confirmation-summary">
+            <h3 class="section-title">
+              <mat-icon>assignment_turned_in</mat-icon>
+              Confirmar Reserva
+            </h3>
+
+            <div class="final-summary">
+              <div class="guest-info">
+                <h4>Información del Huésped</h4>
+                <p><strong>Nombre:</strong> {{ guestForm.get('firstName')?.value }} {{ guestForm.get('lastName')?.value }}</p>
+                <p><strong>Teléfono:</strong> {{ guestForm.get('phone')?.value }}</p>
+                <p><strong>Email:</strong> {{ guestForm.get('email')?.value }}</p>
+              </div>
+
+              <div class="booking-info">
+                <h4>Detalles de la Reserva</h4>
+                <p><strong>Hotel:</strong> {{ selectedHotel()?.name }}</p>
+                <p><strong>Ubicación:</strong> {{ selectedHotel()?.location }}</p>
+                <p><strong>Tipo de Habitación:</strong> {{ getRoomTypeName() }}</p>
+                <p><strong>Fechas:</strong> {{ formatDateRange() }}</p>
+                <p><strong>Noches:</strong> {{ numberOfNights() }}</p>
+                <p><strong>Huéspedes:</strong> {{ bookingForm.get('numberOfGuests')?.value }}</p>
+                @if (bookingForm.get('specialRequests')?.value) {
+                  <p><strong>Solicitudes Especiales:</strong> {{ bookingForm.get('specialRequests')?.value }}</p>
+                }
+              </div>
+
+              @if (finalPrice()) {
+                <div class="price-breakdown">
+                  <h4>Desglose de Precios</h4>
+                  <div class="price-item">
+                    <span>Subtotal ({{ numberOfNights() }} noches):</span>
+                    <span>{{ (finalPrice()?.subtotal || 0) | currency:'COP':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <div class="price-item">
+                    <span>Impuestos:</span>
+                    <span>{{ (finalPrice()?.taxes || 0) | currency:'COP':'symbol':'1.0-0' }}</span>
+                  </div>
+                  <div class="price-item total">
+                    <span><strong>Total:</strong></span>
+                    <span><strong>{{ (finalPrice()?.total || 0) | currency:'COP':'symbol':'1.0-0' }}</strong></span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="terms-section">
+              <mat-checkbox formControlName="acceptTerms" color="primary">
+                He leído y acepto los 
+                <a href="/terminos" target="_blank">términos y condiciones</a> 
+                y la 
+                <a href="/privacidad" target="_blank">política de privacidad</a>
+              </mat-checkbox>
+              @if (mainForm.get('acceptTerms')?.hasError('required') && mainForm.get('acceptTerms')?.touched) {
+                <mat-error class="terms-error">Debe aceptar los términos y condiciones</mat-error>
+              }
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-button matStepperPrevious [disabled]="isSubmitting()">
+              <mat-icon>arrow_back</mat-icon>
+              Anterior
+            </button>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="submitBooking()"
+              [disabled]="!canSubmit() || isSubmitting()">
+              @if (isSubmitting()) {
+                <ng-container>
+                  <mat-spinner diameter="20"></mat-spinner>
+                  <span>Procesando...</span>
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <mat-icon>done</mat-icon>
+                  <span>Confirmar Reserva</span>
+                </ng-container>
+              }
+            </button>
+          </div>
+        </div>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </div>
+
+  <!-- Dialog de éxito -->
+  @if (showSuccessDialog()) {
+    <div class="success-overlay" (click)="closeSuccessDialog()">
+      <div class="success-dialog" (click)="$event.stopPropagation()">
+        <div class="success-content">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h2>¡Reserva Confirmada!</h2>
+          <p>Su reserva ha sido procesada exitosamente.</p>
+          
+          @if (bookingResult()) {
+            <div class="booking-details">
+              <p><strong>Número de Reserva:</strong> {{ bookingResult()?.data?.bookingNumber }}</p>
+              <p><strong>Hotel:</strong> {{ bookingResult()?.data?.hotel?.name || 'N/A' }}
+            </p>
+              <p><strong>Fechas:</strong> {{ formatConfirmationDates() }}</p>
+            </div>
+          }
+
+          <p class="confirmation-note">
+            Hemos enviado la confirmación a su correo electrónico. 
+            Guarde su número de reserva para futuras consultas.
+          </p>
+
+          <div class="success-actions">
+            <button mat-raised-button color="primary" (click)="goToMyBookings()">
+              Ver Mis Reservas
+            </button>
+            <button mat-button (click)="goToHome()">
+              Volver al Inicio
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

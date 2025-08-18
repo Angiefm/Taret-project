@@ -1,0 +1,134 @@
+<div class="hotel-list-container">
+  
+  <!-- aquí muestro el header con filtros y controles si están activos -->
+  <div class="list-header" *ngIf="showFilters || showSorting">
+    <!-- aquí muestro la información de los resultados -->
+    <div class="results-info">
+      <h3 class="results-title">{{ getResultsText() }}</h3>
+      <p class="results-subtitle" *ngIf="searchCriteria?.destination">
+        en {{ searchCriteria?.destination }}
+      </p>
+    </div>
+
+    <!-- aquí muestro los controles de ordenamiento y vista -->
+    <div class="list-controls" *ngIf="hasResults() && (showSorting || showFilters)">
+      
+      <!-- aquí pongo el selector de ordenamiento -->
+      <div class="sort-control" *ngIf="showSorting">
+        <label for="sort-select" class="control-label">ordenar por:</label>
+        <select 
+          id="sort-select"
+          class="sort-select"
+          [value]="currentSort"
+          (change)="onSortChange($any($event.target).value)">
+          <option 
+            *ngFor="let option of sortOptions" 
+            [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- aquí pongo los botones para cambiar la vista -->
+      <div class="view-control">
+        <label class="control-label">vista:</label>
+        <div class="view-buttons">
+          <button 
+            class="view-btn"
+            [class.active]="viewMode === 'grid'"
+            (click)="onViewModeChange('grid')"
+            title="vista de cuadrícula">
+            <span class="view-icon">⊞</span>
+          </button>
+          <button 
+            class="view-btn"
+            [class.active]="viewMode === 'list'"
+            (click)="onViewModeChange('list')"
+            title="vista de lista">
+            <span class="view-icon">☰</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- aquí muestro el estado de carga -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <div class="loading-header">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">cargando hoteles...</p>
+    </div>
+    
+    <!-- aquí pongo los skeletons mientras carga -->
+    <div class="hotels-grid skeleton-grid" [class.list-view]="viewMode === 'list'">
+      <div 
+        *ngFor="let item of skeletonItems; trackBy: trackByIndex"
+        class="skeleton-card">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-content">
+          <div class="skeleton-line skeleton-title"></div>
+          <div class="skeleton-line skeleton-location"></div>
+          <div class="skeleton-line skeleton-price"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- aquí muestro el estado de error -->
+  <div class="error-container" *ngIf="hasError()">
+    <div class="error-content">
+      <div class="error-icon">{{ getErrorIcon() }}</div>
+      <h3 class="error-title">oops! algo salió mal</h3>
+      <p class="error-message">{{ error }}</p>
+      <button class="retry-btn btn-primary" (click)="onRetryClick()">
+        <span class="retry-icon">🔄</span>
+        intentar de nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- aquí muestro el estado vacío -->
+  <div class="empty-container" *ngIf="isEmpty()">
+    <div class="empty-content">
+      <div class="empty-icon">🏨</div>
+      <h3 class="empty-title">no encontramos hoteles</h3>
+      <p class="empty-message">
+        no hay hoteles que coincidan con tus criterios de búsqueda.
+        <br>intenta ajustar los filtros o buscar en otra ubicación.
+      </p>
+      <button class="clear-filters-btn btn-outline" (click)="onRetryClick()">
+        <span class="clear-icon">🔍</span>
+        buscar de nuevo
+      </button>
+    </div>
+  </div>
+
+  <!-- aquí muestro la lista de hoteles -->
+  <div class="hotels-container" *ngIf="hasResults()">
+    <div 
+      class="hotels-grid"
+      [class.list-view]="viewMode === 'list'"
+      [class.grid-view]="viewMode === 'grid'">
+      
+      <!-- aquí repito las tarjetas de hotel -->
+      <app-hotel-card
+        *ngFor="let hotel of filteredHotels; trackBy: trackByHotelId"
+        [hotel]="hotel"
+        [class.list-card]="viewMode === 'list'"
+        [class.grid-card]="viewMode === 'grid'"
+        (reserveClicked)="onReserveClick($event)"
+        (detailsClicked)="onHotelCardClick($event)">
+      </app-hotel-card>
+    </div>
+
+    <!-- aquí muestro información adicional si hay más de 6 hoteles -->
+    <div class="list-footer" *ngIf="filteredHotels.length > 6">
+      <p class="footer-info">
+        mostrando {{ filteredHotels.length }} hoteles
+        <span *ngIf="searchCriteria?.destination">
+          en {{ searchCriteria?.destination }}
+        </span>
+      </p>
+    </div>
+  </div>
+</div>

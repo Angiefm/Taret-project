@@ -21,6 +21,13 @@ export const routes: Routes = [
     path: 'hotel/:id',
     loadComponent: () => import('./features/hotels/hotel-details/hotel-details.component').then(m => m.HotelDetailsComponent)
   },
+
+  {
+    path: 'booking',
+    loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent),
+    canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true]
+  },
+
   {
     path: '**',
     redirectTo: ''

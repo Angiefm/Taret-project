@@ -1,0 +1,134 @@
+<div class="hotels-page">
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="page-title">Nuestros Hoteles</h1>
+        <p class="page-subtitle">
+          Descubre todos los refugios únicos de la cadena Fala en Colombia
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- filtros avanzados -->
+  <div class="filters-section" *ngIf="showAdvancedFilters">
+    <div class="container">
+      <div class="filters-card">
+        <h3 class="filters-title">Refina tu búsqueda</h3>
+        
+        <form class="filters-form" (ngSubmit)="onApplyFilters()">
+          <div class="filters-grid">
+            <!-- destino -->
+            <div class="filter-group">
+              <label class="filter-label">Destino</label>
+              <select class="filter-select" [(ngModel)]="searchCriteria.destination" name="destination">
+                <option value="">Todos los destinos</option>
+                <option value="cartagena">Cartagena</option>
+                <option value="santa marta">Santa Marta</option>
+                <option value="san andrés">San Andrés</option>
+                <option value="medellín">Medellín</option>
+              </select>
+            </div>
+
+            <!-- huéspedes -->
+            <div class="filter-group">
+              <label class="filter-label">Huéspedes</label>
+              <select class="filter-select" [(ngModel)]="searchCriteria.guests" name="guests">
+                <option [value]="1">1 persona</option>
+                <option [value]="2">2 personas</option>
+                <option [value]="3">3 personas</option>
+                <option [value]="4">4 personas</option>
+                <option [value]="5">5+ personas</option>
+              </select>
+            </div>
+
+            <!-- precio mínimo -->
+            <div class="filter-group">
+              <label class="filter-label">Precio mínimo</label>
+              <input 
+                type="number" 
+                class="filter-input"
+                [(ngModel)]="searchCriteria.minPrice"
+                name="minPrice"
+                placeholder="200,000"
+                min="0"
+                step="50000">
+            </div>
+
+            <!-- precio máximo -->
+            <div class="filter-group">
+              <label class="filter-label">Precio máximo</label>
+              <input 
+                type="number" 
+                class="filter-input"
+                [(ngModel)]="searchCriteria.maxPrice"
+                name="maxPrice"
+                placeholder="500,000"
+                min="0"
+                step="50000">
+            </div>
+          </div>
+
+          <div class="filters-actions">
+            <button type="button" class="btn-ghost" (click)="onClearFilters()">
+              <span class="btn-icon">🔄</span>
+              Limpiar filtros
+            </button>
+            <button type="submit" class="btn-primary">
+              <span class="btn-icon">🔍</span>
+              Aplicar filtros
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- botón toggle filtros -->
+  <div class="container">
+    <div class="toggle-filters">
+      <button 
+        class="toggle-btn"
+        (click)="toggleAdvancedFilters()">
+        <span class="toggle-icon">{{ showAdvancedFilters ? '▲' : '▼' }}</span>
+        {{ showAdvancedFilters ? 'Ocultar filtros' : 'Mostrar filtros avanzados' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- lista de hoteles -->
+  <div class="hotels-content">
+    <div class="container">
+      <app-hotel-list
+        [hotels]="hotels"
+        [loading]="loading"
+        [error]="error"
+        [searchCriteria]="hasActiveFilters() ? searchCriteria : undefined"
+        [showFilters]="true"
+        [showSorting]="true"
+        [viewMode]="currentViewMode"
+        (hotelSelected)="onHotelSelected($event)"
+        (reserveHotel)="onReserveHotel($event)"
+        (retryLoad)="onRetryLoad()"
+        (sortChanged)="onSortChanged($event)"
+        (viewModeChanged)="onViewModeChanged($event)">
+      </app-hotel-list>
+    </div>
+  </div>
+
+  <!-- call to action cuando no hay resultados -->
+  <div class="cta-section" *ngIf="!loading && hotels.length === 0">
+    <div class="container">
+      <div class="cta-content">
+        <h3 class="cta-title">¿No encuentras lo que buscas?</h3>
+        <p class="cta-text">
+          Contáctanos y te ayudaremos a encontrar el refugio perfecto para tu estadía
+        </p>
+        <button class="btn-secondary cta-btn" (click)="onContactUs()">
+          <span class="btn-icon">📞</span>
+          Contactar asesor
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
