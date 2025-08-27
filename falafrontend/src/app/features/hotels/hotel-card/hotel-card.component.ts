@@ -11,16 +11,17 @@ import { Hotel } from '../../../core/models/hotel.model';
 })
 export class HotelCardComponent {
   @Input() hotel!: Hotel; //recibo hotel del componente padre
-  @Output() reserveClicked = new EventEmitter<Hotel>(); //envio eventos cuando se reserva al padre y creo un canal para avisar
-  @Output() detailsClicked = new EventEmitter<Hotel>();// otro canal para avisar que quiere ver detalles al padre
+  @Output() detailsClicked = new EventEmitter<Hotel>();
+  @Output() viewRoomsClicked = new EventEmitter<Hotel>(); // vambio ya no "reserve" sino "viewRooms"
 
-  onCardClick(): void { //se ejecuta cuando hace click en tarjeta
+  onCardClick(): void {
     this.detailsClicked.emit(this.hotel); //le mando al padre que hicieron click en ese hotel
   }
 
-  onReserveClick(event: Event): void {
+  // este es un cambio importante es para ver habitaciones, no reservar directamente
+  onViewRoomsClick(event: Event): void {
     event.stopPropagation();
-    this.reserveClicked.emit(this.hotel); //aviso que quieren reservar hotel
+    this.viewRoomsClicked.emit(this.hotel); //aviso que quieren reservar hotel
   }
 
   formatPrice(price: number): string {

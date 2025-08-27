@@ -12,6 +12,17 @@
 
     <!-- Search Form -->
     <div class="search-form">
+      <div *ngIf="error" class="error-message">
+        <span class="error-icon">⚠️</span>
+        <span class="error-text">{{ error }}</span>
+        <button 
+          *ngIf="isConnectionError()" 
+          class="retry-btn"
+          (click)="onReloadHotels()">
+          🔄 reintentar
+        </button>
+      </div>
+
       <div class="search-grid">
         <!-- Destination -->
         <div class="search-field">
@@ -20,12 +31,15 @@
             <span class="field-icon">📍</span>
             <select 
               class="field-input"
-              [(ngModel)]="searchCriteria.destination">
+              [(ngModel)]="searchCriteria.destination"
+              [disabled]="loading">
               <option value="">seleccionar ciudad</option>
               <option value="cartagena">cartagena</option>
               <option value="santa marta">santa marta</option>
               <option value="san andrés">san andrés</option>
               <option value="medellín">medellín</option>
+              <option value="bogotá">bogotá</option>
+              <option value="cali">cali</option>
             </select>
           </div>
         </div>
@@ -33,42 +47,66 @@
         <!-- Check-in -->
         <div class="search-field">
           <label class="field-label">llegada</label>
-          <input 
-            type="date" 
-            class="field-input"
-            [(ngModel)]="searchCriteria.checkIn">
+          <div class="field-wrapper">
+            <span class="field-icon">📅</span>
+            <input 
+              type="date" 
+              class="field-input"
+              [(ngModel)]="searchCriteria.checkIn"
+              [disabled]="loading">
+          </div>
         </div>
 
         <!-- Check-out -->
         <div class="search-field">
           <label class="field-label">salida</label>
-          <input 
-            type="date" 
-            class="field-input"
-            [(ngModel)]="searchCriteria.checkOut">
+          <div class="field-wrapper">
+            <span class="field-icon">📅</span>
+            <input 
+              type="date" 
+              class="field-input"
+              [(ngModel)]="searchCriteria.checkOut"
+              [disabled]="loading">
+          </div>
         </div>
 
         <!-- Guests -->
         <div class="search-field">
           <label class="field-label">huéspedes</label>
-          <select 
-            class="field-input"
-            [(ngModel)]="searchCriteria.guests">
-            <option value="1">1 persona</option>
-            <option value="2">2 personas</option>
-            <option value="3">3 personas</option>
-            <option value="4">4 personas</option>
-            <option value="5">5+ personas</option>
-          </select>
+          <div class="field-wrapper">
+            <span class="field-icon">👤</span>
+            <select 
+              class="field-input"
+              [(ngModel)]="searchCriteria.guests"
+              [disabled]="loading">
+              <option value="1">1 persona</option>
+              <option value="2">2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+              <option value="5">5+ personas</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <button 
-        class="search-btn btn-primary" 
-        (click)="onSearch()">
-        <span class="search-icon">🔍</span>
-        <span>buscar hoteles</span>
-      </button>
+      <div class="search-actions">
+        <button 
+          class="search-btn" 
+          (click)="onSearch()"
+          [disabled]="loading">
+          <span class="search-icon" *ngIf="!loading">🔍</span>
+          <div class="loading-spinner-sm" *ngIf="loading"></div>
+          <span>{{ loading ? 'buscando...' : 'buscar hoteles' }}</span>
+        </button>
+
+        <button 
+          class="clear-btn"
+          (click)="onClearSearch()"
+          [disabled]="loading">
+          <span>🗑️</span>
+          <span>limpiar</span>
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -77,12 +115,23 @@
 <section class="hotels-section">
   <div class="hotels-container">
     <div class="section-header">
-      <h2 class="section-title">nuestros hoteles destacados</h2>
+      <h2 class="section-title">
+        {{ searchCriteria.destination && !loading && featuredHotels.length > 0 
+           ? 'hoteles en ' + searchCriteria.destination 
+           : 'nuestros hoteles destacados' }}
+      </h2>
       <div class="title-accent"></div>
       <p class="section-subtitle">
-        cada uno de nuestros hoteles ha sido cuidadosamente seleccionado 
-        para ofrecerte una experiencia única
+        {{ searchCriteria.destination && !loading && featuredHotels.length > 0
+           ? 'encontramos ' + featuredHotels.length + ' hotel(es) para tu búsqueda'
+           : 'cada uno de nuestros hoteles ha sido cuidadosamente seleccionado para ofrecerte una experiencia única' }}
       </p>
+    </div>
+
+    <!-- Mock Data Warning -->
+    <div *ngIf="isShowingMockData()" class="mock-data-warning">
+      <span class="warning-icon">🔧</span>
+      <span>Mostrando datos de prueba. Conecta tu backend para ver datos reales.</span>
     </div>
 
     <!-- Hotels Grid -->
@@ -90,22 +139,40 @@
       <app-hotel-card
         *ngFor="let hotel of featuredHotels"
         [hotel]="hotel"
-        (reserveClicked)="onReserveHotel($event)"
-        (detailsClicked)="onViewHotelDetails($event)">
+        (viewRoomsClicked)="onViewHotelRooms($event)">
       </app-hotel-card>
     </div>
 
     <!-- Loading State -->
     <div *ngIf="loading" class="loading-state">
       <div class="loading-spinner"></div>
-      <p>cargando hoteles...</p>
+      <p>{{ searchCriteria.destination ? 'buscando hoteles en ' + searchCriteria.destination + '...' : 'cargando hoteles...' }}</p>
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!loading && featuredHotels.length === 0" class="empty-state">
+    <div *ngIf="!loading && featuredHotels.length === 0 && !error" class="empty-state">
       <div class="empty-icon">🏨</div>
-      <h3>no hay hoteles disponibles</h3>
-      <p>intenta ajustar tus criterios de búsqueda</p>
+      <h3>no se encontraron hoteles</h3>
+      <p *ngIf="searchCriteria.destination">
+        no hay hoteles disponibles en <strong>{{ searchCriteria.destination }}</strong> 
+        con los criterios seleccionados
+      </p>
+      <p *ngIf="!searchCriteria.destination">
+        no hay hoteles disponibles en este momento
+      </p>
+      <button class="retry-btn" (click)="onClearSearch()">
+        🔄 ver todos los hoteles
+      </button>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!loading && error && featuredHotels.length === 0" class="error-state">
+      <div class="error-icon">❌</div>
+      <h3>oops! algo salió mal</h3>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="onReloadHotels()">
+        🔄 reintentar
+      </button>
     </div>
   </div>
 </section>

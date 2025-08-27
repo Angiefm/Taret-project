@@ -26,25 +26,54 @@
       <span class="location-text">{{ hotel.location }}</span>
     </div>
 
+    <div class="description">
+      <p>{{ hotel.description }}</p>
+    </div>
+
     <!-- amenidades -->
     <div class="amenities">
       <div class="amenity-tag" *ngFor="let amenity of getDisplayAmenities()">
         <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
         <span class="amenity-text">{{ amenity }}</span>
       </div>
+      <span *ngIf="hotel.amenities.length > 3" class="more-amenities">
+        +{{ hotel.amenities.length - 3 }} más
+      </span>
     </div>
 
-    <!-- precio y botón de reserva -->
+    <div class="hotel-stats">
+      <div class="stat">
+        <span class="stat-icon">👥</span>
+        <span class="stat-text">{{ hotel.totalReviews }} reseñas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">👤</span>
+        <span class="stat-text">hasta {{ hotel.capacity }} huéspedes</span>
+      </div>
+    </div>
+
+    <!-- precio y botones de acción -->
     <div class="bottom-section">
       <div class="price-section">
         <span class="price">${{ formatPrice(hotel.price) }}</span>
-        <span class="price-period">cop / noche</span>
+        <span class="price-period">cop / noche desde</span>
       </div>
-      <button 
-        class="reserve-btn" 
-        (click)="onReserveClick($event)">
-        reservar
-      </button>
+      
+      <div class="action-buttons">
+        <button 
+          class="view-rooms-btn" 
+          (click)="onViewRoomsClick($event)"
+          [attr.aria-label]="'Ver habitaciones disponibles en ' + hotel.name">
+          <span class="btn-icon">🏨</span>
+          <span>ver habitaciones</span>
+        </button>
+        
+        <button 
+          class="details-btn" 
+          (click)="onCardClick()"
+          [attr.aria-label]="'Ver detalles completos de ' + hotel.name">
+        </button>
+      </div>
     </div>
   </div>
 </div>

@@ -116,8 +116,7 @@
         [hotel]="hotel"
         [class.list-card]="viewMode === 'list'"
         [class.grid-card]="viewMode === 'grid'"
-        (reserveClicked)="onReserveClick($event)"
-        (detailsClicked)="onHotelCardClick($event)">
+        (viewRoomsClicked)="onViewRooms($event)">
       </app-hotel-card>
     </div>
 

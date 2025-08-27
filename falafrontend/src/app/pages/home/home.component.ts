@@ -43,7 +43,7 @@ export class HomeComponent implements OnInit { //onLit para inicializar cuando s
     
     console.log('búsqueda iniciada con criterios:', this.searchCriteria);
     
-    // Validar criterios básicos
+        // Validar criterios básicos
     if (!this.searchCriteria.destination) {//validaciones básicas antes de buscar
       this.error = 'Por favor selecciona un destino';
       this.loading = false;
@@ -74,14 +74,12 @@ export class HomeComponent implements OnInit { //onLit para inicializar cuando s
     });
   }
 
-  onReserveHotel(hotel: Hotel): void {//usuario quiere reservar hotel
-    console.log('iniciando reserva para hotel:', hotel.name);
+  // cambioa ahora navego a ver habitaciones, no a reservar directamente
+  onViewHotelRooms(hotel: Hotel): void {
+    console.log('viendo habitaciones del hotel:', hotel.name);
     
-    this.router.navigate(['/booking'], {
+    this.router.navigate(['/hotel', hotel.id, 'rooms'], {
       queryParams: {
-        hotelId: hotel.id,
-        hotelName: hotel.name,
-        // Si tienes las fechas del formulario de búsqueda, las pasas también
         checkIn: this.searchCriteria.checkIn || '',
         checkOut: this.searchCriteria.checkOut || '',
         guests: this.searchCriteria.guests || 2
@@ -89,14 +87,6 @@ export class HomeComponent implements OnInit { //onLit para inicializar cuando s
     });
   }
 
-  onViewHotelDetails(hotel: Hotel): void {
-    console.log('viendo detalles del hotel:', hotel.name);
-    
-    // Navegar a página de detalles
-    this.router.navigate(['/hotel', hotel.id]);
-  }
-
-  // Método para limpiar búsqueda
   onClearSearch(): void { //limpiar búsqueda
     this.searchCriteria = {//reseteo todos los criterios
       destination: '',
@@ -108,7 +98,7 @@ export class HomeComponent implements OnInit { //onLit para inicializar cuando s
     this.loadFeaturedHotels();
   }
 
-  //recargo hoteles
+    //recargo hoteles
   onReloadHotels(): void {
     this.error = '';
     this.loadFeaturedHotels();
@@ -146,8 +136,8 @@ export class HomeComponent implements OnInit { //onLit para inicializar cuando s
 
   private loadMockHotels(): void { //hoteles
     console.log('cargando datos de prueba...');
-    
-    // Datos de prueba temporales
+
+        // Datos de prueba temporales
     this.featuredHotels = [
       {
         id: 'mock-1',

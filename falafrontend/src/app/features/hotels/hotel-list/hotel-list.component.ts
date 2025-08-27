@@ -28,7 +28,7 @@ export class HotelListComponent implements OnInit, OnChanges { //implemento OnIn
   
   //eventos al componente padre
   @Output() hotelSelected = new EventEmitter<Hotel>(); //seleccionaron hotel
-  @Output() reserveHotel = new EventEmitter<Hotel>();//quieren reservar
+  @Output() viewRoomsClicked = new EventEmitter<Hotel>();
   @Output() retryLoad = new EventEmitter<void>();//reintentar carga
   @Output() sortChanged = new EventEmitter<SortOption>();//cambio ordenamiento
   @Output() viewModeChanged = new EventEmitter<ViewMode>(); //cambio vista
@@ -151,15 +151,20 @@ export class HotelListComponent implements OnInit, OnChanges { //implemento OnIn
     this.hotelSelected.emit(hotel);//paso hotel a papi
   }
 
-  onReserveClick(hotel: Hotel): void {
-    console.log('reserva solicitada para:', hotel.name);
-    this.reserveHotel.emit(hotel);
+  onReserveClick(hotel: Hotel): void { //------------------------------
+    this.viewRoomsClicked.emit(hotel);
   }
 
   onRetryClick(): void {
     console.log('reintentando carga de hoteles');
     this.retryLoad.emit();//le paso a papi que reintente
   }
+
+  onViewRooms(hotel: Hotel): void {
+    console.log('viendo habitaciones de:', hotel.name);
+    this.viewRoomsClicked.emit(hotel);
+  }
+
 
   hasResults(): boolean {
     return this.filteredHotels.length > 0; //tengo results?

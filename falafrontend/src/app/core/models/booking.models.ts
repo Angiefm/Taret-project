@@ -7,7 +7,7 @@ export interface BookingFormData {
   
   // info de la reserva
   hotelId: string;
-  roomType: string;
+  roomId: string;
   checkInDate: string;
   checkOutDate: string;
   numberOfGuests: number;
@@ -28,6 +28,7 @@ export interface Booking {
     lastName: string;
     phone: string;
     email: string;
+    fullName?: string;
   };
   
   // info de la reserva
@@ -38,6 +39,8 @@ export interface Booking {
   };
   
   room: {
+    id: string;
+    name?: string;
     type: string;
     capacity: number;
     pricePerNight: number;
@@ -63,9 +66,26 @@ export interface Booking {
   createdAt: Date;
   updatedAt: Date;
   
-  // Información de pago (si se implementa)
-  paymentStatus?: PaymentStatus;
-  paymentMethod?: string;
+  payment?: {
+    status: PaymentStatus;
+    method: string;
+    transactionId?: string;
+    paidAt?: Date;
+  };
+  
+  cancellation?: {
+    cancelledAt: Date;
+    reason: string;
+    refundAmount?: number;
+    refundedAt?: Date;
+  };
+  
+  confirmations?: {
+    emailSent: boolean;
+    emailSentAt?: Date;
+    whatsappSent: boolean;
+    whatsappSentAt?: Date;
+  };
 }
 
 export enum BookingStatus {
@@ -108,8 +128,56 @@ export interface BookingSearchParams {
 }
 
 export interface BookingListResponse {
+  success: boolean;
   bookings: Booking[];
-  total: number;
-  page: number;
-  totalPages: number;
+  pagination: {
+    total: number;
+    page: number;
+    totalPages: number;
+    limit: number;
+  };
+}
+
+export interface PriceCalculationRequest {
+  hotelId: string;
+  roomId: string;
+  checkInDate: string;
+  checkOutDate: string;
+  numberOfGuests: number;
+}
+
+export interface PriceCalculationResponse {
+  success: boolean;
+  totalPrice: number;
+  breakdown: {
+    pricePerNight: number;
+    numberOfNights: number;
+    subtotal: number;
+    taxes: number;
+    fees: number;
+    total: number;
+  };
+}
+
+export interface Room {
+  id: string;
+  hotelId: string;
+  number: string;
+  type: string;
+  capacity: number;
+  pricePerNight: number;
+  description?: string;
+  amenities?: string[];
+  images?: string[];
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RoomAvailability {
+  roomId: string;
+  available: boolean;
+  checkInDate: string;
+  checkOutDate: string;
+  conflictingBookings?: string[];
 }

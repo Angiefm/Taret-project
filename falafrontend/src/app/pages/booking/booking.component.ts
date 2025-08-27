@@ -21,9 +21,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { BookingService } from '../../core/services/booking.service';
 import { AuthService } from '../../core/services/auth.service';
 import { HotelService } from '../../core/services/hotel.service';
+import { RoomService } from '../../core/services/room.service';
 
 import { BookingFormData, BookingResponse } from '../../core/models/booking.models';
 import { Hotel } from '../../core/models/hotel.model';
+import { Room } from '../../core/models/room.model';
 
 export interface CanComponentDeactivate {
   canDeactivate(): boolean;
@@ -58,6 +60,7 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
   private readonly bookingService = inject(BookingService);
   private readonly authService = inject(AuthService);
   private readonly hotelService = inject(HotelService);
+  private readonly roomService = inject(RoomService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly snackBar = inject(MatSnackBar);
@@ -68,6 +71,8 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
   // reactive state
   private readonly availableHotelsSignal = signal<Hotel[]>([]);
   private readonly selectedHotelSignal = signal<Hotel | null>(null);
+  private readonly availableRoomsSignal = signal<Room[]>([]);
+  private readonly selectedRoomSignal = signal<Room | null>(null);
   private readonly isSubmittingSignal = signal<boolean>(false);
   private readonly showSuccessDialogSignal = signal<boolean>(false);
   private readonly bookingResultSignal = signal<BookingResponse | null>(null);
@@ -78,6 +83,8 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
   // computed values
   readonly availableHotels = this.availableHotelsSignal.asReadonly();
   readonly selectedHotel = this.selectedHotelSignal.asReadonly();
+  readonly availableRooms = this.availableRoomsSignal.asReadonly();
+  readonly selectedRoom = this.selectedRoomSignal.asReadonly();
   readonly isSubmitting = this.isSubmittingSignal.asReadonly();
   readonly showSuccessDialog = this.showSuccessDialogSignal.asReadonly();
   readonly bookingResult = this.bookingResultSignal.asReadonly();
@@ -154,7 +161,7 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     // formulario de detalles de la reserva
     this.bookingForm = this.fb.group({
       hotelId: ['', Validators.required],
-      roomType: ['', Validators.required],
+      roomId: ['', Validators.required],
       checkInDate: ['', Validators.required],
       checkOutDate: ['', Validators.required],
       numberOfGuests: [2, [Validators.required, Validators.min(1), Validators.max(8)]],
@@ -184,6 +191,26 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
       });
   }
 
+  private loadAvailableRooms(hotelId: string): void {
+    if (!hotelId) return;
+    
+    console.log('cargando habitaciones para hotel:', hotelId);
+    
+    this.roomService.getRoomsByHotel(hotelId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (rooms) => {
+          this.availableRoomsSignal.set(rooms);
+          console.log('Habitaciones cargadas:', rooms.length);
+        },
+        error: (error) => {
+          console.error('Error cargando habitaciones:', error);
+          this.snackBar.open('Error cargando habitaciones disponibles', 'Cerrar', { duration: 5000 });
+          this.availableRoomsSignal.set([]);
+        }
+      });
+  }
+
   private handleRouteParams(): void {
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
@@ -191,6 +218,9 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
         if (params['hotelId']) {
           this.bookingForm.patchValue({ hotelId: params['hotelId'] });
           this.onHotelChange(params['hotelId']);
+        }
+        if (params['roomId']) {
+          this.bookingForm.patchValue({ roomId: params['roomId'] });
         }
         if (params['checkIn']) {
           this.bookingForm.patchValue({ checkInDate: new Date(params['checkIn']) });
@@ -258,6 +288,19 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     if (hotel) {
       this.selectedHotelSignal.set(hotel);
       console.log('Hotel seleccionado:', hotel.name);
+      
+      this.bookingForm.patchValue({ roomId: '' });
+      this.selectedRoomSignal.set(null);
+      
+      this.loadAvailableRooms(hotelId);
+    }
+  }
+
+  onRoomChange(roomId: string): void {
+    const room = this.availableRooms().find(r => r.id === roomId);
+    if (room) {
+      this.selectedRoomSignal.set(room);
+      console.log('Habitación seleccionada:', room.name);
     }
   }
 
@@ -282,7 +325,7 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
       checkOutDate: this.formatDate(this.bookingForm.get('checkOutDate')?.value)
     };
 
-    if (formData.hotelId && formData.checkInDate && formData.checkOutDate) {
+    if (formData.hotelId && formData.roomId && formData.checkInDate && formData.checkOutDate) {
       this.bookingService.calculateBookingPrice(formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -351,6 +394,7 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
   showBookingSummary(): boolean {
     return this.bookingForm.get('hotelId')?.value && 
+           this.bookingForm.get('roomId')?.value &&
            this.bookingForm.get('checkInDate')?.value && 
            this.bookingForm.get('checkOutDate')?.value;
   }
@@ -386,21 +430,31 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     return '';
   }
 
-  getRoomTypeName(): string {
-    const roomType = this.bookingForm.get('roomType')?.value;
-    const roomTypes: { [key: string]: string } = {
-      'single-1': 'Individual (1 persona)',
-      'single-2': 'Doble (2 personas)',
-      'single-3': 'Triple (3 personas)',
-      'suite': 'Suite (4 personas)',
-      'suite-kid': 'Suite Familiar (5+ personas)'
+  getRoomName(): string {
+    const selectedRoom = this.selectedRoom();
+    if (selectedRoom) {
+      return this.roomService.getRoomDisplayName ? 
+        this.roomService.getRoomDisplayName(selectedRoom.roomType) : 
+        this.getRoomTypeDisplayName(selectedRoom.roomType);
+    }
+    return 'Habitación seleccionada';
+  }
+
+  getRoomTypeDisplayName(roomType: Room['roomType']): string {
+    const displayNames = {
+      'single-1': 'Individual Estándar',
+      'single-2': 'Individual Premium',
+      'single-3': 'Individual Deluxe', 
+      'suite': 'Suite',
+      'suite-kid': 'Suite Familiar'
     };
-    return roomTypes[roomType] || roomType;
+    return displayNames[roomType] || 'Habitación';
   }
 
   getSpecialRequestsLength(): number {
     return this.bookingForm.get('specialRequests')?.value?.length || 0;
   }
+
   closeSuccessDialog(): void {
     this.showSuccessDialogSignal.set(false);
   }
@@ -420,6 +474,7 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.closeSuccessDialog();
     this.router.navigate(['/']);
   }
+
   private formatDate(date: Date): string {
     if (!date) return '';
     return date.toISOString().split('T')[0];

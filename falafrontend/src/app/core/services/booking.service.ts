@@ -186,7 +186,7 @@ export class BookingService {
     
     const payload = {
       hotelId: formData.hotelId,
-      roomType: formData.roomType,
+      roomId: formData.roomId,
       checkInDate: formData.checkInDate,
       checkOutDate: formData.checkOutDate,
       numberOfGuests: formData.numberOfGuests
@@ -252,7 +252,7 @@ export class BookingService {
       
       // información de la reserva
       hotelId: formData.hotelId,
-      roomType: formData.roomType,
+      roomId: formData.roomId,
       checkInDate: formData.checkInDate,
       checkOutDate: formData.checkOutDate,
       numberOfGuests: formData.numberOfGuests,

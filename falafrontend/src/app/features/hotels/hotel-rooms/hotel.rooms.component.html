@@ -1,0 +1,71 @@
+<div class="rooms-page">
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">← Volver a hoteles</button>
+    <h1>Habitaciones disponibles</h1>
+    <p *ngIf="hotel">{{ hotel.name }} - {{ hotel.location }}</p>
+    <p *ngIf="!hotel">Hotel ID: {{ hotelId }}</p>
+  </div>
+
+  <!-- Estado de carga -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando habitaciones...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error && !loading" class="error-message">
+    <div class="error-icon">⚠️</div>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadRooms()">Reintentar</button>
+  </div>
+
+  <!-- Lista de habitaciones -->
+  <div class="rooms-grid" *ngIf="!loading && rooms.length > 0">
+    <div class="room-card" *ngFor="let room of rooms; trackBy: trackByRoomId">
+      <div class="room-header">
+        <div class="room-icon">{{ getRoomTypeInfo(room.roomType).icon }}</div>
+        <div class="availability-badge" [class.available]="room.isAvailable" [class.unavailable]="!room.isAvailable">
+          {{ room.isAvailable ? 'Disponible' : 'No disponible' }}
+        </div>
+      </div>
+      
+      <div class="room-info">
+        <h3>{{ getRoomName(room) }}</h3>
+        <p class="room-type">{{ getRoomTypeInfo(room.roomType).name }}</p>
+        <p class="room-description">{{ getRoomTypeInfo(room.roomType).description }}</p>
+        
+        <div class="room-details">
+          <div class="detail-item">
+            <span class="detail-icon">👥</span>
+            <span>{{ room.capacity }} {{ room.capacity === 1 ? 'persona' : 'personas' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🛏️</span>
+            <span>{{ room.bedDetails }}</span>
+          </div>
+          <div class="detail-item price">
+            <span class="detail-icon">💰</span>
+            <span class="price-amount">{{ room.pricePerNight | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="price-unit">/noche</span>
+          </div>
+        </div>
+
+        <div class="room-actions">
+          <button 
+            class="reserve-btn" 
+            [disabled]="!room.isAvailable"
+            (click)="reserveRoom(room)">
+            {{ room.isAvailable ? 'Reservar ahora' : 'No disponible' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sin resultados -->
+  <div *ngIf="!loading && rooms.length === 0 && !error" class="empty-state">
+    <div class="empty-icon">🏨</div>
+    <p>No se encontraron habitaciones disponibles para este hotel.</p>
+    <button class="retry-btn" (click)="loadRooms()">Actualizar</button>
+  </div>
+</div>

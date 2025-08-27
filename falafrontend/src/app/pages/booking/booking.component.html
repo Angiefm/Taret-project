@@ -142,17 +142,35 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline">
-                <mat-label>Tipo de Habitación</mat-label>
-                <mat-select formControlName="roomType">
-                  <mat-option value="single-1">Individual (1 persona)</mat-option>
-                  <mat-option value="single-2">Doble (2 personas)</mat-option>
-                  <mat-option value="single-3">Triple (3 personas)</mat-option>
-                  <mat-option value="suite">Suite (4 personas)</mat-option>
-                  <mat-option value="suite-kid">Suite Familiar (5+ personas)</mat-option>
+                <mat-label>Habitación</mat-label>
+                <mat-select 
+                  formControlName="roomId" 
+                  (selectionChange)="onRoomChange($event.value)"
+                  [disabled]="!selectedHotel()">
+                  @if (availableRooms().length === 0 && selectedHotel()) {
+                    <mat-option disabled>Cargando habitaciones...</mat-option>
+                  }
+                  @for (room of availableRooms(); track room.id) {
+                    <mat-option [value]="room.id">
+                      {{ getRoomTypeDisplayName(room.roomType) }}
+                      @if (room.capacity) {
+                        (Máx. {{ room.capacity }} {{ room.capacity === 1 ? 'persona' : 'personas' }})
+                      }
+                      @if (room.pricePerNight) {
+                        - {{ room.pricePerNight | currency:'COP':'symbol':'1.0-0' }}/noche
+                      }
+                      @if (room.bedDetails) {
+                        - {{ room.bedDetails }}
+                      }
+                    </mat-option>
+                  }
                 </mat-select>
                 <mat-icon matSuffix>bed</mat-icon>
-                @if (bookingForm.get('roomType')?.hasError('required') && bookingForm.get('roomType')?.touched) {
-                  <mat-error>Debe seleccionar el tipo de habitación</mat-error>
+                @if (bookingForm.get('roomId')?.hasError('required') && bookingForm.get('roomId')?.touched) {
+                  <mat-error>Debe seleccionar una habitación</mat-error>
+                }
+                @if (!selectedHotel()) {
+                  <mat-hint>Seleccione primero un hotel</mat-hint>
                 }
               </mat-form-field>
 
@@ -203,6 +221,9 @@
                 @if (bookingForm.get('numberOfGuests')?.hasError('required') && bookingForm.get('numberOfGuests')?.touched) {
                   <mat-error>Debe indicar el número de huéspedes</mat-error>
                 }
+                @if (selectedRoom() && selectedRoom()!.capacity && bookingForm.get('numberOfGuests')?.value > selectedRoom()!.capacity!) {
+                  <mat-error>Esta habitación tiene capacidad máxima de {{ selectedRoom()!.capacity }} personas</mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="full-width">
@@ -226,6 +247,10 @@
                   <div class="summary-item">
                     <span class="label">Hotel:</span>
                     <span class="value">{{ selectedHotel()?.name }}</span>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Habitación:</span>
+                    <span class="value">{{ selectedRoom() ? getRoomTypeDisplayName(selectedRoom()!.roomType) : 'Habitación seleccionada' }}</span>
                   </div>
                   <div class="summary-item">
                     <span class="label">Fechas:</span>
@@ -284,7 +309,11 @@
                 <h4>Detalles de la Reserva</h4>
                 <p><strong>Hotel:</strong> {{ selectedHotel()?.name }}</p>
                 <p><strong>Ubicación:</strong> {{ selectedHotel()?.location }}</p>
-                <p><strong>Tipo de Habitación:</strong> {{ getRoomTypeName() }}</p>
+                <p><strong>Habitación:</strong> {{ selectedRoom() ? getRoomTypeDisplayName(selectedRoom()!.roomType) : 'Habitación seleccionada' }}</p>
+                <p><strong>Tipo:</strong> {{ selectedRoom()?.roomType || 'N/A' }}</p>
+                @if (selectedRoom()?.bedDetails) {
+                  <p><strong>Camas:</strong> {{ selectedRoom()!.bedDetails }}</p>
+                }
                 <p><strong>Fechas:</strong> {{ formatDateRange() }}</p>
                 <p><strong>Noches:</strong> {{ numberOfNights() }}</p>
                 <p><strong>Huéspedes:</strong> {{ bookingForm.get('numberOfGuests')?.value }}</p>
@@ -313,15 +342,17 @@
             </div>
 
             <div class="terms-section">
-              <mat-checkbox formControlName="acceptTerms" color="primary">
-                He leído y acepto los 
-                <a href="/terminos" target="_blank">términos y condiciones</a> 
-                y la 
-                <a href="/privacidad" target="_blank">política de privacidad</a>
-              </mat-checkbox>
-              @if (mainForm.get('acceptTerms')?.hasError('required') && mainForm.get('acceptTerms')?.touched) {
-                <mat-error class="terms-error">Debe aceptar los términos y condiciones</mat-error>
-              }
+              <form [formGroup]="mainForm">
+                <mat-checkbox formControlName="acceptTerms" color="primary">
+                  He leído y acepto los 
+                  <a href="/terminos" target="_blank">términos y condiciones</a> 
+                  y la 
+                  <a href="/privacidad" target="_blank">política de privacidad</a>
+                </mat-checkbox>
+                @if (mainForm.get('acceptTerms')?.hasError('required') && mainForm.get('acceptTerms')?.touched) {
+                  <mat-error class="terms-error">Debe aceptar los términos y condiciones</mat-error>
+                }
+              </form>
             </div>
           </div>
 
@@ -365,8 +396,8 @@
           @if (bookingResult()) {
             <div class="booking-details">
               <p><strong>Número de Reserva:</strong> {{ bookingResult()?.data?.bookingNumber }}</p>
-              <p><strong>Hotel:</strong> {{ bookingResult()?.data?.hotel?.name || 'N/A' }}
-            </p>
+              <p><strong>Hotel:</strong> {{ bookingResult()?.data?.hotel?.name || selectedHotel()?.name || 'N/A' }}</p>
+              <p><strong>Habitación:</strong> {{ bookingResult()?.data?.room?.name || selectedRoom()?.name || 'N/A' }}</p>
               <p><strong>Fechas:</strong> {{ formatConfirmationDates() }}</p>
             </div>
           }

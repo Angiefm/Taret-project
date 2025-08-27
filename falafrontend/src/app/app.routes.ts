@@ -17,10 +17,12 @@ export const routes: Routes = [
     path: 'hoteles',
     loadComponent: () => import('./pages/hotels/hotels.component').then(m => m.HotelsComponent)
   },
+
   {
-    path: 'hotel/:id',
-    loadComponent: () => import('./features/hotels/hotel-details/hotel-details.component').then(m => m.HotelDetailsComponent)
+    path: 'hotel/:id/rooms',
+    loadComponent: () => import('./features/hotels/hotel-rooms/hotel.rooms.component').then(m => m.HotelRoomsComponent)
   },
+
 
   {
     path: 'booking',

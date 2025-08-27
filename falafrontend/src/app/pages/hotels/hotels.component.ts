@@ -130,11 +130,6 @@ export class HotelsComponent implements OnInit {
     this.router.navigate(['/hotel', hotel.id]);
   }
 
-  onReserveHotel(hotel: Hotel): void {
-    console.log('reserva solicitada:', hotel.name);
-    // todo: implementar navegación a reserva
-    alert(`Iniciando reserva para ${hotel.name}`);
-  }
 
   onRetryLoad(): void {
     console.log('reintentando carga');
@@ -155,6 +150,11 @@ export class HotelsComponent implements OnInit {
     console.log('contactando asesor');
     alert('función de contacto próximamente implementada');
   }
+
+  onViewRooms(hotel: Hotel): void {
+    this.router.navigate(['/hotel', hotel.id, 'rooms']);
+  }
+
 
   // utilidades
   hasActiveFilters(): boolean {
