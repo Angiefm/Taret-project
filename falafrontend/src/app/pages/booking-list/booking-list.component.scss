@@ -1,0 +1,765 @@
+// Variables from home component
+$color-primary: #0d9488; // teal
+$color-primary-dark: #0f766e;
+$color-secondary: #fb7185; // rosa coral
+$color-text-primary: #334155; // azul petróleo
+$color-text-secondary: #475569;
+$color-text-light: #6b7280;
+$color-background-light: #f1f5f9;
+$color-background-section: #d1d5db; // gris plateado
+$color-border: #e5e7eb;
+$color-white: #ffffff;
+
+// Status colors
+$color-success: #10b981;
+$color-success-light: #d1fae5;
+$color-warning: #f59e0b;
+$color-warning-light: #fef3c7;
+$color-error: #ef4444;
+$color-error-light: #fee2e2;
+
+// Mixins
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+@mixin shadow($type: 'default') {
+  @if $type == 'card' {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  } @else if $type == 'hover' {
+    box-shadow: 0 8px 25px rgba(13, 148, 136, 0.3);
+  } @else {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.booking-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: $color-background-section;
+  min-height: 100vh;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+  }
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    
+    .page-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: $color-text-primary;
+      font-family: serif;
+      letter-spacing: 0.025em;
+      
+      mat-icon {
+        font-size: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: $color-primary;
+      }
+    }
+    
+    button {
+      background-color: $color-primary;
+      color: $color-white;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+      padding: 0.75rem 1.5rem;
+      @include transition();
+      
+      &:hover {
+        background-color: $color-primary-dark;
+        transform: translateY(-2px);
+        @include shadow('hover');
+      }
+      
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.filters-card {
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  @include shadow('card');
+  border: none;
+  background: linear-gradient(135deg, $color-white 0%, $color-background-light 100%);
+  
+  mat-card-content {
+    padding: 1.5rem;
+  }
+  
+  .filters-form {
+    .filter-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+      
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      // Angular Material form field styling
+      ::ng-deep .mat-form-field {
+        .mat-form-field-outline {
+          color: $color-border;
+        }
+        
+        &.mat-focused .mat-form-field-outline-thick {
+          color: $color-primary;
+        }
+        
+        .mat-form-field-label {
+          color: $color-text-secondary;
+        }
+        
+        &.mat-focused .mat-form-field-label {
+          color: $color-primary;
+        }
+        
+        .mat-form-field-suffix {
+          mat-icon {
+            color: $color-text-light;
+          }
+        }
+        
+        &.mat-focused .mat-form-field-suffix {
+          mat-icon {
+            color: $color-primary;
+          }
+        }
+      }
+    }
+    
+    .filter-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      
+      @media (max-width: 768px) {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+      
+      button {
+        color: $color-text-secondary;
+        font-weight: 500;
+        @include transition();
+        
+        &:hover {
+          background-color: $color-background-light;
+          color: $color-text-primary;
+        }
+        
+        mat-icon {
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  
+  mat-spinner {
+    margin-bottom: 1.5rem;
+    
+    ::ng-deep circle {
+      stroke: $color-primary;
+    }
+  }
+  
+  p {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+}
+
+.error-card, .empty-card {
+  border-radius: 1rem;
+  @include shadow('card');
+  border: none;
+  background: linear-gradient(135deg, $color-white 0%, $color-background-light 100%);
+  
+  .error-content, .empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    
+    mat-icon, .empty-icon {
+      font-size: 5rem;
+      width: 5rem;
+      height: 5rem;
+      margin-bottom: 1.5rem;
+      color: $color-text-light;
+      opacity: 0.7;
+    }
+    
+    h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.75rem;
+      color: $color-text-primary;
+      font-weight: 600;
+      font-family: serif;
+    }
+    
+    p {
+      margin: 0 0 2rem 0;
+      color: $color-text-secondary;
+      font-size: 1.125rem;
+      line-height: 1.6;
+    }
+    
+    button {
+      background-color: $color-primary;
+      color: $color-white;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      @include transition();
+      
+      &:hover {
+        background-color: $color-primary-dark;
+        transform: translateY(-2px);
+        @include shadow('hover');
+      }
+    }
+  }
+  
+  .error-content {
+    flex-direction: row;
+    text-align: left;
+    gap: 1.5rem;
+    
+    @media (max-width: 768px) {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    mat-icon {
+      color: $color-error;
+      margin-bottom: 0;
+    }
+    
+    .error-text {
+      flex: 1;
+      
+      h3 {
+        color: $color-error;
+        text-align: left;
+        
+        @media (max-width: 768px) {
+          text-align: center;
+        }
+      }
+      
+      p {
+        text-align: left;
+        margin-bottom: 1.5rem;
+        
+        @media (max-width: 768px) {
+          text-align: center;
+        }
+      }
+      
+      button {
+        background-color: $color-error;
+        
+        &:hover {
+          background-color: darken($color-error, 10%);
+        }
+      }
+    }
+  }
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-card {
+  border-radius: 1rem;
+  @include shadow('card');
+  border: none;
+  background: linear-gradient(135deg, $color-white 0%, rgba(241, 245, 249, 0.3) 100%);
+  overflow: hidden;
+  @include transition();
+  
+  &:hover {
+    transform: translateY(-4px);
+    @include shadow('hover');
+  }
+  
+  &.upcoming {
+    border-left: 6px solid $color-success;
+    background: linear-gradient(135deg, $color-white 0%, rgba(16, 185, 129, 0.02) 100%);
+  }
+  
+  &.past {
+    opacity: 0.85;
+    background: linear-gradient(135deg, $color-white 0%, rgba(107, 114, 128, 0.05) 100%);
+  }
+  
+  mat-card-header {
+    padding: 1.5rem 1.5rem 0;
+  }
+  
+  mat-card-content {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  
+  .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    
+    .booking-number {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      
+      strong {
+        font-size: 1.25rem;
+        color: $color-primary;
+        font-weight: 700;
+        letter-spacing: 0.025em;
+      }
+      
+      mat-chip {
+        border-radius: 1rem;
+        font-weight: 600;
+        font-size: 0.75rem;
+        height: 2rem;
+        padding: 0 0.75rem;
+        letter-spacing: 0.025em;
+      }
+    }
+    
+    .booking-actions {
+      button {
+        color: $color-text-light;
+        @include transition();
+        
+        &:hover {
+          color: $color-text-primary;
+          background-color: $color-background-light;
+        }
+      }
+      
+      .cancel-action {
+        color: $color-secondary;
+        
+        &:hover {
+          background-color: $color-error-light;
+        }
+      }
+    }
+  }
+  
+  .booking-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    
+    .detail-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, rgba(13, 148, 136, 0.02) 0%, rgba(13, 148, 136, 0.05) 100%);
+      border-radius: 0.75rem;
+      border: 1px solid rgba(13, 148, 136, 0.1);
+      @include transition();
+      
+      &:hover {
+        border-color: rgba(13, 148, 136, 0.2);
+        transform: translateY(-1px);
+      }
+      
+      .detail-icon {
+        flex-shrink: 0;
+        
+        mat-icon {
+          color: $color-primary;
+          font-size: 1.375rem;
+          width: 1.375rem;
+          height: 1.375rem;
+        }
+      }
+      
+      .detail-content {
+        flex: 1;
+        
+        h4 {
+          margin: 0 0 0.25rem 0;
+          font-size: 1rem;
+          font-weight: 600;
+          color: $color-text-primary;
+          letter-spacing: 0.025em;
+        }
+        
+        p {
+          margin: 0;
+          color: $color-text-secondary;
+          font-size: 0.9rem;
+          line-height: 1.5;
+          
+          &.location {
+            color: $color-text-light;
+          }
+          
+          &.upcoming-text {
+            color: $color-success;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            
+            mat-icon {
+              font-size: 1rem;
+              width: 1rem;
+              height: 1rem;
+            }
+          }
+        }
+        
+        .payment-chip {
+          font-size: 0.75rem;
+          height: 1.75rem;
+          border-radius: 0.875rem;
+          font-weight: 600;
+          margin-top: 0.25rem;
+        }
+      }
+    }
+  }
+  
+  .guest-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, $color-background-light 0%, rgba(241, 245, 249, 0.5) 100%);
+    border-radius: 0.75rem;
+    font-size: 0.9rem;
+    color: $color-text-secondary;
+    border: 1px solid $color-border;
+    
+    mat-icon {
+      color: $color-primary;
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+    
+    .separator {
+      color: $color-text-light;
+      font-weight: 300;
+    }
+  }
+  
+  .special-requests {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, $color-warning-light 0%, rgba(245, 158, 11, 0.1) 100%);
+    border-radius: 0.75rem;
+    border-left: 4px solid $color-warning;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    
+    mat-icon {
+      color: $color-warning;
+      font-size: 1.125rem;
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: $color-text-primary;
+      flex: 1;
+      line-height: 1.5;
+    }
+  }
+  
+  .cancellation-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin: 1.25rem 0;
+    padding: 1rem;
+    background: linear-gradient(135deg, $color-error-light 0%, rgba(239, 68, 68, 0.1) 100%);
+    border-radius: 0.75rem;
+    border-left: 4px solid $color-error;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    
+    mat-icon {
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: $color-error;
+    }
+    
+    .cancellation-details {
+      flex: 1;
+      
+      p {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: $color-text-primary;
+        line-height: 1.5;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+        
+        strong {
+          font-weight: 600;
+          color: $color-text-primary;
+        }
+      }
+    }
+  }
+  
+  .booking-actions-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid $color-border;
+    background: linear-gradient(135deg, rgba(241, 245, 249, 0.3) 0%, rgba(241, 245, 249, 0.1) 100%);
+    
+    button {
+      font-weight: 500;
+      border-radius: 0.5rem;
+      @include transition();
+      
+      &:first-child {
+        color: $color-primary;
+        
+        &:hover {
+          background-color: rgba(13, 148, 136, 0.1);
+        }
+      }
+      
+      &[color="warn"] {
+        color: $color-secondary;
+        
+        &:hover {
+          background-color: rgba(251, 113, 133, 0.1);
+        }
+        
+        &[disabled] {
+          color: $color-text-light;
+        }
+      }
+      
+      mat-icon {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+// Status chip colors
+::ng-deep .mat-chip {
+  &.mat-primary {
+    background-color: rgba(13, 148, 136, 0.1);
+    color: $color-primary;
+  }
+  
+  &.mat-accent {
+    background-color: rgba(251, 113, 133, 0.1);
+    color: $color-secondary;
+  }
+  
+  &.mat-warn {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: $color-warning;
+  }
+  
+  // Custom status colors
+  &[ng-reflect-color="success"] {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: $color-success;
+  }
+}
+
+// Pagination styling
+::ng-deep mat-paginator {
+  background: linear-gradient(135deg, $color-white 0%, $color-background-light 100%);
+  border-radius: 1rem;
+  @include shadow();
+  border: none;
+  margin-top: 1rem;
+  
+  .mat-paginator-container {
+    padding: 1rem 1.5rem;
+  }
+  
+  .mat-paginator-page-size-label,
+  .mat-paginator-range-label {
+    color: $color-text-secondary;
+    font-weight: 500;
+  }
+  
+  .mat-icon-button {
+    color: $color-text-light;
+    
+    &:not([disabled]):hover {
+      background-color: rgba(13, 148, 136, 0.1);
+      color: $color-primary;
+    }
+    
+    &[disabled] {
+      color: $color-text-light;
+      opacity: 0.5;
+    }
+  }
+  
+  .mat-select-trigger {
+    color: $color-text-secondary;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .booking-card {
+    .booking-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      
+      .booking-number {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .booking-actions {
+        align-self: flex-end;
+      }
+    }
+    
+    .booking-actions-footer {
+      flex-direction: column;
+      gap: 0.5rem;
+      
+      button {
+        width: 100%;
+      }
+    }
+  }
+  
+  .page-header .header-content {
+    .page-title {
+      font-size: 2rem;
+      
+      mat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+}
+
+// Menu styling
+::ng-deep .mat-menu-panel {
+  border-radius: 0.75rem;
+  @include shadow('card');
+  border: none;
+  
+  .mat-menu-content {
+    padding: 0.5rem 0;
+    
+    .mat-menu-item {
+      color: $color-text-secondary;
+      font-weight: 500;
+      @include transition();
+      
+      &:hover {
+        background-color: $color-background-light;
+        color: $color-text-primary;
+      }
+      
+      &.cancel-action {
+        color: $color-secondary;
+        
+        &:hover {
+          background-color: $color-error-light;
+        }
+      }
+      
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+    
+    .mat-divider {
+      margin: 0.5rem 0;
+      border-color: $color-border;
+    }
+  }
+}
+
+// Utility classes
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: $color-text-light;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-2 {
+  margin-top: 0.5rem !important;
+}
+
+.mr-2 {
+  margin-right: 0.5rem !important;
+}

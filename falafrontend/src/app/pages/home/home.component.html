@@ -128,12 +128,6 @@
       </p>
     </div>
 
-    <!-- Mock Data Warning -->
-    <div *ngIf="isShowingMockData()" class="mock-data-warning">
-      <span class="warning-icon">🔧</span>
-      <span>Mostrando datos de prueba. Conecta tu backend para ver datos reales.</span>
-    </div>
-
     <!-- Hotels Grid -->
     <div class="hotels-grid" *ngIf="!loading && featuredHotels.length > 0">
       <app-hotel-card

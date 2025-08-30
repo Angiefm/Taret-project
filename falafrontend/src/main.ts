@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { importProvidersFrom, APP_INITIALIZER } from '@angular/core';
+import { importProvidersFrom, APP_INITIALIZER, LOCALE_ID } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
@@ -9,6 +9,12 @@ import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { authInterceptor, httpLoggingInterceptor } from './app/core/interceptors/auth.interceptor';
+
+import localeEsCO from '@angular/common/locales/es-CO'; 
+import { registerLocaleData } from '@angular/common';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+registerLocaleData(localeEsCO);
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -31,27 +37,33 @@ function initializeKeycloak(keycloak: KeycloakService) {
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
-    
+
     importProvidersFrom(BrowserAnimationsModule),
-    
+
+    //Keycloak
     importProvidersFrom(KeycloakAngularModule),
-    
     KeycloakService,
-    
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
       multi: true,
       deps: [KeycloakService]
     },
-    
+
+    //HTTP
     provideHttpClient(
       withInterceptors([
         authInterceptor,         
         httpLoggingInterceptor   
       ])
-    )
+    ),
+
+    // Locale
+    { provide: LOCALE_ID, useValue: 'es-CO' },
+
+    //Snackbar global
+    importProvidersFrom(MatSnackBarModule),
   ]
 }).catch(err => {
-  console.error('❌ Error iniciando la aplicación:', err);
+  console.error('Error iniciando la aplicación:', err);
 });

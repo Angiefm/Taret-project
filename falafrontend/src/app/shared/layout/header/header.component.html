@@ -23,9 +23,16 @@
         (click)="onNavigate(item.route)">
         {{ item.label }}
       </a>
+      
+      <a *ngIf="isAuthenticated()" 
+         routerLink="/mis-reservas" 
+         class="nav-link" 
+         routerLinkActive="active">
+        mis reservas
+      </a>
     </nav>
 
-    <!-- Right side - Language, Currency, Login -->
+    <!-- Right side - Language, Currency, User -->
     <div class="header-right">
       <!-- Language & Currency -->
       <div class="locale-info hidden-mobile">
@@ -55,9 +62,15 @@
         </div>
       </div>
       
-      <!-- Login Button -->
-      <button routerLink="/login" class="login-btn btn-secondary" (click)="onLoginClick()">
-        iniciar sesión
+      <div *ngIf="isAuthenticated()" class="user-info hidden-mobile">
+        <span class="user-name">{{ userInfo()?.firstName || 'Usuario' }}</span>
+      </div>
+      
+      <!-- Login/Logout Button -->
+      <button 
+        class="login-btn btn-secondary" 
+        (click)="onLoginClick()">
+        {{ isAuthenticated() ? 'cerrar sesión' : 'iniciar sesión' }}
       </button>
 
       <!-- Mobile Menu Button -->
@@ -85,6 +98,19 @@
           (click)="onNavigate(item.route)">
           {{ item.label }}
         </a>
+        
+        <a *ngIf="isAuthenticated()" 
+           routerLink="/mis-reservas" 
+           class="mobile-nav-link" 
+           routerLinkActive="active"
+           (click)="onNavigate('/mis-reservas')">
+          mis reservas
+        </a>
+      </div>
+
+      <!-- Mobile User Info -->
+      <div *ngIf="isAuthenticated()" class="mobile-user-info">
+        <p>Hola, {{ userInfo()?.firstName || 'Usuario' }}</p>
       </div>
 
       <!-- Mobile Locale Info -->

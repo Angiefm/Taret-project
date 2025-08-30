@@ -1,52 +1,15 @@
 export interface Room {
   id: string;
   hotelId: string;
-  name: string;
   roomType: 'single-1' | 'single-2' | 'single-3' | 'suite' | 'suite-kid';
   pricePerNight: number;
-  isAvailable: boolean;
+  isActive: boolean;
   capacity: number;
   bedDetails: string;
-  amenities?: string[];
-  description?: string;
-  imageUrls?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-export interface ApiRoomResponse {
-  _id: string;
-  hotelId: string;
-  name?: string;
-  roomType: 'single-1' | 'single-2' | 'single-3' | 'suite' | 'suite-kid';
-  pricePerNight: number;
-  isAvailable: boolean;
-  capacity: number;
-  bedDetails: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface RoomSearchCriteria {
-  hotelId: string;
-  checkIn?: string;
-  checkOut?: string;
-  guests: number;
-  roomType?: string;
-  minPrice?: number;
-  maxPrice?: number;
-}
-
-export interface RoomAvailability {
-  room: Room;
-  isAvailable: boolean;
-  totalPrice: number;
-  priceBreakdown: {
-    subtotal: number;
-    taxes: number;
-    fees: number;
-    nights: number;
-  };
+  amenities: string[];
+  imageUrls: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type RoomTypeDisplay = {
@@ -65,12 +28,12 @@ export const ROOM_TYPE_INFO: RoomTypeDisplay = {
   },
   'single-2': {
     name: 'Individual Premium',
-    description: 'Habitación premium para 1 persona con amenidades adicionales',
+    description: 'Habitación premium con amenidades adicionales',
     icon: '🛏️'
   },
   'single-3': {
     name: 'Individual Deluxe',
-    description: 'Habitación deluxe para 1 persona con vista privilegiada',
+    description: 'Habitación deluxe con vista privilegiada',
     icon: '🛏️'
   },
   'suite': {

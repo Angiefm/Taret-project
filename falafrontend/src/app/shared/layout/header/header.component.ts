@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -28,17 +29,18 @@ export class HeaderComponent implements OnInit {
     { code: 'USD', name: 'Dólar Americano' }
   ];
 
-  // Current selections
   selectedLanguage = this.languages[0];
   selectedCurrency = this.currencies[0];
   isLanguageDropdownOpen = false;
   isMobileMenuOpen = false;
 
-  constructor() {}
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  ngOnInit(): void {
-    // Initialize component
-  }
+  readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  readonly userInfo = computed(() => this.authService.user());
+
+  ngOnInit(): void {}
 
   // Language dropdown methods
   toggleLanguageDropdown(): void {
@@ -49,7 +51,6 @@ export class HeaderComponent implements OnInit {
     this.selectedLanguage = language;
     this.isLanguageDropdownOpen = false;
     console.log('Idioma seleccionado:', language);
-    // Aquí implementaré la lógica de cambio de idioma
   }
 
   // Currency methods
@@ -58,7 +59,6 @@ export class HeaderComponent implements OnInit {
     const nextIndex = (currentIndex + 1) % this.currencies.length;
     this.selectedCurrency = this.currencies[nextIndex];
     console.log('Moneda cambiada a:', this.selectedCurrency);
-    // Aquí implementaré la lógica de cambio de moneda
   }
 
   // Mobile menu methods
@@ -73,15 +73,19 @@ export class HeaderComponent implements OnInit {
   // Navigation methods
   onNavigate(route: string): void {
     this.closeMobileMenu();
-    console.log('Navegando a:', route);
+    this.router.navigate([route]);
   }
 
   onLoginClick(): void {
-    console.log('Iniciando sesión...');
-    // Aquí implementaré la lógica de login
+    if (this.authService.isAuthenticated()) {
+      this.authService.logout();
+    } else {
+      this.authService.login();
+    }
   }
 
   // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     if (this.isLanguageDropdownOpen) {
       this.isLanguageDropdownOpen = false;

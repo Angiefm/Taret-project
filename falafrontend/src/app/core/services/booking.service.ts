@@ -180,6 +180,30 @@ export class BookingService {
     );
   }
 
+  getBookingById(bookingId: string): Observable<BookingResponse> {
+    console.log('Buscando reserva por id:', bookingId);
+  
+    this.setLoading(true);
+    this.clearError();
+  
+    return this.http.get<BookingResponse>(`${this.apiUrl}/${bookingId}`).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          console.log('Reserva encontrada:', response.data);
+        } else {
+          console.warn('Reserva no encontrada:', response.message);
+        }
+      }),
+      catchError((error) => {
+        console.error('Error buscando reserva por id:', error);
+        const errorMessage = this.extractErrorMessage(error);
+        this.setError(errorMessage);
+        return throwError(() => new Error(errorMessage));
+      }),
+      finalize(() => this.setLoading(false))
+    );
+  }
+
   // calcular precio total de reserva
   calculateBookingPrice(formData: Partial<BookingFormData>): Observable<{ totalPrice: number; breakdown: any }> {
     console.log('Calculando precio de reserva');
@@ -187,8 +211,8 @@ export class BookingService {
     const payload = {
       hotelId: formData.hotelId,
       roomId: formData.roomId,
-      checkInDate: formData.checkInDate,
-      checkOutDate: formData.checkOutDate,
+      checkInDate: this.formatDateOnly(formData.checkInDate!),
+      checkOutDate: this.formatDateOnly(formData.checkOutDate!),
       numberOfGuests: formData.numberOfGuests
     };
 
@@ -239,33 +263,35 @@ export class BookingService {
 
   // métodos auxiliares privados
   private prepareBookingPayload(formData: BookingFormData): any {
-    const user = this.authService.user();
-    
     return {
       // información del huésped
       guestInfo: {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        email: formData.email
+        firstName: formData.guestInfo.firstName,
+        lastName: formData.guestInfo.lastName,
+        phone: formData.guestInfo.phone,
+        email: formData.guestInfo.email,
       },
       
       // información de la reserva
       hotelId: formData.hotelId,
       roomId: formData.roomId,
-      checkInDate: formData.checkInDate,
-      checkOutDate: formData.checkOutDate,
+      checkInDate: this.formatDateOnly(formData.checkInDate),
+      checkOutDate: this.formatDateOnly(formData.checkOutDate),
       numberOfGuests: formData.numberOfGuests,
-      specialRequests: formData.specialRequests,
-      
-      // información del usuario (si está autenticado)
-      userId: user?.id || null,
-      
+
       // información adicional
       source: 'web_application',
       platform: 'angular',
       userAgent: navigator.userAgent
     };
+  }
+
+  private formatDateOnly(date: Date | string): string {
+    const d = new Date(date);
+    const year = d.getUTCFullYear();
+    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(d.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private extractErrorMessage(error: any): string {

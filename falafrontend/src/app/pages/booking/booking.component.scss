@@ -502,6 +502,45 @@
       height: 3rem !important;
     }
 
+    .room.option {
+      padding: 8px 0;
+      line-height: 1.3;
+    }
+
+    .room-main-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    
+    .room-name {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .room-price {
+      font-weight: 600;
+      color: #1976d2;
+    }
+    
+    .room-details {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.85em;
+      color: #666;
+    }
+    
+    .room-capacity {
+      margin-bottom: 2px;
+    }
+    
+    .room-description {
+      font-style: italic;
+    }
+
+
+
     h2 {
       font-size: 1.5rem;
     }

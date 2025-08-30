@@ -1,18 +1,13 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+
 
 export const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
   },
-  {
-    path: 'login',
-    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent)
-  },
-  {
-    path: 'registro',
-    loadComponent: () => import('./pages/register/register.component').then(m => m.RegisterComponent) 
-  },
+  
   {
     path: 'hoteles',
     loadComponent: () => import('./pages/hotels/hotels.component').then(m => m.HotelsComponent)
@@ -23,11 +18,25 @@ export const routes: Routes = [
     loadComponent: () => import('./features/hotels/hotel-rooms/hotel.rooms.component').then(m => m.HotelRoomsComponent)
   },
 
-
+  
   {
     path: 'booking',
     loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent),
+    canActivate: [AuthGuard],
     canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true]
+  },
+
+  {
+    path: 'mis-reservas',
+    loadComponent: () => import('./pages/booking-list/booking-list.component').then(m => m.BookingListComponent),
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'booking/confirmation/:id',
+    loadComponent: () => import('./features/booking/booking-confirmation/booking-confirmation.component')
+      .then(m => m.BookingConfirmationComponent),
+    canActivate: [AuthGuard]
   },
 
   {

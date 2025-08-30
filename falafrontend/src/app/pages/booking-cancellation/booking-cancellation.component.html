@@ -1,0 +1,226 @@
+<div class="cancellation-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>cancel</mat-icon>
+      Cancelar Reserva
+    </h2>
+    <button mat-icon-button 
+            mat-dialog-close 
+            class="close-button"
+            [disabled]="isSubmitting()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    
+    <mat-card class="booking-summary-card">
+      <mat-card-header>
+        <mat-card-title>Resumen de la reserva</mat-card-title>
+        <mat-card-subtitle>#{{ booking.bookingNumber }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="booking-summary-grid">
+          <div class="summary-item">
+            <mat-icon>hotel</mat-icon>
+            <div class="summary-content">
+              <strong>{{ booking.hotel.name }}</strong>
+              <p>{{ booking.hotel.location }}</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>bed</mat-icon>
+            <div class="summary-content">
+              <strong>{{ booking.room.roomType }}</strong>
+              <p>{{ booking.numberOfGuests }} huésped(es)</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>calendar_today</mat-icon>
+            <div class="summary-content">
+              <strong>{{ formatDateRange() }}</strong>
+              <p>{{ booking.numberOfNights }} noche(s)</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>payment</mat-icon>
+            <div class="summary-content">
+              <strong>${{ booking.priceBreakdown.total | number:'1.0-0' }}</strong>
+              <p>Total pagado</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="isLastMinuteCancellation" class="warning-banner">
+      <mat-icon>warning</mat-icon>
+      <div class="warning-content">
+        <h4>Cancelación de último momento</h4>
+        <p>Tu reserva tiene check-in en {{ daysUntilCheckIn }} día(s). Las cancelaciones de último momento pueden tener penalidades adicionales.</p>
+      </div>
+    </div>
+
+    <mat-card class="refund-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>monetization_on</mat-icon>
+          Información de reembolso
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="refund-breakdown">
+          <div class="refund-item">
+            <span>Total pagado:</span>
+            <span class="amount">${{ booking.priceBreakdown.total | number:'1.0-0' }}</span>
+          </div>
+          
+          <div class="refund-item">
+            <span>Reembolso base:</span>
+            <span class="amount">${{ refundAmount() | number:'1.0-0' }}</span>
+          </div>
+          
+          <div *ngIf="cancellationFees()" class="refund-item fees">
+            <span>Tarifa de cancelación:</span>
+            <span class="amount">-${{ cancellationFees() | number:'1.0-0' }}</span>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="refund-item total">
+            <span><strong>Reembolso neto:</strong></span>
+            <span class="amount final"><strong>${{ netRefund() | number:'1.0-0' }}</strong></span>
+          </div>
+        </div>
+        
+        <div class="refund-note">
+          <mat-icon>info</mat-icon>
+          <p>El reembolso se procesará en 5-10 días hábiles a tu método de pago original.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="form-section" *ngIf="!showConfirmation()">
+      <h3>Motivo de cancelación</h3>
+      
+      <form [formGroup]="cancellationForm" class="cancellation-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>¿Por qué cancelas tu reserva?</mat-label>
+          <mat-select formControlName="reason">
+            <mat-option *ngFor="let reason of cancellationReasons" [value]="reason.value">
+              {{ reason.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="cancellationForm.get('reason')?.hasError('required')">
+            Selecciona un motivo para continuar
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="cancellationForm.get('reason')?.value === 'other'" 
+                        appearance="outline" 
+                        class="full-width">
+          <mat-label>Especifica tu motivo</mat-label>
+          <input matInput formControlName="customReason" placeholder="Describe brevemente el motivo...">
+          <mat-error *ngIf="cancellationForm.get('customReason')?.hasError('required')">
+            Especifica el motivo de cancelación
+          </mat-error>
+          <mat-error *ngIf="cancellationForm.get('customReason')?.hasError('minlength')">
+            El motivo debe tener al menos 5 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comentarios adicionales (opcional)</mat-label>
+          <textarea matInput 
+                    formControlName="additionalComments" 
+                    rows="3"
+                    placeholder="¿Hay algo más que quieras agregar?"></textarea>
+          <mat-hint align="end">
+            {{ cancellationForm.get('additionalComments')?.value?.length || 0 }}/500
+          </mat-hint>
+          <mat-error *ngIf="cancellationForm.get('additionalComments')?.hasError('maxlength')">
+            Los comentarios no pueden exceder 500 caracteres
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+
+    <div class="confirmation-section" *ngIf="showConfirmation()">
+      <div class="confirmation-summary">
+        <h3>Confirma la cancelación</h3>
+        
+        <div class="confirmation-details">
+          <p><strong>Motivo:</strong> {{ selectedReasonLabel }}</p>
+          <p *ngIf="cancellationForm.get('additionalComments')?.value">
+            <strong>Comentarios:</strong> {{ cancellationForm.get('additionalComments')?.value }}
+          </p>
+          <p><strong>Reembolso:</strong> ${{ netRefund() | number:'1.0-0' }}</p>
+        </div>
+      </div>
+      
+      <form [formGroup]="confirmationForm" class="confirmation-form">
+        <mat-checkbox formControlName="acceptCancellationPolicy" class="full-width">
+          He leído y acepto las 
+          <a href="/politicas-cancelacion" target="_blank">políticas de cancelación</a>
+        </mat-checkbox>
+        
+        <mat-checkbox formControlName="confirmCancellation" class="full-width">
+          Confirmo que deseo cancelar esta reserva de forma permanente
+        </mat-checkbox>
+      </form>
+      
+      <div class="final-warning">
+        <mat-icon>warning</mat-icon>
+        <p>
+          <strong>¡Atención!</strong> 
+          Esta acción no se puede deshacer. Una vez cancelada, la reserva no podrá ser restaurada.
+        </p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions" align="end">
+    <ng-container *ngIf="!showConfirmation()">
+      <button mat-button 
+              (click)="closeDialog()" 
+              [disabled]="isSubmitting()">
+        Mantener reserva
+      </button>
+      
+      <button mat-raised-button 
+              (click)="proceedToConfirmation()"
+              [disabled]="!cancellationForm.valid || isSubmitting()">
+        <mat-icon>arrow_forward</mat-icon>
+        Continuar
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="showConfirmation()">
+      <button mat-button 
+              (click)="goBackToForm()" 
+              [disabled]="isSubmitting()">
+        <mat-icon>arrow_back</mat-icon>
+        Atrás
+      </button>
+      
+      <button mat-button 
+              (click)="closeDialog()" 
+              [disabled]="isSubmitting()">
+        Cancelar proceso
+      </button>
+      
+      <button mat-raised-button 
+              (click)="submitCancellation()"
+              [disabled]="!canSubmitCancellation()">
+        <mat-spinner *ngIf="isSubmitting()" diameter="20" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!isSubmitting()">delete_forever</mat-icon>
+        {{ isSubmitting() ? 'Cancelando...' : 'Cancelar reserva' }}
+      </button>
+    </ng-container>
+  </mat-dialog-actions>
+</div>

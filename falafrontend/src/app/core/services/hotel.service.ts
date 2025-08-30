@@ -3,8 +3,11 @@ import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http'
 import { Observable, throwError } from 'rxjs'; // observable para datos en tiempo real
 import { catchError, retry, map } from 'rxjs/operators'; //traigo herramientas para procesar datos
 import { Hotel, ApiHotelResponse } from '../models/hotel.model';
-import { SearchCriteria } from '../models/search-criteria';
+import { SearchCriteria } from '../models/search-criteria.model';
 import { environment } from '../../../environments/environment';
+import { normalizeDate } from '../utils/date.utils';
+
+
 
 @Injectable({ // aqui le digo a angular que esto es un servicio
   providedIn: 'root'  //angular crea una sola vez para toda la app
@@ -24,14 +27,17 @@ export class HotelService {
       );
   }
 
-  searchHotels(criteria: SearchCriteria): Observable<Hotel[]> { //aqui busco hoteles con filtro especifico
-    const params = this.buildSearchParams(criteria); //convierto los criterios en parámentros url
-    return this.http.get<ApiHotelResponse[]>(`${this.hotelsEndpoint}/search`, { params }) //hago petición get a /hotels/search con parámetros
-      .pipe(
-        map(this.transformHotelsData.bind(this)), //transformo datos
-        retry(2),
-        catchError(this.handleError.bind(this))
-      );
+  searchHotels(criteria: SearchCriteria): Observable<Hotel[]> {
+    const params = this.buildSearchParams(criteria);
+  
+    return this.http.get<{ success: boolean; total: number; hotels: ApiHotelResponse[] }>(
+      `${this.hotelsEndpoint}/search`,
+      { params }
+    ).pipe(
+      map(res => this.transformHotelsData(res.hotels)), // <- usar hotels, no data
+      retry(2),
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getHotelById(id: string): Observable<Hotel> {
@@ -54,7 +60,7 @@ export class HotelService {
       location: hotel.location,
       description: hotel.description,
       amenities: hotel.amenities || [],
-      price: hotel.basePrice || 350000, //se convierte en price
+      minPrice: hotel.minPrice || 0, //se convierte en price
       rating: hotel.rating || 4.5, //por defecto POR EL MOMENTO
       totalReviews: hotel.totalReviews || 0, //total reseñas
       imageUrls: hotel.imageUrls || [],
@@ -66,24 +72,26 @@ export class HotelService {
     };
   }
 
-  private buildSearchParams(criteria: SearchCriteria): HttpParams { //convierto criterios en parametros URL
-    let params = new HttpParams();//parametros vacios
-    
-    if (criteria.destination) {
-      params = params.set('location', criteria.destination); //si hay destino
-    }
-    if (criteria.guests) {
-      params = params.set('people', criteria.guests.toString());//si hay huespedes
-    }
-    if (criteria.minPrice) {
-      params = params.set('minPrice', criteria.minPrice.toString());// si hay precio minimo agrego minPrice:200000
-    }
-    if (criteria.maxPrice) {
-      params = params.set('maxPrice', criteria.maxPrice.toString());// si hay precio maximo 500000
-    }
-    
-    return params;//devuelvo algo como: ?location=cartagena&people=2&minPrice=200000
+  private buildSearchParams(criteria: SearchCriteria): HttpParams {
+
+  let params = new HttpParams();
+
+  if (criteria.destination) {
+    params = params.set('destination', criteria.destination);
   }
+  if (criteria.checkIn) {
+  params = params.set('checkIn', normalizeDate(criteria.checkIn));
+}
+if (criteria.checkOut) {
+  params = params.set('checkOut', normalizeDate(criteria.checkOut));
+}
+  if (criteria.guests) {
+    params = params.set('guests', criteria.guests.toString());
+  }
+
+  return params;
+}
+
 
   private handleError(error: HttpErrorResponse): Observable<never> { // aqui manejo errores
     let errorMessage = 'Error desconocido en el servidor';

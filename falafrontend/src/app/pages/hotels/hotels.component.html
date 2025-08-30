@@ -42,30 +42,15 @@
               </select>
             </div>
 
-            <!-- precio mínimo -->
+            <!-- fechas -->
             <div class="filter-group">
-              <label class="filter-label">Precio mínimo</label>
-              <input 
-                type="number" 
-                class="filter-input"
-                [(ngModel)]="searchCriteria.minPrice"
-                name="minPrice"
-                placeholder="200,000"
-                min="0"
-                step="50000">
+              <label class="filter-label">Check-In</label>
+              <input type="date" class="filter-input" [(ngModel)]="searchCriteria.checkIn" name="checkIn">
             </div>
-
-            <!-- precio máximo -->
+          
             <div class="filter-group">
-              <label class="filter-label">Precio máximo</label>
-              <input 
-                type="number" 
-                class="filter-input"
-                [(ngModel)]="searchCriteria.maxPrice"
-                name="maxPrice"
-                placeholder="500,000"
-                min="0"
-                step="50000">
+              <label class="filter-label">Check-Out</label>
+              <input type="date" class="filter-input" [(ngModel)]="searchCriteria.checkOut" name="checkOut">
             </div>
           </div>
 

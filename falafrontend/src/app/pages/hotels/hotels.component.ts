@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HotelListComponent, ViewMode, SortOption } from '../../features/hotels/hotel-list/hotel-list.component';
 import { Hotel } from '../../core/models/hotel.model';
-import { SearchCriteria } from '../../core/models/search-criteria';
+import { SearchCriteria } from '../../core/models/search-criteria.model';
 import { HotelService } from '../../core/services/hotel.service';
 
 @Component({
@@ -26,9 +26,7 @@ export class HotelsComponent implements OnInit {
     destination: '',
     checkIn: '',
     checkOut: '',
-    guests: 2,
-    minPrice: undefined,
-    maxPrice: undefined
+    guests: 1,
   };
 
   // estados de ui
@@ -111,9 +109,7 @@ export class HotelsComponent implements OnInit {
       destination: '',
       checkIn: '',
       checkOut: '',
-      guests: 2,
-      minPrice: undefined,
-      maxPrice: undefined
+      guests: 1,
     };
     this.loadHotels();
   }
@@ -159,10 +155,10 @@ export class HotelsComponent implements OnInit {
   // utilidades
   hasActiveFilters(): boolean {
     return !!(
-      this.searchCriteria.destination ||
-      this.searchCriteria.minPrice ||
-      this.searchCriteria.maxPrice ||
-      (this.searchCriteria.guests && this.searchCriteria.guests !== 2)
+      this.searchCriteria.destination || 
+      this.searchCriteria.checkIn || 
+      this.searchCriteria.checkOut || 
+      (this.searchCriteria.guests && this.searchCriteria.guests !== 1)
     );
   }
 }

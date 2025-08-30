@@ -4,17 +4,16 @@ export interface Hotel {
   location: string;
   description: string;
   amenities: string[];
-  price: number;
-  basePrice?: number;
   rating: number;
   totalReviews: number;
   imageUrls: string[];
-  imageUrl?: string; // primera imagen como principal
+  imageUrl?: string;   // primera imagen como principal
   capacity: number;
   totalCapacity?: number;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;
+  minPrice?: number;
 }
 
 export interface ApiHotelResponse {
@@ -23,7 +22,6 @@ export interface ApiHotelResponse {
   location: string;
   description: string;
   amenities: string[];
-  basePrice: number;
   rating: number;
   totalReviews: number;
   imageUrls: string[];
@@ -31,15 +29,7 @@ export interface ApiHotelResponse {
   totalCapacity?: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface SearchCriteria {
-  destination: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
   minPrice?: number;
-  maxPrice?: number;
 }
 
 export interface HotelSearchResponse {

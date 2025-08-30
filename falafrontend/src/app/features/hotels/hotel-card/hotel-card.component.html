@@ -11,7 +11,8 @@
     <!-- badge de rating -->
     <div class="rating-badge">
       <span class="star">⭐</span>
-      <span class="rating-value">{{ hotel.rating }}</span>
+      <span class="rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
+
     </div>
   </div>
 
@@ -55,9 +56,18 @@
     <!-- precio y botones de acción -->
     <div class="bottom-section">
       <div class="price-section">
-        <span class="price">${{ formatPrice(hotel.price) }}</span>
-        <span class="price-period">cop / noche desde</span>
-      </div>
+  <span class="price" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0; else sinPrecio">
+    {{ hotel.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+  </span>
+  <span class="price-period" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0">
+    / noche desde
+  </span>
+
+  <ng-template #sinPrecio>
+    <span class="price muted">consulta precio</span>
+  </ng-template>
+</div>
+
       
       <div class="action-buttons">
         <button 

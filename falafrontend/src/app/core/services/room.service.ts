@@ -1,177 +1,147 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
-import { Room, ApiRoomResponse, RoomSearchCriteria, RoomAvailability, ROOM_TYPE_INFO } from '../models/room.model';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+
 import { environment } from '../../../environments/environment';
+import { Room } from '../models/room.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomService {
-  private readonly API_URL = `${environment.apiUrl}/rooms`;
+  
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/rooms`;
 
-  constructor(private http: HttpClient) {}
-
-  // obtengo todas las habitaciones de un hotel
-  getRoomsByHotel(hotelId: string): Observable<Room[]> {
-    return this.http.get<ApiRoomResponse[]>(`${this.API_URL}/hotel/${hotelId}`)
-      .pipe(
-        map(rooms => rooms.map(room => this.transformApiRoom(room))),
-        catchError(this.handleError)
-      );
+  constructor() {
+    console.log('RoomService inicializado');
   }
 
-  // busco habitaciones disponibles
-  searchAvailableRooms(criteria: RoomSearchCriteria): Observable<RoomAvailability[]> {
-    let params = new HttpParams()
-      .set('hotelId', criteria.hotelId)
-      .set('guests', criteria.guests.toString());
-
-    if (criteria.checkIn) {
-      params = params.set('checkIn', criteria.checkIn);
-    }
-    if (criteria.checkOut) {
-      params = params.set('checkOut', criteria.checkOut);
-    }
-    if (criteria.roomType) {
-      params = params.set('roomType', criteria.roomType);
-    }
-    if (criteria.minPrice) {
-      params = params.set('minPrice', criteria.minPrice.toString());
-    }
-    if (criteria.maxPrice) {
-      params = params.set('maxPrice', criteria.maxPrice.toString());
-    }
-
-    return this.http.get<any[]>(`${this.API_URL}/search-available`, { params })
-      .pipe(
-        map(results => results.map(result => this.transformRoomAvailability(result))),
-        catchError(this.handleError)
-      );
+getRoomsByHotel(hotelId: string): Observable<Room[]> {
+  if (!hotelId) {
+    return throwError(() => new Error('Hotel ID es requerido'));
   }
 
-  // verifico disponibilidad de una habitación específica
-  checkRoomAvailability(roomId: string, checkIn: string, checkOut: string): Observable<boolean> {
-    const params = new HttpParams()
-      .set('roomId', roomId)
-      .set('checkIn', checkIn)
-      .set('checkOut', checkOut);
+  console.log('Cargando habitaciones para hotel:', hotelId);
 
-    return this.http.get<{available: boolean}>(`${this.API_URL}/check-availability`, { params })
-      .pipe(
-        map(response => response.available),
-        catchError(this.handleError)
-      );
+  return this.http.get<{ success: boolean; total: number; data: Room[] }>(
+    `${this.apiUrl}/hotel/${hotelId}`
+  ).pipe(
+    map(res => {
+      if (!res.success || !Array.isArray(res.data)) {
+        throw new Error('Respuesta inválida de la API');
+      }
+
+      return res.data
+        .filter(room => room.isActive) // solo activas
+        .map(room => ({
+          ...room,
+          id: (room as any)._id,
+          roomType: (room as any).roomType || (room as any).type,
+          amenities: room.amenities || [],
+          images: (room as any).imageUrls || []
+        }));
+    }),
+    catchError(error => {
+      console.error('Error cargando habitaciones:', error);
+      return throwError(() => new Error('Error cargando habitaciones del hotel'));
+    })
+  );
+}
+
+
+getAvailableRooms(hotelId: string, checkIn?: string, checkOut?: string, guests?: number): Observable<Room[]> {
+  if (!hotelId) {
+    return throwError(() => new Error('Hotel ID es requerido'));
   }
 
-  // obtengo detalles de una habitación
+
+  let params = new HttpParams();
+  if (guests) {
+    params = params.set('guests', guests.toString());
+  }
+  if (checkIn) {
+    params = params.set('checkIn', checkIn);
+  }
+  if (checkOut) {
+    params = params.set('checkOut', checkOut);
+  }
+
+  return this.http.get<{ success: boolean; data: Room[] }>(
+    `${this.apiUrl}/hotel/${hotelId}/availability`,
+    { params }
+  ).pipe(
+    map(res => {
+      if (!res.success) throw new Error('Error en la API');
+
+      return res.data.map(room => ({
+        ...room,
+        id: (room as any)._id,
+        roomType: (room as any).roomType || (room as any).type,
+        amenities: room.amenities || [],
+        images: (room as any).imageUrls || []
+      }));
+    }),
+    catchError(error => {
+      console.error('[FRONT] Error cargando habitaciones:', error);
+      return throwError(() => new Error('Error cargando habitaciones del hotel'));
+    })
+  );
+}
+
+
+
   getRoomById(roomId: string): Observable<Room> {
-    return this.http.get<ApiRoomResponse>(`${this.API_URL}/${roomId}`)
-      .pipe(
-        map(room => this.transformApiRoom(room)),
-        catchError(this.handleError)
-      );
+    return this.http.get<{ success: boolean; data: Room }>(
+      `${this.apiUrl}/${roomId}`
+    ).pipe(
+      map(response => {
+        if (response.success && response.data) {
+          return {
+            ...response.data,
+            id: (response.data as any)._id,
+            roomType: (response.data as any).roomType || (response.data as any).type,
+            images: (response.data as any).imageUrls || []
+          };
+        } else {
+          throw new Error('Habitación no encontrada');
+        }
+      }),
+      catchError(error => {
+        console.error('Error obteniendo habitación:', error);
+        return throwError(() => new Error('Error obteniendo información de la habitación'));
+      })
+    );
   }
 
-  // calcuo precio total para estadía
-  calculatePrice(roomId: string, checkIn: string, checkOut: string): Observable<any> {
-    const params = new HttpParams()
-      .set('roomId', roomId)
-      .set('checkIn', checkIn)
-      .set('checkOut', checkOut);
-
-    return this.http.get<any>(`${this.API_URL}/calculate-price`, { params })
-      .pipe(catchError(this.handleError));
-  }
-
-  // aca metodos para manejar tipos y descripciones de habitaciones
-
-  // obtengo nombre de habitación basado en el tipo
-  getRoomDisplayName(roomType: Room['roomType']): string {
-    return ROOM_TYPE_INFO[roomType]?.name || 'Habitación';
-  }
-
-  // obtengo descripción de habitación basado en el tipo
-  getRoomDescription(roomType: Room['roomType']): string {
-    return ROOM_TYPE_INFO[roomType]?.description || '';
-  }
-
-  // obtengo icon de habitación basado en el tipo
-  getRoomIcon(roomType: Room['roomType']): string {
-    return ROOM_TYPE_INFO[roomType]?.icon || '🛏️';
-  }
-
-  // obtengo nombre completo de la habitación (nombre personalizado o tipo)
-  getRoomName(room: Room): string {
-    return room.name || this.getRoomDisplayName(room.roomType);
-  }
-
-  // obtengo información completa de la habitación para mostrar
-  getRoomDisplayInfo(room: Room): {
-    name: string;
-    type: string;
-    description: string;
-    icon: string;
-  } {
-    return {
-      name: this.getRoomName(room),
-      type: this.getRoomDisplayName(room.roomType),
-      description: room.description || this.getRoomDescription(room.roomType),
-      icon: this.getRoomIcon(room.roomType)
+  getRoomDisplayName(room: Room): string {
+    const typeNames: { [key: string]: string } = {
+      'single-1': 'Individual Estándar',
+      'single-2': 'Individual Premium',
+      'single-3': 'Individual Deluxe',
+      'suite': 'Suite',
+      'suite-kid': 'Suite Familiar'
     };
-  }
-
-  // transformo respuesta de API a modelo frontend
-  private transformApiRoom(apiRoom: ApiRoomResponse): Room {
-    return {
-      id: apiRoom._id,
-      hotelId: apiRoom.hotelId,
-      name: apiRoom.name || this.getRoomDisplayName(apiRoom.roomType),
-      roomType: apiRoom.roomType,
-      pricePerNight: apiRoom.pricePerNight,
-      isAvailable: apiRoom.isAvailable,
-      capacity: apiRoom.capacity,
-      bedDetails: apiRoom.bedDetails,
-      createdAt: apiRoom.createdAt,
-      updatedAt: apiRoom.updatedAt
-    };
-  }
-
-  private transformRoomAvailability(apiResult: any): RoomAvailability {
-    return {
-      room: this.transformApiRoom(apiResult.room),
-      isAvailable: apiResult.isAvailable,
-      totalPrice: apiResult.totalPrice,
-      priceBreakdown: {
-        subtotal: apiResult.priceBreakdown?.subtotal || 0,
-        taxes: apiResult.priceBreakdown?.taxes || 0,
-        fees: apiResult.priceBreakdown?.fees || 0,
-        nights: apiResult.priceBreakdown?.nights || 1
-      }
-    };
-  }
-
-  private handleError(error: any): Observable<never> {
-    console.error('Error en RoomService:', error);
-    let errorMessage = 'Error desconocido';
     
-    if (error.error?.message) {
-      errorMessage = error.error.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    } else if (error.status) {
-      switch (error.status) {
-        case 404:
-          errorMessage = 'Habitaciones no encontradas';
-          break;
-        case 500:
-          errorMessage = 'Error del servidor';
-          break;
-        default:
-          errorMessage = `Error HTTP: ${error.status}`;
-      }
-    }
-    
-    return throwError(() => new Error(errorMessage));
+    const typeName = typeNames[room.roomType] || room.roomType;
+    return `${typeName} - ${room.bedDetails || 'Habitación'}`;
+  }
+
+  getRoomDescription(room: Room): string {
+    const displayName = this.getRoomDisplayName(room);
+    return `${displayName} (Capacidad: ${room.capacity} huéspedes - ${room.pricePerNight}/noche)`;
+  }
+
+  formatRoomType(roomType: string): string {
+    const typeMap: { [key: string]: string } = {
+      'single-1': 'Individual Estándar',
+      'single-2': 'Individual Premium', 
+      'single-3': 'Individual Deluxe',
+      'suite': 'Suite',
+      'suite-kid': 'Suite Familiar'
+    };
+
+    return typeMap[roomType] || roomType.charAt(0).toUpperCase() + roomType.slice(1);
   }
 }

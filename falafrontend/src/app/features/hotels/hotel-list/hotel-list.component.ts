@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { HotelCardComponent } from '../hotel-card/hotel-card.component'; //hijo
 import { Hotel } from '../../../core/models/hotel.model';
-import { SearchCriteria } from '../../../core/models/search-criteria';
+import { SearchCriteria } from '../../../core/models/search-criteria.model';
 import { HotelService } from '../../../core/services/hotel.service';
 
 //tipos especiales para mi componente
@@ -99,19 +99,6 @@ export class HotelListComponent implements OnInit, OnChanges { //implemento OnIn
           return false;//no hay capacidad de huesped
         }
       }
-
-      if (this.searchCriteria!.minPrice) {
-        if (hotel.price < this.searchCriteria!.minPrice) {
-          return false;//precio muy bajo
-        }
-      }
-
-      if (this.searchCriteria!.maxPrice) {
-        if (hotel.price > this.searchCriteria!.maxPrice) {
-          return false;//precio muy alto
-        }
-      }
-
       return true; //cumple todos los criterios
     });
   }
@@ -120,9 +107,9 @@ export class HotelListComponent implements OnInit, OnChanges { //implemento OnIn
     return hotels.sort((a, b) => {//comparo hoteles de a pares a vs b
       switch (this.currentSort) {
         case 'price-asc':
-          return a.price - b.price;//ascendente
+          return (a.minPrice ?? 0) - (b.minPrice ?? 0);//ascendente
         case 'price-desc':
-          return b.price - a.price;//descedente
+          return (b.minPrice ?? 0) - (a.minPrice ?? 0);//descedente
         case 'rating-desc':
           return b.rating - a.rating;//ratin descendente
         case 'name-asc':
