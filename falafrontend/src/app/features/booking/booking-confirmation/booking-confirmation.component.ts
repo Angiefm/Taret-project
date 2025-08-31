@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, signal } from '@angular/core';
+import { Component, Input, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core'; // aqui importo changeDetectionStrategy porque lo voy a usar
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,7 +18,8 @@ import { BookingResponse } from '../../../core/models/booking.models';
     MatDividerModule
   ],
   templateUrl: './booking-confirmation.component.html',
-  styleUrls: ['./booking-confirmation.component.scss']
+  styleUrls: ['./booking-confirmation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // aqui pongo onpush para optimizar la detección de cambios
 })
 export class BookingConfirmationComponent implements OnInit {
 
@@ -44,20 +45,20 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   private loadBooking(id: string): void {
-  this.bookingService.getBookingById(id).subscribe({
-    next: (res) => {
-      console.log('Respuesta del backend:', res);
-      this.bookingResponseSignal.set(res);
-    },
-    error: (err) => {
-      console.error('Error cargando la reserva:', err);
-      this.bookingResponseSignal.set({
-        success: false,
-        message: 'No se pudo cargar la reserva.'
-      });
-    }
-  });
-}
+    this.bookingService.getBookingById(id).subscribe({
+      next: (res) => {
+        console.log('Respuesta del backend:', res);
+        this.bookingResponseSignal.set(res);
+      },
+      error: (err) => {
+        console.error('Error cargando la reserva:', err);
+        this.bookingResponseSignal.set({
+          success: false,
+          message: 'No se pudo cargar la reserva.'
+        });
+      }
+    });
+  }
 
   goToMyBookings(): void {
     this.router.navigate(['/mis-reservas']);
