@@ -78,54 +78,64 @@
       </mat-step>
 
 
+      <!-- Paso Confirmación -->
       <mat-step label="Confirmación">
-        <div class="confirmation-step">
-          <div class="confirmation-summary">
-            <h3 class="section-title">
-              <mat-icon>assignment_turned_in</mat-icon>
-              Confirmar Reserva
-            </h3>
-
-            <div class="final-summary">
-              <div class="guest-info">
-                <h4>Información del Huésped</h4>
-                <p><strong>Nombre:</strong> {{ guestForm.get('firstName')?.value }} {{ guestForm.get('lastName')?.value }}</p>
-                <p><strong>Teléfono:</strong> {{ guestForm.get('phone')?.value }}</p>
-                <p><strong>Email:</strong> {{ guestForm.get('email')?.value }}</p>
-                <p *ngIf="guestForm.get('requests')?.value"><strong>Solicitudes:</strong> {{ guestForm.get('requests')?.value }}</p>
+        @defer (on interaction) {
+          <div class="confirmation-step">
+            <div class="confirmation-summary">
+              <h3 class="section-title">
+                <mat-icon>assignment_turned_in</mat-icon>
+                Confirmar Reserva
+              </h3>
+      
+              <div class="final-summary">
+                <div class="guest-info">
+                  <h4>Información del Huésped</h4>
+                  <p><strong>Nombre:</strong> {{ guestForm.get('firstName')?.value }} {{ guestForm.get('lastName')?.value }}</p>
+                  <p><strong>Teléfono:</strong> {{ guestForm.get('phone')?.value }}</p>
+                  <p><strong>Email:</strong> {{ guestForm.get('email')?.value }}</p>
+                  <p *ngIf="guestForm.get('requests')?.value"><strong>Solicitudes:</strong> {{ guestForm.get('requests')?.value }}</p>
+                </div>
+      
+                <div class="booking-info">
+                  <h4>Detalles de la Reserva</h4>
+                  <p><strong>Hotel:</strong> {{ selectedHotel()?.name }}</p>
+                  <p><strong>Habitación:</strong> {{ selectedRoom()?.roomType }}</p>
+                  <p><strong>Fechas:</strong> {{ formatDateRange() }}</p>
+                  <p><strong>Huéspedes:</strong> {{ bookingForm.get('numberOfGuests')?.value }}</p>
+                </div>
               </div>
-
-              <div class="booking-info">
-                <h4>Detalles de la Reserva</h4>
-                <p><strong>Hotel:</strong> {{ selectedHotel()?.name }}</p>
-                <p><strong>Habitación:</strong> {{ selectedRoom()?.roomType }}</p>
-                <p><strong>Fechas:</strong> {{ formatDateRange() }}</p>
-                <p><strong>Huéspedes:</strong> {{ bookingForm.get('numberOfGuests')?.value }}</p>
+      
+              <div class="terms-section">
+                <form [formGroup]="mainForm">
+                  <mat-checkbox formControlName="acceptTerms" color="primary">
+                    Acepto los <a href="/terminos" target="_blank">términos y condiciones</a>
+                  </mat-checkbox>
+                </form>
               </div>
             </div>
-
-            <div class="terms-section">
-              <form [formGroup]="mainForm">
-                <mat-checkbox formControlName="acceptTerms" color="primary">
-                  Acepto los <a href="/terminos" target="_blank">términos y condiciones</a>
-                </mat-checkbox>
-              </form>
+      
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Anterior
+              </button>
+              <button mat-raised-button color="primary" (click)="submitBooking()" [disabled]="!canSubmit() || isSubmitting()">
+                <mat-icon *ngIf="!isSubmitting()">done</mat-icon>
+                <span *ngIf="!isSubmitting()">Confirmar Reserva</span>
+                <mat-spinner *ngIf="isSubmitting()" diameter="20"></mat-spinner>
+              </button>
             </div>
           </div>
-
-          <div class="step-actions">
-            <button mat-button matStepperPrevious>
-              <mat-icon>arrow_back</mat-icon>
-              Anterior
-            </button>
-            <button mat-raised-button color="primary" (click)="submitBooking()" [disabled]="!canSubmit() || isSubmitting()">
-              <mat-icon *ngIf="!isSubmitting()">done</mat-icon>
-              <span *ngIf="!isSubmitting()">Confirmar Reserva</span>
-              <mat-spinner *ngIf="isSubmitting()" diameter="20"></mat-spinner>
-            </button>
-          </div>
-        </div>
+        } @placeholder {
+          <p>preparando resumen de confirmación...</p>
+        } @loading {
+          <p>cargando resumen...</p>
+        } @error {
+          <p>no se pudo cargar la confirmación.</p>
+        }
       </mat-step>
+
     </mat-horizontal-stepper>
   </div>
 

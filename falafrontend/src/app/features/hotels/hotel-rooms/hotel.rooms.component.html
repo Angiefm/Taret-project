@@ -125,79 +125,90 @@
   </div>
 
   <!-- grid de habitaciones -->
-  <div class="rooms-grid" *ngIf="!loading() && !error() && filteredRooms().length > 0">
-    <div *ngFor="let room of filteredRooms()" class="room-card">
-      
-      <!-- imagen habitacion -->
-      <div class="room-image">
-        <div class="image-placeholder">
-          <div class="placeholder-content">
-            <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
-            <p>imagen de habitacion</p>
-          </div>
-        </div>
+  @defer (on viewport) {
+    <div class="rooms-grid" *ngIf="!loading() && !error() && filteredRooms().length > 0">
+      <div *ngFor="let room of filteredRooms()" class="room-card">
         
-        <!-- badge habitacion -->
-        <div class="room-badge">
-          <span>{{ room.roomType }}</span>
-        </div>
-      </div>
-
-      <!-- contenido habitacion -->
-      <div class="room-content">
-        <!-- header -->
-        <div class="room-header">
-          <h4 class="room-title">{{ room.roomType }}</h4>
-          <div class="room-capacity">
-            <span class="capacity-icon">👤</span>
-            <span>{{ room.capacity }} huésped(es)</span>
-          </div>
-        </div>
-
-        <!-- detalles habitacion -->
-        <div class="room-details">
-          <p class="bed-details" *ngIf="room.bedDetails">
-            <span class="bed-icon">🛏️</span>
-            {{ room.bedDetails }}
-          </p>
-        </div>
-
-        <!-- amenidades -->
-        <div class="room-amenities" *ngIf="room.amenities && room.amenities.length > 0">
-          <div class="amenity-tag" *ngFor="let amenity of room.amenities.slice(0, 4)">
-            <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
-            <span class="amenity-text">{{ amenity }}</span>
-          </div>
-          <span *ngIf="room.amenities.length > 4" class="more-amenities">
-            +{{ room.amenities.length - 4 }} mas
-          </span>
-        </div>
-
-        <!-- footer habitacion -->
-        <div class="room-footer">
-          <div class="price-section">
-            <div class="price-info">
-              <span class="price">{{ formatPrice(room.pricePerNight) }}</span>
-              <span class="price-period">/ noche</span>
-            </div>
-            <div *ngIf="searchCriteria.checkIn && searchCriteria.checkOut" class="total-price">
-              <span class="total-label">total {{ calculateNights() }} noche(s):</span>
-              <span class="total-amount">{{ formatPrice(room.pricePerNight * calculateNights()) }}</span>
+        <!-- imagen habitacion -->
+        <div class="room-image">
+          <div class="image-placeholder">
+            <div class="placeholder-content">
+              <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
+              <p>imagen de habitacion</p>
             </div>
           </div>
-
-          <div class="room-actions">
-            <button class="btn btn-primary room-book-btn" 
-                    (click)="onBookRoom(room)"
-                    [attr.aria-label]="'reservar habitacion ' + room.roomType">
-              <span class="btn-icon">📝</span>
-              <span>reservar</span>
-            </button>
+          
+          <!-- badge habitacion -->
+          <div class="room-badge">
+            <span>{{ room.roomType }}</span>
+          </div>
+        </div>
+  
+        <!-- contenido habitacion -->
+        <div class="room-content">
+          <!-- header -->
+          <div class="room-header">
+            <h4 class="room-title">{{ room.roomType }}</h4>
+            <div class="room-capacity">
+              <span class="capacity-icon">👤</span>
+              <span>{{ room.capacity }} huésped(es)</span>
+            </div>
+          </div>
+  
+          <!-- detalles habitacion -->
+          <div class="room-details">
+            <p class="bed-details" *ngIf="room.bedDetails">
+              <span class="bed-icon">🛏️</span>
+              {{ room.bedDetails }}
+            </p>
+          </div>
+  
+          <!-- amenidades -->
+          <div class="room-amenities" *ngIf="room.amenities && room.amenities.length > 0">
+            <div class="amenity-tag" *ngFor="let amenity of room.amenities.slice(0, 4)">
+              <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
+              <span class="amenity-text">{{ amenity }}</span>
+            </div>
+            <span *ngIf="room.amenities.length > 4" class="more-amenities">
+              +{{ room.amenities.length - 4 }} más
+            </span>
+          </div>
+  
+          <!-- footer habitacion -->
+          <div class="room-footer">
+            <div class="price-section">
+              <div class="price-info">
+                <span class="price">{{ formatPrice(room.pricePerNight) }}</span>
+                <span class="price-period">/ noche</span>
+              </div>
+              <div *ngIf="searchCriteria.checkIn && searchCriteria.checkOut" class="total-price">
+                <span class="total-label">total {{ calculateNights() }} noche(s):</span>
+                <span class="total-amount">{{ formatPrice(room.pricePerNight * calculateNights()) }}</span>
+              </div>
+            </div>
+  
+            <div class="room-actions">
+              <button class="btn btn-primary room-book-btn" 
+                      (click)="onBookRoom(room)"
+                      [attr.aria-label]="'reservar habitacion ' + room.roomType">
+                <span class="btn-icon">📝</span>
+                <span>reservar</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  } @placeholder {
+    <!-- lo que se muestra antes de activar el defer -->
+    <p>las habitaciones aparecerán en breve...</p>
+  } @loading {
+    <!-- lo que se muestra después del trigger mientras carga -->
+    <p>cargando habitaciones...</p>
+  } @error {
+    <!-- lo que se muestra si falla -->
+    <p>no se pudo cargar la lista de habitaciones.</p>
+  }
 
   <!-- boton volver a hoteles -->
   <div class="back-section" *ngIf="!loading()">

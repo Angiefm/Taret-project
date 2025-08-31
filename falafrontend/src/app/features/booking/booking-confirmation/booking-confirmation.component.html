@@ -1,56 +1,64 @@
-<div class="booking-confirmation" *ngIf="bookingResponseReadonly()?.success && bookingResponseReadonly()?.data as booking">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>🎉 ¡Reserva confirmada!</mat-card-title>
-      <mat-card-subtitle>Número de reserva: <b>{{ booking.bookingNumber }}</b></mat-card-subtitle>
-    </mat-card-header>
+@defer (on viewport) {
+  <div class="booking-confirmation" *ngIf="bookingResponseReadonly()?.success && bookingResponseReadonly()?.data as booking">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>🎉 ¡Reserva confirmada!</mat-card-title>
+        <mat-card-subtitle>Número de reserva: <b>{{ booking.bookingNumber }}</b></mat-card-subtitle>
+      </mat-card-header>
 
-    <mat-card-content>
-      <!-- Hotel y habitación -->
-      <section>
-        <h3>{{ booking.hotel.name }}</h3>
-        <p>{{ booking.hotel.location }}</p>
-        <p>Habitación: {{ booking.room.roomType }} ({{ booking.room.bedDetails }})</p>
-        <p>Capacidad: {{ booking.room.capacity }} huéspedes</p>
-      </section>
+      <mat-card-content>
+        <!-- Hotel y habitación -->
+        <section>
+          <h3>{{ booking.hotel.name }}</h3>
+          <p>{{ booking.hotel.location }}</p>
+          <p>Habitación: {{ booking.room.roomType }} ({{ booking.room.bedDetails }})</p>
+          <p>Capacidad: {{ booking.room.capacity }} huéspedes</p>
+        </section>
 
-      <mat-divider></mat-divider>
+        <mat-divider></mat-divider>
 
-      <!-- Fechas -->
-      <section>
-        <p><b>Check-In:</b> {{ booking.checkInDate | date:'fullDate' }}</p>
-        <p><b>Check-Out:</b> {{ booking.checkOutDate | date:'fullDate' }}</p>
-        <p><b>Noches:</b> {{ booking.numberOfNights }}</p>
-        <p><b>Huéspedes:</b> {{ booking.numberOfGuests }}</p>
-      </section>
+        <!-- Fechas -->
+        <section>
+          <p><b>Check-In:</b> {{ booking.checkInDate | date:'fullDate' }}</p>
+          <p><b>Check-Out:</b> {{ booking.checkOutDate | date:'fullDate' }}</p>
+          <p><b>Noches:</b> {{ booking.numberOfNights }}</p>
+          <p><b>Huéspedes:</b> {{ booking.numberOfGuests }}</p>
+        </section>
 
-      <mat-divider></mat-divider>
+        <mat-divider></mat-divider>
 
-      <!-- Precios -->
-      <section>
-        <p><b>Tarifa habitación:</b> {{ booking.priceBreakdown.subtotal | currency:'COP' }}</p>
-        <p><b>Impuestos:</b> {{ booking.priceBreakdown.taxes | currency:'COP' }}</p>
-        <p><b>Tarifas:</b> {{ booking.priceBreakdown.fees | currency:'COP' }}</p>
-        <h3>Total: {{ booking.priceBreakdown.total | currency:'COP' }}</h3>
-      </section>
+        <!-- Precios -->
+        <section>
+          <p><b>Tarifa habitación:</b> {{ booking.priceBreakdown.subtotal | currency:'COP' }}</p>
+          <p><b>Impuestos:</b> {{ booking.priceBreakdown.taxes | currency:'COP' }}</p>
+          <p><b>Tarifas:</b> {{ booking.priceBreakdown.fees | currency:'COP' }}</p>
+          <h3>Total: {{ booking.priceBreakdown.total | currency:'COP' }}</h3>
+        </section>
 
-      <mat-divider></mat-divider>
+        <mat-divider></mat-divider>
 
-      <!-- Huésped -->
-      <section>
-        <p><b>Nombre:</b> {{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</p>
-        <p><b>Email:</b> {{ booking.guestInfo.email }}</p>
-        <p><b>Teléfono:</b> {{ booking.guestInfo.phone }}</p>
-        <p *ngIf="booking.specialRequests"><b>Petición especial:</b> {{ booking.specialRequests }}</p>
-      </section>
-    </mat-card-content>
+        <!-- Huésped -->
+        <section>
+          <p><b>Nombre:</b> {{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</p>
+          <p><b>Email:</b> {{ booking.guestInfo.email }}</p>
+          <p><b>Teléfono:</b> {{ booking.guestInfo.phone }}</p>
+          <p *ngIf="booking.specialRequests"><b>Petición especial:</b> {{ booking.specialRequests }}</p>
+        </section>
+      </mat-card-content>
 
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="goToMyBookings()">Ver mis reservas</button>
-      <button mat-button (click)="goToHome()">Volver al inicio</button>
-    </mat-card-actions>
-  </mat-card>
-</div>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="goToMyBookings()">Ver mis reservas</button>
+        <button mat-button (click)="goToHome()">Volver al inicio</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+} @placeholder {
+  <p>preparando confirmación de la reserva...</p>
+} @loading {
+  <p>cargando detalles de la reserva...</p>
+} @error {
+  <p>no se pudo cargar la confirmación.</p>
+}
 
 <div *ngIf="!bookingResponseReadonly()?.success && bookingResponseReadonly()">
   <mat-card>

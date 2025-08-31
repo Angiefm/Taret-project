@@ -84,20 +84,31 @@
   <!-- lista de hoteles -->
   <div class="hotels-content">
     <div class="container">
-      <app-hotel-list
-        [hotels]="hotels"
-        [loading]="loading"
-        [error]="error"
-        [searchCriteria]="hasActiveFilters() ? searchCriteria : undefined"
-        [showFilters]="true"
-        [showSorting]="true"
-        [viewMode]="currentViewMode"
-        (hotelSelected)="onHotelSelected($event)"
-        (viewRoomsClicked)="onViewRooms($event)" 
-        (retryLoad)="onRetryLoad()"
-        (sortChanged)="onSortChanged($event)"
-        (viewModeChanged)="onViewModeChanged($event)">
-      </app-hotel-list>
+      @defer (on viewport) {
+        <app-hotel-list
+          [hotels]="hotels"
+          [loading]="loading"
+          [error]="error"
+          [searchCriteria]="hasActiveFilters() ? searchCriteria : undefined"
+          [showFilters]="true"
+          [showSorting]="true"
+          [viewMode]="currentViewMode"
+          (hotelSelected)="onHotelSelected($event)"
+          (viewRoomsClicked)="onViewRooms($event)" 
+          (retryLoad)="onRetryLoad()"
+          (sortChanged)="onSortChanged($event)"
+          (viewModeChanged)="onViewModeChanged($event)">
+        </app-hotel-list>
+      } @placeholder {
+        <!-- esto se muestra mientras el usuario aún no llegó al viewport -->
+        <p>lista de hoteles pendiente de cargar...</p>
+      } @loading {
+        <!-- esto se muestra después de que el trigger se dispara, mientras carga -->
+        <p>cargando hoteles...</p>
+      } @error {
+        <!-- esto se muestra si ocurre un error en la carga -->
+        <p>no se pudo cargar la lista de hoteles.</p>
+      }
     </div>
   </div>
 
