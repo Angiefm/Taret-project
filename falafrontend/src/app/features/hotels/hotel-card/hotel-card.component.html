@@ -1,4 +1,4 @@
-<div class="hotel-card" (click)="onCardClick()">
+<div class="hotel-card">
   <!-- placeholder de imagen del hotel -->
   <div class="image-container">
     <div class="image-placeholder">
@@ -71,17 +71,11 @@
       
       <div class="action-buttons">
         <button 
-          class="view-rooms-btn" 
+          class="btn btn-primary view-rooms-btn" 
           (click)="onViewRoomsClick($event)"
           [attr.aria-label]="'Ver habitaciones disponibles en ' + hotel.name">
           <span class="btn-icon">🏨</span>
           <span>ver habitaciones</span>
-        </button>
-        
-        <button 
-          class="details-btn" 
-          (click)="onCardClick()"
-          [attr.aria-label]="'Ver detalles completos de ' + hotel.name">
         </button>
       </div>
     </div>

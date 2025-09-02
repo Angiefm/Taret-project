@@ -27,16 +27,16 @@ export class BookingConfirmationComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
-  @Input() bookingResponse: BookingResponse | null = null;
+  // @Input() bookingResponse: BookingResponse | null = null; // ----
 
-  private readonly bookingResponseSignal = signal<BookingResponse | null>(null);
+  private readonly bookingResponseSignal = signal<BookingResponse | null>(null); //----
   readonly bookingResponseReadonly = this.bookingResponseSignal.asReadonly();
 
   ngOnInit(): void {
-    if (this.bookingResponse) {
-      this.bookingResponseSignal.set(this.bookingResponse);
-      return;
-    }
+    //if (this.bookingResponse) {
+    //  this.bookingResponseSignal.set(this.bookingResponse);
+    //  return;
+    //}
 
     const bookingId = this.route.snapshot.paramMap.get('id');
     if (bookingId) {

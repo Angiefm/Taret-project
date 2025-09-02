@@ -12,12 +12,12 @@ import { Hotel } from '../../../core/models/hotel.model';
 })
 export class HotelCardComponent {
   @Input() hotel!: Hotel; //recibo hotel del componente padre
-  @Output() detailsClicked = new EventEmitter<Hotel>(); //emito evento cuando hacen click en la tarjeta
+  //@Output() detailsClicked = new EventEmitter<Hotel>(); //emito evento cuando hacen click en la tarjeta
   @Output() viewRoomsClicked = new EventEmitter<Hotel>(); //emito evento cuando quieren ver habitaciones
 
-  onCardClick(): void {
-    this.detailsClicked.emit(this.hotel); //le mando al padre que hicieron click en ese hotel
-  }
+  //onCardClick(): void {
+  //  this.detailsClicked.emit(this.hotel); //le mando al padre que hicieron click en ese hotel
+  //}
 
   // aqui aviso que quieren ver habitaciones y detengo la propagación del evento
   onViewRoomsClick(event: Event): void {
