@@ -8,7 +8,7 @@ import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
-import { authInterceptor, httpLoggingInterceptor } from './app/core/interceptors/auth.interceptor';
+import { appHttpInterceptor } from './app/core/interceptors/app-http.interceptor';
 
 import localeEsCO from '@angular/common/locales/es-CO'; 
 import { registerLocaleData } from '@angular/common';
@@ -52,10 +52,7 @@ bootstrapApplication(AppComponent, {
 
     //HTTP
     provideHttpClient(
-      withInterceptors([
-        authInterceptor,         
-        httpLoggingInterceptor   
-      ])
+        withInterceptors([ appHttpInterceptor ]) 
     ),
 
     // Locale
