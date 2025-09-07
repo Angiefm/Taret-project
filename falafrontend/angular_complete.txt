@@ -1,0 +1,4475 @@
+﻿{
+  "name": "falafrontend",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "serve:ssr:falafrontend": "node dist/falafrontend/server/server.mjs"
+  },
+  "prettier": {
+    "overrides": [
+      {
+        "files": "*.html",
+        "options": {
+          "parser": "angular"
+        }
+      }
+    ]
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^20.1.6",
+    "@angular/cdk": "^20.1.5",
+    "@angular/common": "^20.1.0",
+    "@angular/compiler": "^20.1.0",
+    "@angular/core": "^20.1.0",
+    "@angular/forms": "^20.1.0",
+    "@angular/material": "^20.1.5",
+    "@angular/platform-browser": "^20.1.0",
+    "@angular/platform-server": "^20.1.0",
+    "@angular/router": "^20.1.0",
+    "@angular/ssr": "^20.1.0",
+    "express": "^5.1.0",
+    "keycloak-angular": "^20.0.0",
+    "keycloak-js": "^26.2.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.15.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^20.1.5",
+    "@angular/build": "^20.1.0",
+    "@angular/cli": "^20.1.5",
+    "@angular/compiler-cli": "^20.1.0",
+    "@types/express": "^5.0.1",
+    "@types/jasmine": "~5.1.0",
+    "@types/node": "^20.17.19",
+    "jasmine-core": "~5.8.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.8.2"
+  }
+}
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "falafrontend": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/falafrontend",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico", 
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              },
+              {
+                "glob": "silent-check-sso.html",
+                "input": "src/assets/",
+                "output": "/assets/"
+              }
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "1mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "falafrontend:build:production"
+            },
+            "development": {
+              "buildTarget": "falafrontend:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "falafrontend:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "polyfills": ["zone.js", "zone.js/testing"],
+            "tsConfig": "tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              "src/favicon.ico", 
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "output": "/assets/"
+              }
+            ],
+            "styles": ["src/styles.scss"],
+            "scripts": []
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "8a8f3f74-0e83-4fbf-8b0d-bf2bec24055e"
+  }
+}
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compilerOptions": {
+  "strict": true,
+  "noImplicitOverride": true,
+  "noPropertyAccessFromIndexSignature": true,
+  "noImplicitReturns": true,
+  "noFallthroughCasesInSwitch": true,
+  "skipLibCheck": true,
+  "isolatedModules": true,
+  "experimentalDecorators": true,
+  "importHelpers": true,
+  "target": "ES2022",
+  "module": "preserve",
+  "useDefineForClassFields": false
+},
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ]
+}
+import { bootstrapApplication } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
+import { importProvidersFrom, APP_INITIALIZER, LOCALE_ID } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+
+import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
+
+import { AppComponent } from './app/app.component';
+import { routes } from './app/app.routes';
+import { appHttpInterceptor } from './app/core/interceptors/app-http.interceptor';
+
+import localeEsCO from '@angular/common/locales/es-CO'; 
+import { registerLocaleData } from '@angular/common';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+registerLocaleData(localeEsCO);
+
+function initializeKeycloak(keycloak: KeycloakService) {
+  return () =>
+    keycloak.init({
+      config: {
+        url: 'http://localhost:8080/',
+        realm: 'FalaHotel',
+        clientId: 'FalaFrontend'  
+      },
+      initOptions: {
+        onLoad: 'check-sso',
+        silentCheckSsoRedirectUri: window.location.origin + '/assets/silent-check-sso.html',
+        checkLoginIframe: false,
+        pkceMethod: 'S256'
+      },
+      bearerExcludedUrls: ['/assets', '/clients/public']
+    });
+}
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideRouter(routes),
+
+    importProvidersFrom(BrowserAnimationsModule),
+
+    //Keycloak
+    importProvidersFrom(KeycloakAngularModule),
+    KeycloakService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService]
+    },
+
+    //HTTP
+    provideHttpClient(
+        withInterceptors([ appHttpInterceptor ]) 
+    ),
+
+    // Locale
+    { provide: LOCALE_ID, useValue: 'es-CO' },
+
+    //Snackbar global
+    importProvidersFrom(MatSnackBarModule),
+  ]
+}).catch(err => {
+  console.error('Error iniciando la aplicación:', err);
+});
+
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: light;
+
+  // Set a default background, font and text colors for the application using
+  // Angular Material's system-level CSS variables. Learn more about these
+  // variables at https://material.angular.dev/guide/system-variables
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+
+  // Reset the user agent margin.
+  margin: 0;
+}
+/* src/styles.scss - Estilos Globales El Refugi Fala */
+
+/* Reset y configuración base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: #374151;
+  background-color: #f8fafc;
+}
+
+/* Variables CSS para consistencia de colores */
+:root {
+  /* Colores principales del logo */
+  --color-teal-primary: #0d9488;
+  --color-teal-dark: #0f766e;
+  --color-slate-primary: #334155;
+  --color-slate-light: #cbd5e1;
+  --color-gray-platinum: #d1d5db;
+  --color-rose-coral: #fb7185;
+  --color-rose-dark: #f43f5e;
+  
+  /* Colores de texto */
+  --text-primary: #374151;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+  --text-white: #f1f5f9;
+  
+  /* Colores de fondo */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-gray: #d1d5db;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.2);
+  
+  /* Transiciones */
+  --transition-base: all 0.3s ease;
+  --transition-fast: all 0.2s ease;
+}
+
+/* Tipografía */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--color-slate-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-family: serif;
+}
+
+h2 {
+  font-size: 2rem;
+  font-family: serif;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+p {
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Enlaces */
+a {
+  color: var(--color-teal-primary);
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-teal-dark);
+}
+
+/* Botones base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition-base);
+  text-decoration: none;
+  letter-spacing: 0.025em;
+  gap: 0.5rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-primary {
+  background-color: var(--color-teal-primary);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-teal-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  background-color: var(--color-rose-coral);
+  color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--color-rose-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-teal-primary);
+  border: 2px solid var(--color-teal-primary);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--color-teal-primary);
+  color: white;
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: 1px solid #e5e7eb;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: #f9fafb;
+  border-color: var(--color-teal-primary);
+  color: var(--color-teal-primary);
+}
+
+/* Formularios */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.025em;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: var(--transition-base);
+  background-color: white;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--color-teal-primary);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+.form-input:invalid {
+  border-color: #ef4444;
+}
+
+.form-select {
+  cursor: pointer;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  transition: var(--transition-base);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-slate-primary);
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Utilidades de layout */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Espaciado */
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 0.75rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+.p-8 { padding: 2rem; }
+
+/* Flexbox utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-end { justify-content: flex-end; }
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+
+/* Sizing */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.w-auto { width: auto; }
+.h-auto { height: auto; }
+
+/* Border radius */
+.rounded { border-radius: 0.5rem; }
+.rounded-lg { border-radius: 1rem; }
+.rounded-full { border-radius: 9999px; }
+
+/* Shadow utilities */
+.shadow { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-none { box-shadow: none; }
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid var(--color-teal-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Estados */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+}
+
+/* Accesibilidad */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.warn-snackbar {
+  background: var(--color-rose-coral);
+  color: white;
+  font-weight: bold;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-teal-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-platinum);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-teal-primary);
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+import { Injectable, inject } from '@angular/core';
+import { 
+  CanMatch,
+  Router, 
+  ActivatedRouteSnapshot, 
+  RouterStateSnapshot,
+  Route,
+  UrlSegment
+} from '@angular/router';
+import { KeycloakAuthGuard, KeycloakService } from 'keycloak-angular';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../services/auth.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard extends KeycloakAuthGuard implements CanMatch {
+  
+  private readonly authService = inject(AuthService);
+  private readonly snackBar = inject(MatSnackBar);
+  
+  constructor(
+    protected override router: Router,
+    protected keycloakService: KeycloakService
+  ) {
+    super(router, keycloakService);
+  }
+
+  async isAccessAllowed(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Promise<boolean> {
+    console.log('authGuard verificando acceso a:', state.url);
+    
+    if (!this.authenticated) {
+      console.log('usuario no autenticado, redirigiendo a login...');
+
+      this.snackBar.open(
+        '⚠️ Para reservar nuestras habitaciones de El Refugi Fala primero debes autenticarte',
+        'Cerrar',
+        { duration: 3000, panelClass: ['warn-snackbar'] }
+      );
+
+      setTimeout(() => {
+        this.keycloakService.login({
+          redirectUri: window.location.origin + state.url
+        });
+      }, 300);
+
+      return false;
+    }
+
+    const requiredRoles = route.data?.['roles'] as string[];
+    if (requiredRoles?.length) {
+      const hasRequiredRole = requiredRoles.some(role => 
+        this.keycloakService.isUserInRole(role)
+      );
+      
+      if (!hasRequiredRole) {
+        console.log('usuario sin permisos suficientes');
+        this.router.navigate(['/sin-permisos']);
+        return false;
+      }
+    }
+
+    console.log('acceso permitido - Usuario autenticado');
+    return true;
+  }
+
+  canMatch(route: Route, segments: UrlSegment[]): Promise<boolean> {
+    return this.isAccessAllowed(
+      {} as ActivatedRouteSnapshot,
+      { url: `/${segments.map(s => s.path).join('/')}` } as RouterStateSnapshot
+    );
+  }
+}
+import { Injectable } from '@angular/core';
+import { CanDeactivate } from '@angular/router';
+import { Observable } from 'rxjs';
+
+export interface CanComponentDeactivate {
+  canDeactivate(): Observable<boolean> | Promise<boolean> | boolean;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class CanDeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+  
+  canDeactivate(
+    component: CanComponentDeactivate
+  ): Observable<boolean> | Promise<boolean> | boolean {
+    
+    console.log('CanDeactivateGuard verificando salida del componente');
+    
+    if (component.canDeactivate) {
+      return component.canDeactivate();
+    }
+    
+    return true;
+  }
+}
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Observable, from, switchMap } from 'rxjs';
+import { KeycloakService } from 'keycloak-angular';
+
+export const authInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<any>, 
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> => {
+  
+  const keycloakService = inject(KeycloakService);
+  
+  console.log('authInterceptor procesando:', req.method, req.url);
+  
+  if (isPublicEndpoint(req.url)) {
+    console.log('endpoint público - Sin token requerido');
+    return next(req);
+  }
+
+  if (keycloakService.isLoggedIn()) {
+    return from(keycloakService.getToken()).pipe(
+      switchMap(token => {
+        if (token) {
+          console.log('agregando token de Keycloak');
+          const authReq = req.clone({
+            setHeaders: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          return next(authReq);
+        } else {
+          console.log('no hay token de Keycloak disponible');
+          return next(req.clone({
+            setHeaders: {
+              'Content-Type': 'application/json'
+            }
+          }));
+        }
+      })
+    );
+  }
+
+  console.log('usuario no autenticado');
+  return next(req.clone({
+    setHeaders: {
+      'Content-Type': 'application/json'
+    }
+  }));
+};
+
+function isPublicEndpoint(url: string): boolean {
+  const publicEndpoints = [
+    '/hotels',
+    '/hotels/search',
+    '/rooms'
+  ];
+  
+  return publicEndpoints.some(endpoint => url.includes(endpoint));
+}
+
+export const httpLoggingInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> => {
+  
+  const startTime = Date.now();
+  
+  console.log(`[HTTP] ${req.method} ${req.url}`);
+  
+  return next(req).pipe(
+    tap({
+      next: (event: any) => {
+        if (event.type === 4) {
+          const duration = Date.now() - startTime;
+          console.log(`[HTTP] ${req.method} ${req.url} - ${duration}ms`);
+        }
+      },
+      error: (error) => {
+        const duration = Date.now() - startTime;
+        console.error(`[HTTP] ${req.method} ${req.url} - ${duration}ms`, error);
+      }
+    })
+  );
+};
+
+import { tap } from 'rxjs/operators';
+import { Room } from './room.model';
+
+export interface BookingFormData {
+  guestInfo: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+  };
+
+  hotelId: string;
+  roomId: string;
+  checkInDate: string;
+  checkOutDate: string;
+  numberOfGuests: number;
+  specialRequests?: string;
+}
+
+export interface Booking {
+  id: string;
+  userId?: string;
+  bookingNumber: string;
+
+  // info del huésped
+  guestInfo: {
+    firstName: string;
+    lastName: string;
+    phone: string;
+    email: string;
+  };
+
+  // info de la reserva
+  hotel: {
+    id: string;
+    name: string;
+    location: string;
+  };
+
+  room: {
+    id: string;
+    roomType: string;
+    capacity: number;
+    pricePerNight: number;
+    bedDetails: string;
+  };
+
+  // fechas y duración
+  checkInDate: Date;
+  checkOutDate: Date;
+  numberOfNights: number;
+  numberOfGuests: number;
+
+  // precios
+  priceBreakdown: {
+    subtotal: number;
+    taxes: number;
+    fees: number;
+    total: number;
+  };
+
+  // estado y metadatos
+  status: BookingStatus;
+  specialRequests?: string;
+  createdAt: Date;
+  updatedAt: Date;
+
+  payment?: {
+    status: PaymentStatus;
+    method: string;
+    transactionId?: string;
+    paidAt?: Date;
+  };
+
+  cancellation?: {
+    cancelledAt: Date;
+    reason: string;
+    refundAmount?: number;
+    refundedAt?: Date;
+  };
+
+  confirmations?: {
+    emailSent: boolean;
+    emailSentAt?: Date;
+    whatsappSent: boolean;
+    whatsappSentAt?: Date;
+  };
+}
+
+export enum BookingStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+  NO_SHOW = 'no_show'
+}
+
+export enum PaymentStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  REFUNDED = 'refunded',
+  FAILED = 'failed'
+}
+
+export interface BookingResponse {
+  success: boolean;
+  data?: Booking;
+  message: string;
+  errors?: ValidationError[];
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
+  code: string;
+}
+
+export interface BookingSearchParams {
+  userId?: string;
+  email?: string;
+  bookingNumber?: string;
+  status?: BookingStatus;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface BookingListResponse {
+  success: boolean;
+  bookings: Booking[];
+  pagination: {
+    total: number;
+    page: number;
+    totalPages: number;
+    limit: number;
+  };
+}
+
+export interface PriceCalculationRequest {
+  hotelId: string;
+  roomId: string;
+  checkInDate: string;
+  checkOutDate: string;
+  numberOfGuests: number;
+}
+
+export interface PriceCalculationResponse {
+  success: boolean;
+  totalPrice: number;
+  breakdown: {
+    pricePerNight: number;
+    numberOfNights: number;
+    subtotal: number;
+    taxes: number;
+    fees: number;
+    total: number;
+  };
+}
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  isAuthenticated: boolean;
+}
+import { Component, Input, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core'; // aqui importo changeDetectionStrategy porque lo voy a usar
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { BookingService } from '../../../core/services/booking.service';
+import { BookingResponse } from '../../../core/models/booking.models';
+
+@Component({
+  selector: 'app-booking-confirmation',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatDividerModule
+  ],
+  templateUrl: './booking-confirmation.component.html',
+  styleUrls: ['./booking-confirmation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // aqui pongo onpush para optimizar la detección de cambios
+})
+export class BookingConfirmationComponent implements OnInit {
+
+  private readonly bookingService = inject(BookingService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  // @Input() bookingResponse: BookingResponse | null = null; // ----
+
+  private readonly bookingResponseSignal = signal<BookingResponse | null>(null); //----
+  readonly bookingResponseReadonly = this.bookingResponseSignal.asReadonly();
+
+  ngOnInit(): void {
+    //if (this.bookingResponse) {
+    //  this.bookingResponseSignal.set(this.bookingResponse);
+    //  return;
+    //}
+
+    const bookingId = this.route.snapshot.paramMap.get('id');
+    if (bookingId) {
+      this.loadBooking(bookingId);
+    }
+  }
+
+  private loadBooking(id: string): void {
+    this.bookingService.getBookingById(id).subscribe({
+      next: (res) => {
+        console.log('Respuesta del backend:', res);
+        this.bookingResponseSignal.set(res);
+      },
+      error: (err) => {
+        console.error('Error cargando la reserva:', err);
+        this.bookingResponseSignal.set({
+          success: false,
+          message: 'No se pudo cargar la reserva.'
+        });
+      }
+    });
+  }
+
+  goToMyBookings(): void {
+    this.router.navigate(['/mis-reservas']);
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/']);
+  }
+}
+@defer (on viewport) {
+  <div class="booking-confirmation" *ngIf="bookingResponseReadonly()?.success && bookingResponseReadonly()?.data as booking">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>🎉 ¡Reserva confirmada!</mat-card-title>
+        <mat-card-subtitle>Número de reserva: <b>{{ booking.bookingNumber }}</b></mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Hotel y habitación -->
+        <section>
+          <h3>{{ booking.hotel.name }}</h3>
+          <p>{{ booking.hotel.location }}</p>
+          <p>Habitación: {{ booking.room.roomType }} ({{ booking.room.bedDetails }})</p>
+          <p>Capacidad: {{ booking.room.capacity }} huéspedes</p>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Fechas -->
+        <section>
+          <p><b>Check-In:</b> {{ booking.checkInDate | date:'fullDate' }}</p>
+          <p><b>Check-Out:</b> {{ booking.checkOutDate | date:'fullDate' }}</p>
+          <p><b>Noches:</b> {{ booking.numberOfNights }}</p>
+          <p><b>Huéspedes:</b> {{ booking.numberOfGuests }}</p>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Precios -->
+        <section>
+          <p><b>Tarifa habitación:</b> {{ booking.priceBreakdown.subtotal | currency:'COP' }}</p>
+          <p><b>Impuestos:</b> {{ booking.priceBreakdown.taxes | currency:'COP' }}</p>
+          <p><b>Tarifas:</b> {{ booking.priceBreakdown.fees | currency:'COP' }}</p>
+          <h3>Total: {{ booking.priceBreakdown.total | currency:'COP' }}</h3>
+        </section>
+
+        <mat-divider></mat-divider>
+
+        <!-- Huésped -->
+        <section>
+          <p><b>Nombre:</b> {{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</p>
+          <p><b>Email:</b> {{ booking.guestInfo.email }}</p>
+          <p><b>Teléfono:</b> {{ booking.guestInfo.phone }}</p>
+          <p *ngIf="booking.specialRequests"><b>Petición especial:</b> {{ booking.specialRequests }}</p>
+        </section>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="goToMyBookings()">Ver mis reservas</button>
+        <button mat-button (click)="goToHome()">Volver al inicio</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+} @placeholder {
+  <p>preparando confirmación de la reserva...</p>
+} @loading {
+  <p>cargando detalles de la reserva...</p>
+} @error {
+  <p>no se pudo cargar la confirmación.</p>
+}
+
+<div *ngIf="!bookingResponseReadonly()?.success && bookingResponseReadonly()">
+  <mat-card>
+    <mat-card-title>Error</mat-card-title>
+    <mat-card-content>
+      <p>{{ bookingResponseReadonly()?.message || 'No se pudo confirmar la reserva.' }}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="goToHome()">Volver al inicio</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common'; // para usar *ngIf y *ngFor
+import { Hotel } from '../../../core/models/hotel.model';
+
+@Component({
+  selector: 'app-hotel-card', //nombre
+  standalone: true, //independiente o sea no necesito de modulos acqui
+  imports: [CommonModule], //importo commonModule para directivas
+  templateUrl: './hotel-card.component.html',
+  styleUrl: './hotel-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush // pongo onpush para optimizar la detección de cambios
+})
+export class HotelCardComponent {
+  @Input() hotel!: Hotel; //recibo hotel del componente padre
+  //@Output() detailsClicked = new EventEmitter<Hotel>(); //emito evento cuando hacen click en la tarjeta
+  @Output() viewRoomsClicked = new EventEmitter<Hotel>(); //emito evento cuando quieren ver habitaciones
+
+  //onCardClick(): void {
+  //  this.detailsClicked.emit(this.hotel); //le mando al padre que hicieron click en ese hotel
+  //}
+
+  // aqui aviso que quieren ver habitaciones y detengo la propagación del evento
+  onViewRoomsClick(event: Event): void {
+    event.stopPropagation();
+    this.viewRoomsClicked.emit(this.hotel);
+  }
+
+  formatPrice(price: number): string {
+    return price.toLocaleString('es-CO'); //formato colombiano para numeros
+  }
+
+  getDisplayAmenities(): string[] {
+    return this.hotel.amenities.slice(0, 3); // de todas muestro primeras 3
+  }
+
+  getAmenityIcon(amenity: string): string { //aqui emojis para que se vea lindo
+    const iconMap: { [key: string]: string } = {
+      'wifi': '📶',
+      'estacionamiento': '🚗',
+      'restaurante': '🍽️',
+      'café': '☕',
+      'piscina': '🏊',
+      'gimnasio': '💪',
+      'spa': '🧘'
+    };
+    return iconMap[amenity.toLowerCase()] || '✨'; // busco en el diccionario y si no encuentro estrella
+  }
+}
+<div class="hotel-card">
+  <!-- placeholder de imagen del hotel -->
+  <div class="image-container">
+    <div class="image-placeholder">
+      <div class="placeholder-content">
+        <div class="placeholder-icon"></div>
+        <p>imagen del hotel</p>
+      </div>
+    </div>
+    
+    <!-- badge de rating -->
+    <div class="rating-badge">
+      <span class="star">⭐</span>
+      <span class="rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
+
+    </div>
+  </div>
+
+  <!-- información del hotel -->
+  <div class="hotel-info">
+    <!-- nombre del hotel -->
+    <h3 class="hotel-name">{{ hotel.name }}</h3>
+    
+    <!-- ubicación -->
+    <div class="location">
+      <span class="location-icon">📍</span>
+      <span class="location-text">{{ hotel.location }}</span>
+    </div>
+
+    <div class="description">
+      <p>{{ hotel.description }}</p>
+    </div>
+
+    <!-- amenidades -->
+    <div class="amenities">
+      <div class="amenity-tag" *ngFor="let amenity of getDisplayAmenities()">
+        <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
+        <span class="amenity-text">{{ amenity }}</span>
+      </div>
+      <span *ngIf="hotel.amenities.length > 3" class="more-amenities">
+        +{{ hotel.amenities.length - 3 }} más
+      </span>
+    </div>
+
+    <div class="hotel-stats">
+      <div class="stat">
+        <span class="stat-icon">👥</span>
+        <span class="stat-text">{{ hotel.totalReviews }} reseñas</span>
+      </div>
+      <div class="stat">
+        <span class="stat-icon">👤</span>
+        <span class="stat-text">hasta {{ hotel.capacity }} huéspedes</span>
+      </div>
+    </div>
+
+    <!-- precio y botones de acción -->
+    <div class="bottom-section">
+      <div class="price-section">
+  <span class="price" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0; else sinPrecio">
+    {{ hotel.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+  </span>
+  <span class="price-period" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0">
+    / noche desde
+  </span>
+
+  <ng-template #sinPrecio>
+    <span class="price muted">consulta precio</span>
+  </ng-template>
+</div>
+
+      
+      <div class="action-buttons">
+        <button 
+          class="btn btn-primary view-rooms-btn" 
+          (click)="onViewRoomsClick($event)"
+          [attr.aria-label]="'Ver habitaciones disponibles en ' + hotel.name">
+          <span class="btn-icon">🏨</span>
+          <span>ver habitaciones</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+import { Component, ChangeDetectionStrategy } from '@angular/core'; // importo ChangeDetectionStrategy
+
+@Component({
+  selector: 'app-search-form',
+  imports: [],
+  templateUrl: './search-form.html',
+  styleUrl: './search-form.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush // aqui aplico OnPush
+})
+export class SearchForm {
+
+}
+<p>search-form works!</p>
+import { Component, ChangeDetectionStrategy } from '@angular/core'; // aqui importo changeDetectionStrategy porque lo voy a usar
+
+@Component({
+  selector: 'app-filters',
+  imports: [],
+  templateUrl: './filters.html',
+  styleUrl: './filters.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush // aqui pongo onpush para optimizar la detección de cambios
+})
+export class Filters {
+
+}
+<p>filters works!</p>
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; //para formularios
+import { Router } from '@angular/router';// para navegación
+import { HotelCardComponent } from '../../features/hotels/hotel-card/hotel-card.component';
+import { Hotel } from '../../core/models/hotel.model';
+import { SearchCriteria } from '../../core/models/search-criteria.model';
+import { HotelService } from '../../core/services/hotel.service';
+
+@Component({
+  selector: 'app-home', //nombre app home
+  standalone: true,//independiente
+  imports: [CommonModule, FormsModule, HotelCardComponent], //dependencias de esta clase
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
+})
+export class HomeComponent implements OnInit { //onInit para inicializar cuando se crea
+  searchCriteria: SearchCriteria = {
+    destination: '', //ciudad seleccionada
+    checkIn: '', //fecha de entrada
+    checkOut: '', //fecha de salida
+    guests: 2 //número de huespedes default 2
+  };
+
+  featuredHotels: Hotel[] = []; //hoteles que va a mostrar
+  loading: boolean = false; //esta cargando datos?
+  error: string = '';//error si falla
+
+  constructor(
+    private hotelService: HotelService, //servicio para comunicar con back
+    private router: Router //router para navegar entre páginas
+  ) {}
+
+  ngOnInit(): void {
+    console.log('componente Home iniciado');
+    this.loadFeaturedHotels();
+  }
+
+  onSearch(): void {
+    this.loading = true;
+    this.error = '';
+    
+    console.log('búsqueda iniciada con criterios:', this.searchCriteria);
+    
+    // Validar criterios básicos
+    if (!this.searchCriteria.destination) {
+      this.error = 'Por favor selecciona un destino';
+      this.loading = false;
+      return;
+    }
+
+    if (this.searchCriteria.guests < 1) {
+      this.error = 'Debe haber al menos 1 huésped';
+      this.loading = false;
+      return;
+    }
+
+    if(this.searchCriteria.checkIn && this.searchCriteria.checkOut) {
+      const checkInDate = new Date(this.searchCriteria.checkIn);
+      const checkOutDate = new Date(this.searchCriteria.checkOut);
+
+      if (checkInDate >= checkOutDate) {
+        this.error = "La fecha de salida debe ser posterior a la de entrada";
+        this.loading = false;
+        return;
+      }
+    }
+    
+    this.hotelService.searchHotels(this.searchCriteria).subscribe({
+      next: (hotels) => {
+        console.log('búsqueda completada:', hotels);
+        this.featuredHotels = hotels;
+        this.loading = false;
+        
+        if (hotels.length === 0) {
+          this.error = 'No se encontraron hoteles con esos criterios. Intenta con otros filtros.';
+        }
+      },
+      error: (error) => {
+        console.error('error en búsqueda:', error);
+        this.error = error.message || 'Error al buscar hoteles. Inténtalo de nuevo.';
+        this.loading = false;
+      }
+    });
+  }
+
+  onViewHotelRooms(hotel: Hotel): void {
+    console.log('viendo habitaciones del hotel:', hotel.name);
+    
+    this.router.navigate(['/hotel', hotel.id, 'rooms'], {
+      queryParams: {
+        checkIn: this.searchCriteria.checkIn || '',
+        checkOut: this.searchCriteria.checkOut || '',
+        guests: this.searchCriteria.guests || 2
+      }
+    });
+  }
+
+  onClearSearch(): void {
+    this.searchCriteria = {
+      destination: '',
+      checkIn: '',
+      checkOut: '',
+      guests: 1
+    };
+    this.error = '';
+    this.loadFeaturedHotels();
+  }
+
+  onReloadHotels(): void {
+    this.error = '';
+    this.loadFeaturedHotels();
+  }
+
+  private loadFeaturedHotels(): void {
+    this.loading = true;
+    this.error = '';
+    console.log('iniciando carga de hoteles desde el API...');
+    
+    this.hotelService.getAllHotels().subscribe({
+      next: (hotels) => {
+        console.log('hoteles cargados desde API:', hotels);
+        this.featuredHotels = hotels;
+        this.loading = false;
+        
+        if (hotels.length === 0) {
+          console.log('no hay hoteles en la base de datos');
+          this.error = 'No hay hoteles disponibles en este momento.';
+        }
+      },
+      error: (error) => {
+        console.error('error cargando hoteles desde API:', error);
+        this.error = `Error de conexión: ${error.message}`;
+        this.loading = false;
+      }
+    });
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0
+    }).format(price);
+  }
+
+  isConnectionError(): boolean {
+    return this.error.includes('conexión') || this.error.includes('servidor');
+  }
+}
+<!-- Hero Section with Search -->
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-content">
+      <h1 class="hero-title">Encuentra tu refugio perfecto 💙</h1>
+      <div class="title-accent"></div>
+      <p class="hero-subtitle">
+        descubre experiencias únicas en nuestros hoteles boutique ubicados 
+        en los destinos más hermosos de Colombia 
+      </p>
+    </div>
+
+    <!-- Search Form -->
+    <div class="search-form">
+      <div *ngIf="error" class="error-message">
+        <span class="error-icon">⚠️</span>
+        <span class="error-text">{{ error }}</span>
+        <button 
+          *ngIf="isConnectionError()" 
+          class="retry-btn"
+          (click)="onReloadHotels()">
+          🔄 reintentar
+        </button>
+      </div>
+
+      <div class="search-grid">
+        <!-- Destination -->
+        <div class="search-field">
+          <label class="field-label">destino</label>
+          <div class="field-wrapper">
+            <span class="field-icon">📍</span>
+            <select 
+              class="field-input"
+              [(ngModel)]="searchCriteria.destination"
+              [disabled]="loading">
+              <option value="">seleccionar ciudad</option>
+              <option value="cartagena">cartagena</option>
+              <option value="santa marta">santa marta</option>
+              <option value="san andrés">san andrés</option>
+              <option value="medellín">medellín</option>
+              <option value="bogotá">bogotá</option>
+              <option value="cali">cali</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Check-in -->
+        <div class="search-field">
+          <label class="field-label">llegada</label>
+          <div class="field-wrapper">
+            <span class="field-icon">📅</span>
+            <input 
+              type="date" 
+              class="field-input"
+              [(ngModel)]="searchCriteria.checkIn"
+              [disabled]="loading">
+          </div>
+        </div>
+
+        <!-- Check-out -->
+        <div class="search-field">
+          <label class="field-label">salida</label>
+          <div class="field-wrapper">
+            <span class="field-icon">📅</span>
+            <input 
+              type="date" 
+              class="field-input"
+              [(ngModel)]="searchCriteria.checkOut"
+              [disabled]="loading">
+          </div>
+        </div>
+
+        <!-- Guests -->
+        <div class="search-field">
+          <label class="field-label">huéspedes</label>
+          <div class="field-wrapper">
+            <span class="field-icon">👤</span>
+            <select 
+              class="field-input"
+              [(ngModel)]="searchCriteria.guests"
+              [disabled]="loading">
+              <option value="1">1 persona</option>
+              <option value="2">2 personas</option>
+              <option value="3">3 personas</option>
+              <option value="4">4 personas</option>
+              <option value="5">5+ personas</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="search-actions">
+        <button 
+          class="search-btn" 
+          (click)="onSearch()"
+          [disabled]="loading">
+          <span class="search-icon" *ngIf="!loading">🔍</span>
+          <div class="loading-spinner-sm" *ngIf="loading"></div>
+          <span>{{ loading ? 'buscando...' : 'buscar hoteles' }}</span>
+        </button>
+
+        <button 
+          class="clear-btn"
+          (click)="onClearSearch()"
+          [disabled]="loading">
+          <span>🗑️</span>
+          <span>limpiar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Hotels Section -->
+<section class="hotels-section">
+  <div class="hotels-container">
+    <div class="section-header">
+      <h2 class="section-title">
+        {{ searchCriteria.destination && !loading && featuredHotels.length > 0 
+           ? 'hoteles en ' + searchCriteria.destination 
+           : 'nuestros hoteles destacados' }}
+      </h2>
+      <div class="title-accent"></div>
+      <p class="section-subtitle">
+        {{ searchCriteria.destination && !loading && featuredHotels.length > 0
+           ? 'encontramos ' + featuredHotels.length + ' hotel(es) para tu búsqueda'
+           : 'cada uno de nuestros hoteles ha sido cuidadosamente seleccionado para ofrecerte una experiencia única' }}
+      </p>
+    </div>
+
+    <!-- Hotels Grid -->
+    <div class="hotels-grid" *ngIf="!loading && featuredHotels.length > 0">
+      <app-hotel-card
+        *ngFor="let hotel of featuredHotels"
+        [hotel]="hotel"
+        (viewRoomsClicked)="onViewHotelRooms($event)">
+      </app-hotel-card>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>{{ searchCriteria.destination ? 'buscando hoteles en ' + searchCriteria.destination + '...' : 'cargando hoteles...' }}</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && featuredHotels.length === 0 && !error" class="empty-state">
+      <div class="empty-icon">🏨</div>
+      <h3>no se encontraron hoteles</h3>
+      <p *ngIf="searchCriteria.destination">
+        no hay hoteles disponibles en <strong>{{ searchCriteria.destination }}</strong> 
+        con los criterios seleccionados
+      </p>
+      <p *ngIf="!searchCriteria.destination">
+        no hay hoteles disponibles en este momento
+      </p>
+      <button class="retry-btn" (click)="onClearSearch()">
+        🔄 ver todos los hoteles
+      </button>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!loading && error && featuredHotels.length === 0" class="error-state">
+      <div class="error-icon">❌</div>
+      <h3>oops! algo salió mal</h3>
+      <p>{{ error }}</p>
+      <button class="retry-btn" (click)="onReloadHotels()">
+        🔄 reintentar
+      </button>
+    </div>
+  </div>
+</section>
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HotelListComponent, ViewMode, SortOption } from '../../features/hotels/hotel-list/hotel-list.component';
+import { Hotel } from '../../core/models/hotel.model';
+import { SearchCriteria } from '../../core/models/search-criteria.model';
+import { HotelService } from '../../core/services/hotel.service';
+
+@Component({
+  selector: 'app-hotels',
+  standalone: true,
+  imports: [CommonModule, FormsModule, HotelListComponent],
+  templateUrl: './hotels.component.html',
+  styleUrl: './hotels.component.scss'
+})
+export class HotelsComponent implements OnInit {
+  
+  // estados principales
+  hotels: Hotel[] = [];
+  loading: boolean = false;
+  error: string = '';
+
+  // filtros y búsqueda
+  searchCriteria: SearchCriteria = {
+    destination: '',
+    checkIn: '',
+    checkOut: '',
+    guests: 1,
+  };
+
+  // estados de ui
+  showAdvancedFilters: boolean = false;
+  currentViewMode: ViewMode = 'grid';
+
+  constructor(
+    private hotelService: HotelService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    console.log('inicializo página de hoteles');
+    
+    // verifico si hay parámetros de búsqueda en la url
+    this.route.queryParams.subscribe(params => {
+      if (params['destination']) {
+        this.searchCriteria.destination = params['destination'];
+        this.showAdvancedFilters = true;
+      }
+      if (params['guests']) {
+        this.searchCriteria.guests = parseInt(params['guests']);
+      }
+      
+      this.loadHotels();
+    });
+  }
+
+  // cargo hoteles
+  loadHotels(): void {
+    this.loading = true;
+    this.error = '';
+    
+    console.log('cargando todos los hoteles...');
+    
+    this.hotelService.getAllHotels().subscribe({
+      next: (hotels) => {
+        console.log('hoteles cargados:', hotels);
+        this.hotels = hotels;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('error cargando hoteles:', error);
+        this.error = error.message;
+        this.loading = false;
+      }
+    });
+  }
+
+  // aplico filtros
+  onApplyFilters(): void {
+    console.log('aplicando filtros:', this.searchCriteria);
+    
+    if (this.hasActiveFilters()) {
+      this.loading = true;
+      this.error = '';
+      
+      this.hotelService.searchHotels(this.searchCriteria).subscribe({
+        next: (hotels) => {
+          console.log('búsqueda completada:', hotels);
+          this.hotels = hotels;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('error en búsqueda:', error);
+          this.error = error.message;
+          this.loading = false;
+        }
+      });
+    } else {
+      this.loadHotels();
+    }
+  }
+
+  // limpio filtros
+  onClearFilters(): void {
+    console.log('limpiando filtros');
+    this.searchCriteria = {
+      destination: '',
+      checkIn: '',
+      checkOut: '',
+      guests: 1,
+    };
+    this.loadHotels();
+  }
+
+  // alterno filtros avanzados
+  toggleAdvancedFilters(): void {
+    this.showAdvancedFilters = !this.showAdvancedFilters;
+    console.log('filtros avanzados:', this.showAdvancedFilters ? 'mostrados' : 'ocultos');
+  }
+
+  // eventos del hotel-list
+  onHotelSelected(hotel: Hotel): void {
+    console.log('hotel seleccionado:', hotel.name);
+    this.router.navigate(['/hotel', hotel.id]);
+  }
+
+
+  onRetryLoad(): void {
+    console.log('reintentando carga');
+    this.loadHotels();
+  }
+
+  onSortChanged(sortOption: SortOption): void {
+    console.log('ordenamiento cambiado:', sortOption);
+  }
+
+  onViewModeChanged(viewMode: ViewMode): void {
+    console.log('vista cambiada:', viewMode);
+    this.currentViewMode = viewMode;
+  }
+
+  // método para contacto
+  onContactUs(): void {
+    console.log('contactando asesor');
+    alert('función de contacto próximamente implementada');
+  }
+
+  onViewRooms(hotel: Hotel): void {
+    this.router.navigate(['/hotel', hotel.id, 'rooms']);
+  }
+
+
+  // utilidades
+  hasActiveFilters(): boolean {
+    return !!(
+      this.searchCriteria.destination || 
+      this.searchCriteria.checkIn || 
+      this.searchCriteria.checkOut || 
+      (this.searchCriteria.guests && this.searchCriteria.guests !== 1)
+    );
+  }
+}
+<div class="hotels-page">
+  <div class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="page-title">Nuestros Hoteles</h1>
+        <p class="page-subtitle">
+          Descubre todos los refugios únicos de la cadena Fala en Colombia
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- filtros avanzados -->
+  <div class="filters-section" *ngIf="showAdvancedFilters">
+    <div class="container">
+      <div class="filters-card">
+        <h3 class="filters-title">Refina tu búsqueda</h3>
+        
+        <form class="filters-form" (ngSubmit)="onApplyFilters()">
+          <div class="filters-grid">
+            <!-- destino -->
+            <div class="filter-group">
+              <label class="filter-label">Destino</label>
+              <select class="filter-select" [(ngModel)]="searchCriteria.destination" name="destination">
+                <option value="">Todos los destinos</option>
+                <option value="cartagena">Cartagena</option>
+                <option value="santa marta">Santa Marta</option>
+                <option value="san andrés">San Andrés</option>
+                <option value="medellín">Medellín</option>
+              </select>
+            </div>
+
+            <!-- huéspedes -->
+            <div class="filter-group">
+              <label class="filter-label">Huéspedes</label>
+              <select class="filter-select" [(ngModel)]="searchCriteria.guests" name="guests">
+                <option [value]="1">1 persona</option>
+                <option [value]="2">2 personas</option>
+                <option [value]="3">3 personas</option>
+                <option [value]="4">4 personas</option>
+                <option [value]="5">5+ personas</option>
+              </select>
+            </div>
+
+            <!-- fechas -->
+            <div class="filter-group">
+              <label class="filter-label">Check-In</label>
+              <input type="date" class="filter-input" [(ngModel)]="searchCriteria.checkIn" name="checkIn">
+            </div>
+          
+            <div class="filter-group">
+              <label class="filter-label">Check-Out</label>
+              <input type="date" class="filter-input" [(ngModel)]="searchCriteria.checkOut" name="checkOut">
+            </div>
+          </div>
+
+          <div class="filters-actions">
+            <button type="button" class="btn-ghost" (click)="onClearFilters()">
+              <span class="btn-icon">🔄</span>
+              Limpiar filtros
+            </button>
+            <button type="submit" class="btn-primary">
+              <span class="btn-icon">🔍</span>
+              Aplicar filtros
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- botón toggle filtros -->
+  <div class="container">
+    <div class="toggle-filters">
+      <button 
+        class="toggle-btn"
+        (click)="toggleAdvancedFilters()">
+        <span class="toggle-icon">{{ showAdvancedFilters ? '▲' : '▼' }}</span>
+        {{ showAdvancedFilters ? 'Ocultar filtros' : 'Mostrar filtros avanzados' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- lista de hoteles -->
+  <div class="hotels-content">
+    <div class="container">
+      @defer (on viewport) {
+        <app-hotel-list
+          [hotels]="hotels"
+          [loading]="loading"
+          [error]="error"
+          [searchCriteria]="hasActiveFilters() ? searchCriteria : undefined"
+          [showFilters]="true"
+          [showSorting]="true"
+          [viewMode]="currentViewMode"
+          (hotelSelected)="onHotelSelected($event)"
+          (viewRoomsClicked)="onViewRooms($event)" 
+          (retryLoad)="onRetryLoad()"
+          (sortChanged)="onSortChanged($event)"
+          (viewModeChanged)="onViewModeChanged($event)">
+        </app-hotel-list>
+      } @placeholder {
+        <!-- esto se muestra mientras el usuario aún no llegó al viewport -->
+        <p>lista de hoteles pendiente de cargar...</p>
+      } @loading {
+        <!-- esto se muestra después de que el trigger se dispara, mientras carga -->
+        <p>cargando hoteles...</p>
+      } @error {
+        <!-- esto se muestra si ocurre un error en la carga -->
+        <p>no se pudo cargar la lista de hoteles.</p>
+      }
+    </div>
+  </div>
+
+  <!-- call to action cuando no hay resultados -->
+  <div class="cta-section" *ngIf="!loading && hotels.length === 0">
+    <div class="container">
+      <div class="cta-content">
+        <h3 class="cta-title">¿No encuentras lo que buscas?</h3>
+        <p class="cta-text">
+          Contáctanos y te ayudaremos a encontrar el refugio perfecto para tu estadía
+        </p>
+        <button class="btn-secondary cta-btn" (click)="onContactUs()">
+          <span class="btn-icon">📞</span>
+          Contactar asesor
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { BookingService } from '../../core/services/booking.service';
+import { AuthService } from '../../core/services/auth.service';
+import { HotelService } from '../../core/services/hotel.service';
+import { RoomService } from '../../core/services/room.service';
+
+import { BookingResponse } from '../../core/models/booking.models';
+import { Hotel } from '../../core/models/hotel.model';
+import { Room } from '../../core/models/room.model';
+
+export interface CanComponentDeactivate {
+  canDeactivate(): boolean;
+}
+
+@Component({
+  selector: 'app-booking',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatStepperModule,
+    MatProgressSpinnerModule
+  ],
+  templateUrl: './booking.component.html',
+  styleUrl: './booking.component.scss'
+})
+export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactivate {
+
+  private readonly fb = inject(FormBuilder);
+  private readonly bookingService = inject(BookingService);
+  private readonly authService = inject(AuthService);
+  private readonly hotelService = inject(HotelService);
+  private readonly roomService = inject(RoomService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
+
+  private destroy$ = new Subject<void>();
+
+  // reactive state
+  private readonly selectedHotelSignal = signal<Hotel | null>(null);
+  private readonly selectedRoomSignal = signal<Room | null>(null);
+  private readonly isSubmittingSignal = signal<boolean>(false);
+  private readonly showSuccessDialogSignal = signal<boolean>(false);
+  private readonly bookingResultSignal = signal<BookingResponse | null>(null);
+
+  readonly selectedHotel = this.selectedHotelSignal.asReadonly();
+  readonly selectedRoom = this.selectedRoomSignal.asReadonly();
+  readonly isSubmitting = this.isSubmittingSignal.asReadonly();
+  readonly showSuccessDialog = this.showSuccessDialogSignal.asReadonly();
+  readonly bookingResult = this.bookingResultSignal.asReadonly();
+  readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+
+  // forms
+  guestForm!: FormGroup;
+  bookingForm!: FormGroup;
+  mainForm!: FormGroup;
+
+  private formDirty = false;
+
+  ngOnInit(): void {
+    this.initializeForms();
+    this.handleRouteParams();
+    this.setupFormWatchers();
+    this.prefillUserDataIfAuthenticated();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // canComponentDeactivate impl
+  canDeactivate(): boolean {
+    if (this.formDirty && !this.showSuccessDialog()) {
+      return confirm('¿Está seguro de que desea salir? Los datos del formulario se perderán.');
+    }
+    return true;
+  }
+
+  private initializeForms(): void {
+    // formulario de info del huésped
+    this.guestForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      phone: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email]],
+      requests: ['', Validators.maxLength(500)]
+    });
+
+    // solo para datos que vienen de queryParams (no visibles en form)
+    this.bookingForm = this.fb.group({
+      hotelId: ['', Validators.required],
+      roomId: ['', Validators.required],
+      checkInDate: ['', Validators.required],
+      checkOutDate: ['', Validators.required],
+      numberOfGuests: [2, [Validators.required, Validators.min(1), Validators.max(8)]]
+    });
+
+    this.mainForm = this.fb.group({
+      acceptTerms: [false, Validators.requiredTrue]
+    });
+  }
+
+  private handleRouteParams(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        if (params['hotelId']) this.bookingForm.patchValue({ hotelId: params['hotelId'] });
+        if (params['roomId']) this.bookingForm.patchValue({ roomId: params['roomId'] });
+        if (params['checkIn']) this.bookingForm.patchValue({ checkInDate: new Date(params['checkIn']) });
+        if (params['checkOut']) this.bookingForm.patchValue({ checkOutDate: new Date(params['checkOut']) });
+        if (params['guests']) this.bookingForm.patchValue({ numberOfGuests: parseInt(params['guests']) });
+      });
+  }
+
+  private setupFormWatchers(): void {
+    this.guestForm.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.formDirty = true);
+  }
+
+  private prefillUserDataIfAuthenticated(): void {
+    if (this.isAuthenticated()) {
+      const user = this.authService.user();
+      if (user) {
+        this.guestForm.patchValue({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email
+        });
+      }
+    }
+  }
+
+  submitBooking(): void {
+  if (!this.canSubmit()) return;
+
+  this.isSubmittingSignal.set(true);
+
+  const checkIn = this.bookingForm.get('checkInDate')?.value;
+  const checkOut = this.bookingForm.get('checkOutDate')?.value;
+
+  if (!checkIn || !checkOut) {
+    this.snackBar.open('Debes seleccionar fechas válidas', 'Cerrar', { duration: 5000 });
+    this.isSubmittingSignal.set(false);
+    return;
+  }
+
+  const payload = {
+    guestInfo: {
+      firstName: this.guestForm.value.firstName,
+      lastName: this.guestForm.value.lastName,
+      phone: this.guestForm.value.phone,
+      email: this.guestForm.value.email,
+    },
+    hotelId: this.bookingForm.get('hotelId')?.value,
+    roomId: this.bookingForm.get('roomId')?.value,
+    checkInDate: this.formatDate(checkIn),
+    checkOutDate: this.formatDate(checkOut),
+    numberOfGuests: this.bookingForm.get('numberOfGuests')?.value,
+    specialRequests: this.guestForm.value.requests || ''
+  };
+
+  console.log('Payload final enviado al back:', JSON.stringify(payload, null, 2));
+
+  this.bookingService.createBooking(payload)
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          console.log('Reserva creada:', response.data);
+          this.formDirty = false;
+
+          this.router.navigate(['/booking/confirmation', response.data.id]);
+        } 
+        
+        else {
+          this.snackBar.open('No se pudo crear la reserva', 'Cerrar', { duration: 5000 });
+        }
+      },
+      error: (error) => {
+        console.error('Error creando reserva:', error);
+
+        if (error.error?.errors && Array.isArray(error.error.errors)) {
+          const errorMessages = error.error.errors.map((err: any) => err.message).join(', ');
+          this.snackBar.open(`Error: ${errorMessages}`, 'Cerrar', { duration: 8000 });
+        } else {
+          this.snackBar.open('Error procesando la reserva', 'Cerrar', { duration: 5000 });
+        }
+      },
+      complete: () => this.isSubmittingSignal.set(false)
+    });
+}
+
+
+  canSubmit(): boolean {
+    return this.guestForm.valid && this.bookingForm.valid && this.mainForm.get('acceptTerms')?.value === true;
+  }
+
+  closeSuccessDialog(): void {
+    this.showSuccessDialogSignal.set(false);
+  }
+
+  goToMyBookings(): void {
+    this.closeSuccessDialog();
+    if (this.isAuthenticated()) {
+      this.router.navigate(['/mis-reservas']);
+    } else {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/mis-reservas' } });
+    }
+  }
+
+  goToHome(): void {
+    this.closeSuccessDialog();
+    this.router.navigate(['/']);
+  }
+
+  private formatDate(date: Date): string {
+    if (!date) return '';
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}T12:00:00.000Z`;
+  }
+  
+  formatDateRange(): string {
+    const checkIn = this.bookingForm.get('checkInDate')?.value;
+    const checkOut = this.bookingForm.get('checkOutDate')?.value;
+  
+    if (!checkIn || !checkOut) return '';
+  
+    const checkInDate = checkIn instanceof Date ? checkIn : new Date(checkIn);
+    const checkOutDate = checkOut instanceof Date ? checkOut : new Date(checkOut);
+  
+    return `${this.formatDate(checkInDate)} - ${this.formatDate(checkOutDate)}`;
+  }
+}
+<!-- src/app/pages/booking/booking.component.html -->
+<div class="booking-container">
+  <div class="booking-header">
+    <h1 class="booking-title">
+      <mat-icon>hotel</mat-icon>
+      Realizar Reserva
+    </h1>
+    <p class="booking-subtitle">
+      Complete el formulario para reservar su estadía en {{ selectedHotel()?.name || 'nuestro hotel' }}
+    </p>
+  </div>
+
+  <div class="booking-content">
+    <mat-horizontal-stepper [linear]="true" #stepper class="booking-stepper">
+      
+      <!-- Paso 1: Información del Huésped -->
+      <mat-step [stepControl]="guestForm" label="Información del Huésped">
+        <form [formGroup]="guestForm" class="step-form">
+          <div class="form-section">
+            <h3 class="section-title">
+              <mat-icon>person</mat-icon>
+              Datos del Huésped Principal
+            </h3>
+
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="firstName" placeholder="Ingrese su nombre">
+                <mat-icon matSuffix>person</mat-icon>
+                <mat-error *ngIf="guestForm.get('firstName')?.invalid && guestForm.get('firstName')?.touched">
+                  El nombre es requerido (mín. 2 caracteres)
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="lastName" placeholder="Ingrese su apellido">
+                <mat-icon matSuffix>person_outline</mat-icon>
+                <mat-error *ngIf="guestForm.get('lastName')?.invalid && guestForm.get('lastName')?.touched">
+                  El apellido es requerido (mín. 2 caracteres)
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input matInput formControlName="phone" placeholder="+57 300 123 4567">
+                <mat-icon matSuffix>phone</mat-icon>
+                <mat-error *ngIf="guestForm.get('phone')?.invalid && guestForm.get('phone')?.touched">
+                  Teléfono inválido o requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Correo Electrónico</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="ejemplo@correo.com">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="guestForm.get('email')?.invalid && guestForm.get('email')?.touched">
+                  Email inválido o requerido
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Solicitudes Especiales (Opcional)</mat-label>
+                <textarea matInput formControlName="requests" rows="3" maxlength="500"
+                  placeholder="Ej: Cama extra, accesibilidad, alergias..."></textarea>
+                <mat-icon matSuffix>note_add</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <button mat-raised-button color="primary" matStepperNext [disabled]="!guestForm.valid">
+              Continuar
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+
+      <!-- Paso Confirmación -->
+      <mat-step label="Confirmación">
+        @defer (on interaction) {
+          <div class="confirmation-step">
+            <div class="confirmation-summary">
+              <h3 class="section-title">
+                <mat-icon>assignment_turned_in</mat-icon>
+                Confirmar Reserva
+              </h3>
+      
+              <div class="final-summary">
+                <div class="guest-info">
+                  <h4>Información del Huésped</h4>
+                  <p><strong>Nombre:</strong> {{ guestForm.get('firstName')?.value }} {{ guestForm.get('lastName')?.value }}</p>
+                  <p><strong>Teléfono:</strong> {{ guestForm.get('phone')?.value }}</p>
+                  <p><strong>Email:</strong> {{ guestForm.get('email')?.value }}</p>
+                  <p *ngIf="guestForm.get('requests')?.value"><strong>Solicitudes:</strong> {{ guestForm.get('requests')?.value }}</p>
+                </div>
+      
+                <div class="booking-info">
+                  <h4>Detalles de la Reserva</h4>
+                  <p><strong>Hotel:</strong> {{ selectedHotel()?.name }}</p>
+                  <p><strong>Habitación:</strong> {{ selectedRoom()?.roomType }}</p>
+                  <p><strong>Fechas:</strong> {{ formatDateRange() }}</p>
+                  <p><strong>Huéspedes:</strong> {{ bookingForm.get('numberOfGuests')?.value }}</p>
+                </div>
+              </div>
+      
+              <div class="terms-section">
+                <form [formGroup]="mainForm">
+                  <mat-checkbox formControlName="acceptTerms" color="primary">
+                    Acepto los <a href="/terminos" target="_blank">términos y condiciones</a>
+                  </mat-checkbox>
+                </form>
+              </div>
+            </div>
+      
+            <div class="step-actions">
+              <button mat-button matStepperPrevious>
+                <mat-icon>arrow_back</mat-icon>
+                Anterior
+              </button>
+              <button mat-raised-button color="primary" (click)="submitBooking()" [disabled]="!canSubmit() || isSubmitting()">
+                <mat-icon *ngIf="!isSubmitting()">done</mat-icon>
+                <span *ngIf="!isSubmitting()">Confirmar Reserva</span>
+                <mat-spinner *ngIf="isSubmitting()" diameter="20"></mat-spinner>
+              </button>
+            </div>
+          </div>
+        } @placeholder {
+          <p>preparando resumen de confirmación...</p>
+        } @loading {
+          <p>cargando resumen...</p>
+        } @error {
+          <p>no se pudo cargar la confirmación.</p>
+        }
+      </mat-step>
+
+    </mat-horizontal-stepper>
+  </div>
+
+  <!-- Dialog de éxito -->
+  <ng-container *ngIf="showSuccessDialog()">
+    <div class="success-overlay" (click)="closeSuccessDialog()">
+      <div class="success-dialog" (click)="$event.stopPropagation()">
+        <div class="success-content">
+          <mat-icon class="success-icon">check_circle</mat-icon>
+          <h2>¡Reserva Confirmada!</h2>
+          <p>Su reserva ha sido procesada exitosamente.</p>
+          <div class="success-actions">
+            <button mat-raised-button color="primary" (click)="goToMyBookings()">Ver Mis Reservas</button>
+            <button mat-button (click)="goToHome()">Volver al Inicio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+import { Component, OnInit, OnDestroy, Inject, inject, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
+
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatStepperModule } from '@angular/material/stepper';
+
+import { BookingService } from '../../core/services/booking.service';
+import { Booking, BookingStatus } from '../../core/models/booking.models';
+
+export interface BookingCancellationData {
+  booking: Booking;
+}
+
+export interface BookingCancellationResult {
+  cancelled: boolean;
+  booking?: Booking;
+  reason?: string;
+}
+
+@Component({
+  selector: 'app-booking-cancellation',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatStepperModule
+  ],
+  templateUrl: './booking-cancellation.component.html',
+  styleUrl: './booking-cancellation.component.scss'
+})
+export class BookingCancellationComponent implements OnInit, OnDestroy {
+  
+  private readonly fb = inject(FormBuilder);
+  private readonly bookingService = inject(BookingService);
+  private readonly snackBar = inject(MatSnackBar);
+  
+  private destroy$ = new Subject<void>();
+
+  private readonly isSubmittingSignal = signal<boolean>(false);
+  private readonly showConfirmationSignal = signal<boolean>(false);
+  private readonly refundAmountSignal = signal<number | null>(null);
+  private readonly cancellationFeesSignal = signal<number | null>(null);
+
+  readonly isSubmitting = this.isSubmittingSignal.asReadonly();
+  readonly showConfirmation = this.showConfirmationSignal.asReadonly();
+  readonly refundAmount = this.refundAmountSignal.asReadonly();
+  readonly cancellationFees = this.cancellationFeesSignal.asReadonly();
+  readonly netRefund = computed(() => {
+    const refund = this.refundAmount();
+    const fees = this.cancellationFees();
+    return refund && fees ? refund - fees : refund;
+  });
+
+  cancellationForm!: FormGroup;
+  confirmationForm!: FormGroup;
+
+  readonly cancellationReasons = [
+    { value: 'change_of_plans', label: 'Cambio de planes' },
+    { value: 'emergency', label: 'Emergencia familiar' },
+    { value: 'work_reasons', label: 'Motivos laborales' },
+    { value: 'health_issues', label: 'Problemas de salud' },
+    { value: 'travel_restrictions', label: 'Restricciones de viaje' },
+    { value: 'financial_reasons', label: 'Motivos económicos' },
+    { value: 'dissatisfaction', label: 'Insatisfacción con el servicio' },
+    { value: 'other', label: 'Otro motivo' }
+  ];
+
+  constructor(
+    public dialogRef: MatDialogRef<BookingCancellationComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: BookingCancellationData
+  ) {}
+
+  ngOnInit(): void {
+    console.log('BookingCancellationComponent inicializado para reserva:', this.data.booking.bookingNumber);
+    this.initializeForms();
+    this.calculateRefundAmount();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForms(): void {
+    this.cancellationForm = this.fb.group({
+      reason: ['', Validators.required],
+      customReason: [''],
+      additionalComments: ['', Validators.maxLength(500)]
+    });
+
+    this.confirmationForm = this.fb.group({
+      acceptCancellationPolicy: [false, Validators.requiredTrue],
+      confirmCancellation: [false, Validators.requiredTrue]
+    });
+
+    this.cancellationForm.get('reason')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(reason => {
+        const customReasonControl = this.cancellationForm.get('customReason');
+        if (reason === 'other') {
+          customReasonControl?.setValidators([Validators.required, Validators.minLength(5)]);
+        } else {
+          customReasonControl?.clearValidators();
+          customReasonControl?.setValue('');
+        }
+        customReasonControl?.updateValueAndValidity();
+      });
+  }
+
+  private calculateRefundAmount(): void {
+    const booking = this.data.booking;
+    const totalPaid = booking.priceBreakdown.total;
+    const checkInDate = new Date(booking.checkInDate);
+    const today = new Date();
+    const daysUntilCheckIn = Math.ceil((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    let refundPercentage = 0;
+    let cancellationFee = 0;
+
+    if (daysUntilCheckIn >= 30) { //agrego más jeje
+      // cancelación con 30+ días de anticipación: reembolso completo
+      refundPercentage = 100;
+      cancellationFee = 0;
+    } else if (daysUntilCheckIn >= 15) {
+      // cancelación con 15-29 días de anticipación: 80% de reembolso
+      refundPercentage = 80;
+      cancellationFee = totalPaid * 0.10; // 10% de tarifa administrativa
+    } else if (daysUntilCheckIn >= 7) {
+      // cancelación con 7-14 días de anticipación: 50% de reembolso
+      refundPercentage = 50;
+      cancellationFee = totalPaid * 0.15; // 15% de tarifa administrativa
+    } else if (daysUntilCheckIn >= 1) {
+      // cancelación con menos de 7 días: 25% de reembolso
+      refundPercentage = 25;
+      cancellationFee = totalPaid * 0.20; // 20% de tarifa administrativa
+    } else {
+      // cancelación el mismo día: sin reembolso
+      refundPercentage = 0;
+      cancellationFee = 0;
+    }
+
+    const refundAmount = (totalPaid * refundPercentage) / 100;
+    
+    this.refundAmountSignal.set(refundAmount);
+    this.cancellationFeesSignal.set(cancellationFee);
+
+    console.log('Cálculo de reembolso:', {
+      totalPaid,
+      daysUntilCheckIn,
+      refundPercentage,
+      refundAmount,
+      cancellationFee,
+      netRefund: refundAmount - cancellationFee
+    });
+  }
+
+  proceedToConfirmation(): void {
+    if (this.cancellationForm.valid) {
+      this.showConfirmationSignal.set(true);
+    }
+  }
+
+  goBackToForm(): void {
+    this.showConfirmationSignal.set(false);
+  }
+
+  submitCancellation(): void {
+    if (!this.canSubmitCancellation()) {
+      return;
+    }
+
+    this.isSubmittingSignal.set(true);
+
+    const formValue = this.cancellationForm.value;
+    const reason = formValue.reason === 'other' ? formValue.customReason : 
+                  this.cancellationReasons.find(r => r.value === formValue.reason)?.label;
+    
+    const cancellationReason = `${reason}${formValue.additionalComments ? ` - ${formValue.additionalComments}` : ''}`;
+
+    console.log('Cancelando reserva:', this.data.booking.id, 'Motivo:', cancellationReason);
+
+    this.bookingService.cancelBooking(this.data.booking.id, cancellationReason)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('Reserva cancelada exitosamente:', response);
+          
+          const result: BookingCancellationResult = {
+            cancelled: true,
+            booking: response.data,
+            reason: cancellationReason
+          };
+
+          this.snackBar.open('Reserva cancelada exitosamente', 'Cerrar', {
+            duration: 3000
+          });
+
+          this.dialogRef.close(result);
+        },
+        error: (error) => {
+          console.error('Error cancelando reserva:', error);
+          this.snackBar.open(
+            error.message || 'Error cancelando la reserva. Inténtelo de nuevo.',
+            'Cerrar',
+            { duration: 5000 }
+          );
+        },
+        complete: () => {
+          this.isSubmittingSignal.set(false);
+        }
+      });
+  }
+
+  canSubmitCancellation(): boolean {
+    return this.cancellationForm.valid && 
+           this.confirmationForm.valid && 
+           !this.isSubmitting();
+  }
+
+  closeDialog(): void {
+    const result: BookingCancellationResult = {
+      cancelled: false
+    };
+    this.dialogRef.close(result);
+  }
+
+  get booking(): Booking {
+    return this.data.booking;
+  }
+
+  get selectedReasonLabel(): string {
+    const reason = this.cancellationForm.get('reason')?.value;
+    if (reason === 'other') {
+      return this.cancellationForm.get('customReason')?.value || 'Motivo personalizado';
+    }
+    return this.cancellationReasons.find(r => r.value === reason)?.label || '';
+  }
+
+  get daysUntilCheckIn(): number {
+    const checkInDate = new Date(this.booking.checkInDate);
+    const today = new Date();
+    return Math.ceil((checkInDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  get isLastMinuteCancellation(): boolean {
+    return this.daysUntilCheckIn < 7;
+  }
+
+  get canBeCancelled(): boolean {
+    return this.booking.status === BookingStatus.CONFIRMED || 
+           this.booking.status === BookingStatus.PENDING;
+  }
+
+  formatDisplayDate(date: Date | string): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('es-CO', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  formatDateRange(): string {
+    const checkIn = this.formatDisplayDate(this.booking.checkInDate);
+    const checkOut = this.formatDisplayDate(this.booking.checkOutDate);
+    return `${checkIn} - ${checkOut}`;
+  }
+}
+<div class="cancellation-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>cancel</mat-icon>
+      Cancelar Reserva
+    </h2>
+    <button mat-icon-button 
+            mat-dialog-close 
+            class="close-button"
+            [disabled]="isSubmitting()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="dialog-content">
+    
+    <mat-card class="booking-summary-card">
+      <mat-card-header>
+        <mat-card-title>Resumen de la reserva</mat-card-title>
+        <mat-card-subtitle>#{{ booking.bookingNumber }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="booking-summary-grid">
+          <div class="summary-item">
+            <mat-icon>hotel</mat-icon>
+            <div class="summary-content">
+              <strong>{{ booking.hotel.name }}</strong>
+              <p>{{ booking.hotel.location }}</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>bed</mat-icon>
+            <div class="summary-content">
+              <strong>{{ booking.room.roomType }}</strong>
+              <p>{{ booking.numberOfGuests }} huésped(es)</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>calendar_today</mat-icon>
+            <div class="summary-content">
+              <strong>{{ formatDateRange() }}</strong>
+              <p>{{ booking.numberOfNights }} noche(s)</p>
+            </div>
+          </div>
+          
+          <div class="summary-item">
+            <mat-icon>payment</mat-icon>
+            <div class="summary-content">
+              <strong>${{ booking.priceBreakdown.total | number:'1.0-0' }}</strong>
+              <p>Total pagado</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div *ngIf="isLastMinuteCancellation" class="warning-banner">
+      <mat-icon>warning</mat-icon>
+      <div class="warning-content">
+        <h4>Cancelación de último momento</h4>
+        <p>Tu reserva tiene check-in en {{ daysUntilCheckIn }} día(s). Las cancelaciones de último momento pueden tener penalidades adicionales.</p>
+      </div>
+    </div>
+
+    <mat-card class="refund-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>monetization_on</mat-icon>
+          Información de reembolso
+        </mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="refund-breakdown">
+          <div class="refund-item">
+            <span>Total pagado:</span>
+            <span class="amount">${{ booking.priceBreakdown.total | number:'1.0-0' }}</span>
+          </div>
+          
+          <div class="refund-item">
+            <span>Reembolso base:</span>
+            <span class="amount">${{ refundAmount() | number:'1.0-0' }}</span>
+          </div>
+          
+          <div *ngIf="cancellationFees()" class="refund-item fees">
+            <span>Tarifa de cancelación:</span>
+            <span class="amount">-${{ cancellationFees() | number:'1.0-0' }}</span>
+          </div>
+          
+          <mat-divider></mat-divider>
+          
+          <div class="refund-item total">
+            <span><strong>Reembolso neto:</strong></span>
+            <span class="amount final"><strong>${{ netRefund() | number:'1.0-0' }}</strong></span>
+          </div>
+        </div>
+        
+        <div class="refund-note">
+          <mat-icon>info</mat-icon>
+          <p>El reembolso se procesará en 5-10 días hábiles a tu método de pago original.</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="form-section" *ngIf="!showConfirmation()">
+      <h3>Motivo de cancelación</h3>
+      
+      <form [formGroup]="cancellationForm" class="cancellation-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>¿Por qué cancelas tu reserva?</mat-label>
+          <mat-select formControlName="reason">
+            <mat-option *ngFor="let reason of cancellationReasons" [value]="reason.value">
+              {{ reason.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="cancellationForm.get('reason')?.hasError('required')">
+            Selecciona un motivo para continuar
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="cancellationForm.get('reason')?.value === 'other'" 
+                        appearance="outline" 
+                        class="full-width">
+          <mat-label>Especifica tu motivo</mat-label>
+          <input matInput formControlName="customReason" placeholder="Describe brevemente el motivo...">
+          <mat-error *ngIf="cancellationForm.get('customReason')?.hasError('required')">
+            Especifica el motivo de cancelación
+          </mat-error>
+          <mat-error *ngIf="cancellationForm.get('customReason')?.hasError('minlength')">
+            El motivo debe tener al menos 5 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Comentarios adicionales (opcional)</mat-label>
+          <textarea matInput 
+                    formControlName="additionalComments" 
+                    rows="3"
+                    placeholder="¿Hay algo más que quieras agregar?"></textarea>
+          <mat-hint align="end">
+            {{ cancellationForm.get('additionalComments')?.value?.length || 0 }}/500
+          </mat-hint>
+          <mat-error *ngIf="cancellationForm.get('additionalComments')?.hasError('maxlength')">
+            Los comentarios no pueden exceder 500 caracteres
+          </mat-error>
+        </mat-form-field>
+      </form>
+    </div>
+
+    <div class="confirmation-section" *ngIf="showConfirmation()">
+      <div class="confirmation-summary">
+        <h3>Confirma la cancelación</h3>
+        
+        <div class="confirmation-details">
+          <p><strong>Motivo:</strong> {{ selectedReasonLabel }}</p>
+          <p *ngIf="cancellationForm.get('additionalComments')?.value">
+            <strong>Comentarios:</strong> {{ cancellationForm.get('additionalComments')?.value }}
+          </p>
+          <p><strong>Reembolso:</strong> ${{ netRefund() | number:'1.0-0' }}</p>
+        </div>
+      </div>
+      
+      <form [formGroup]="confirmationForm" class="confirmation-form">
+        <mat-checkbox formControlName="acceptCancellationPolicy" class="full-width">
+          He leído y acepto las 
+          <a href="/politicas-cancelacion" target="_blank">políticas de cancelación</a>
+        </mat-checkbox>
+        
+        <mat-checkbox formControlName="confirmCancellation" class="full-width">
+          Confirmo que deseo cancelar esta reserva de forma permanente
+        </mat-checkbox>
+      </form>
+      
+      <div class="final-warning">
+        <mat-icon>warning</mat-icon>
+        <p>
+          <strong>¡Atención!</strong> 
+          Esta acción no se puede deshacer. Una vez cancelada, la reserva no podrá ser restaurada.
+        </p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions" align="end">
+    <ng-container *ngIf="!showConfirmation()">
+      <button mat-button 
+              (click)="closeDialog()" 
+              [disabled]="isSubmitting()">
+        Mantener reserva
+      </button>
+      
+      <button mat-raised-button 
+              (click)="proceedToConfirmation()"
+              [disabled]="!cancellationForm.valid || isSubmitting()">
+        <mat-icon>arrow_forward</mat-icon>
+        Continuar
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="showConfirmation()">
+      <button mat-button 
+              (click)="goBackToForm()" 
+              [disabled]="isSubmitting()">
+        <mat-icon>arrow_back</mat-icon>
+        Atrás
+      </button>
+      
+      <button mat-button 
+              (click)="closeDialog()" 
+              [disabled]="isSubmitting()">
+        Cancelar proceso
+      </button>
+      
+      <button mat-raised-button 
+              (click)="submitCancellation()"
+              [disabled]="!canSubmitCancellation()">
+        <mat-spinner *ngIf="isSubmitting()" diameter="20" class="button-spinner"></mat-spinner>
+        <mat-icon *ngIf="!isSubmitting()">delete_forever</mat-icon>
+        {{ isSubmitting() ? 'Cancelando...' : 'Cancelar reserva' }}
+      </button>
+    </ng-container>
+  </mat-dialog-actions>
+</div>
+import { Component, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+
+
+import { BookingService } from '../../core/services/booking.service';
+import { AuthService } from '../../core/services/auth.service';
+
+import { 
+  Booking, 
+  BookingStatus, 
+  PaymentStatus, 
+  BookingSearchParams 
+} from '../../core/models/booking.models';
+
+import { BookingCancellationComponent } from '../booking-cancellation/booking-cancellation.component';
+
+@Component({
+  selector: 'app-booking-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatPaginatorModule,
+    MatTooltipModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
+  templateUrl: './booking-list.component.html',
+  styleUrl: './booking-list.component.scss'
+})
+export class BookingListComponent implements OnInit, OnDestroy {
+
+    readonly PaymentStatus = PaymentStatus;
+  
+  private readonly bookingService = inject(BookingService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
+  private readonly fb = inject(FormBuilder);
+  
+  private destroy$ = new Subject<void>();
+
+  private readonly bookingsSignal = signal<Booking[]>([]);
+  private readonly loadingSignal = signal<boolean>(false);
+  private readonly errorSignal = signal<string | null>(null);
+  private readonly totalBookingsSignal = signal<number>(0);
+  private readonly currentPageSignal = signal<number>(0);
+  private readonly pageSizeSignal = signal<number>(10);
+
+  readonly bookings = this.bookingsSignal.asReadonly();
+  readonly loading = this.loadingSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
+  readonly totalBookings = this.totalBookingsSignal.asReadonly();
+  readonly currentPage = this.currentPageSignal.asReadonly();
+  readonly pageSize = this.pageSizeSignal.asReadonly();
+  readonly hasBookings = computed(() => this.bookings().length > 0);
+  readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+
+  filterForm!: FormGroup;
+
+  readonly bookingStatuses = [
+    { value: '', label: 'Todos los estados' },
+    { value: BookingStatus.PENDING, label: 'Pendiente' },
+    { value: BookingStatus.CONFIRMED, label: 'Confirmada' },
+    { value: BookingStatus.CANCELLED, label: 'Cancelada' },
+    { value: BookingStatus.COMPLETED, label: 'Completada' },
+    { value: BookingStatus.NO_SHOW, label: 'No show' }
+  ];
+
+  readonly paymentStatuses = [
+    { value: '', label: 'Todos los pagos' },
+    { value: PaymentStatus.PENDING, label: 'Pendiente' },
+    { value: PaymentStatus.PAID, label: 'Pagado' },
+    { value: PaymentStatus.REFUNDED, label: 'Reembolsado' },
+    { value: PaymentStatus.FAILED, label: 'Fallido' }
+  ];
+
+  ngOnInit(): void {
+    console.log('BookingListComponent inicializado');
+    
+    if (!this.isAuthenticated()) {
+      this.router.navigate(['/login'], { 
+        queryParams: { returnUrl: '/mis-reservas' } 
+      });
+      return;
+    }
+
+    this.initializeFilterForm();
+    this.setupFilterWatcher();
+    this.loadBookings();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeFilterForm(): void {
+    this.filterForm = this.fb.group({
+      search: [''],
+      status: [''],
+      paymentStatus: [''],
+      dateFrom: [''],
+      dateTo: ['']
+    });
+  }
+
+  private setupFilterWatcher(): void {
+    this.filterForm.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+      .subscribe(() => {
+        this.currentPageSignal.set(0);
+        this.loadBookings();
+      });
+  }
+
+  private loadBookings(): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+
+    const searchParams = this.buildSearchParams();
+
+    this.bookingService.getUserBookings(searchParams)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.bookingsSignal.set(response.bookings);
+          this.totalBookingsSignal.set(response.pagination.total);
+          console.log('Reservas cargadas:', response.bookings.length);
+        },
+        error: (error) => {
+          console.error('Error cargando reservas:', error);
+          this.errorSignal.set(error.message);
+          this.snackBar.open('Error cargando las reservas', 'Cerrar', { 
+            duration: 5000 
+          });
+        },
+        complete: () => {
+          this.loadingSignal.set(false);
+        }
+      });
+  }
+
+  private buildSearchParams(): BookingSearchParams {
+    const formValue = this.filterForm.value;
+    
+    const params: BookingSearchParams = {
+      page: this.currentPage() + 1,
+      limit: this.pageSize()
+    };
+  
+    if (formValue?.search?.trim() && !formValue.search.includes('http')) {
+      params.bookingNumber = formValue.search.trim();
+    }
+  
+    if (formValue?.status) {
+      params.status = formValue.status as BookingStatus;
+    }
+  
+    if (formValue?.dateFrom) {
+      params.dateFrom = this.formatDate(formValue.dateFrom);
+    }
+  
+    if (formValue?.dateTo) {
+      params.dateTo = this.formatDate(formValue.dateTo);
+    }
+  
+    return params;
+  }
+
+  onPageChange(event: PageEvent): void {
+    this.currentPageSignal.set(event.pageIndex);
+    this.pageSizeSignal.set(event.pageSize);
+    this.loadBookings();
+  }
+
+  clearFilters(): void {
+    this.filterForm.reset();
+    this.currentPageSignal.set(0);
+  }
+
+  refreshBookings(): void {
+    this.loadBookings();
+  }
+
+  viewBookingDetails(booking: Booking): void {
+    console.log('Ver detalles de reserva:', booking.bookingNumber);
+  }
+
+  openCancellationDialog(booking: Booking): void {
+    const dialogRef = this.dialog.open(BookingCancellationComponent, {
+      width: '500px',
+      data: { booking }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result?.cancelled) {
+        this.snackBar.open('Reserva cancelada exitosamente', 'Cerrar', {
+          duration: 3000
+        });
+        this.refreshBookings();
+      }
+    });
+  }
+
+  sendBookingConfirmation(booking: Booking): void {
+    this.bookingService.sendBookingConfirmation(booking.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.snackBar.open('Confirmación enviada por email', 'Cerrar', {
+              duration: 3000
+            });
+          }
+        },
+        error: (error) => {
+          console.error('Error enviando confirmación:', error);
+          this.snackBar.open('Error enviando confirmación', 'Cerrar', {
+            duration: 5000
+          });
+        }
+      });
+  }
+
+  canCancelBooking(booking: Booking | null): boolean {
+    if (!booking) return false;
+    
+    if (booking.status === BookingStatus.CANCELLED || 
+        booking.status === BookingStatus.COMPLETED ||
+        booking.status === BookingStatus.NO_SHOW) {
+      return false;
+    }
+  
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const checkInDate = new Date(booking.checkInDate);
+      checkInDate.setHours(0, 0, 0, 0);
+      
+      return checkInDate > today;
+    } catch (error) {
+      console.error('Error checking cancellation eligibility:', error);
+      return false;
+    }
+  }
+
+  canResendConfirmation(booking: Booking): boolean {
+    return booking.status === BookingStatus.CONFIRMED || 
+           booking.status === BookingStatus.PENDING;
+  }
+
+  getStatusLabel(status: BookingStatus): string {
+    const labels = {
+      [BookingStatus.PENDING]: 'Pendiente',
+      [BookingStatus.CONFIRMED]: 'Confirmada',
+      [BookingStatus.CANCELLED]: 'Cancelada',
+      [BookingStatus.COMPLETED]: 'Completada',
+      [BookingStatus.NO_SHOW]: 'No show'
+    };
+    return labels[status] || status;
+  }
+
+  getStatusColor(status: BookingStatus): string {
+    const colors = {
+      [BookingStatus.PENDING]: 'warn',
+      [BookingStatus.CONFIRMED]: 'primary',
+      [BookingStatus.CANCELLED]: 'accent',
+      [BookingStatus.COMPLETED]: 'primary',
+      [BookingStatus.NO_SHOW]: 'warn'
+    };
+    return colors[status] || 'basic';
+  }
+
+  getPaymentStatusLabel(status: PaymentStatus | undefined): string {
+   if (!status) return 'Pendiente';
+   
+   const labels: Record<PaymentStatus, string> = {
+     [PaymentStatus.PENDING]: 'Pendiente',
+     [PaymentStatus.PAID]: 'Pagado',
+     [PaymentStatus.REFUNDED]: 'Reembolsado',
+     [PaymentStatus.FAILED]: 'Fallido'
+   };
+   
+   return labels[status] || 'Desconocido';
+ }
+
+  getPaymentStatusColor(status: PaymentStatus): string {
+    const colors = {
+      [PaymentStatus.PENDING]: 'warn',
+      [PaymentStatus.PAID]: 'primary',
+      [PaymentStatus.REFUNDED]: 'accent',
+      [PaymentStatus.FAILED]: 'warn'
+    };
+    return colors[status] || 'basic';
+  }
+
+  formatDateRange(booking: Booking): string {
+    const checkIn = this.formatDisplayDate(booking.checkInDate);
+    const checkOut = this.formatDisplayDate(booking.checkOutDate);
+    return `${checkIn} - ${checkOut}`;
+  }
+
+  formatDisplayDate(date: Date | string): string {
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    return dateObj.toLocaleDateString('es-CO', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  private formatDate(date: Date | string | null): string {
+    if (!date) return '';
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return dateObj.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  }
+
+  getDaysUntilCheckIn(booking: Booking): number {
+    const today = new Date();
+    const checkIn = new Date(booking.checkInDate);
+    const diffTime = checkIn.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  isUpcomingBooking(booking: Booking): boolean {
+    const daysUntil = this.getDaysUntilCheckIn(booking);
+    return daysUntil >= 0 && daysUntil <= 7 && 
+           booking.status === BookingStatus.CONFIRMED;
+  }
+
+  isPastBooking(booking: Booking): boolean {
+    const today = new Date();
+    const checkOut = new Date(booking.checkOutDate);
+    return checkOut < today;
+  }
+
+  createNewBooking(): void {
+    this.router.navigate(['/reservar']);
+  }
+
+  trackByBookingId(index: number, booking: Booking): string {
+    return booking.id;
+  }
+}
+<div class="booking-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>book_online</mat-icon>
+        Mis Reservas
+      </h1>
+      <button mat-raised-button color="primary" (click)="createNewBooking()">
+        <mat-icon>add</mat-icon>
+        Nueva Reserva
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="filters-form">
+        <div class="filter-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Buscar por número de reserva</mat-label>
+            <input matInput formControlName="search" placeholder="RF12345678">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="status">
+              <mat-option *ngFor="let status of bookingStatuses" [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Desde</mat-label>
+            <input matInput [matDatepicker]="startDatePicker" formControlName="dateFrom">
+            <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #startDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Hasta</mat-label>
+            <input matInput [matDatepicker]="endDatePicker" formControlName="dateTo">
+            <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #endDatePicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-button type="button" (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Limpiar filtros
+          </button>
+          <button mat-button type="button" (click)="refreshBookings()">
+            <mat-icon>refresh</mat-icon>
+            Actualizar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>Cargando reservas...</p>
+  </div>
+
+  <!-- Error State -->
+  <mat-card *ngIf="error() && !loading()" class="error-card">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error_outline</mat-icon>
+        <div class="error-text">
+          <h3>Error cargando reservas</h3>
+          <p>{{ error() }}</p>
+          <button mat-button color="primary" (click)="refreshBookings()">
+            <mat-icon>refresh</mat-icon>
+            Reintentar
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Empty State -->
+  <mat-card *ngIf="!loading() && !error() && !hasBookings()" class="empty-card">
+    <mat-card-content>
+      <div class="empty-content">
+        <mat-icon class="empty-icon">book_online</mat-icon>
+        <h3>No tienes reservas</h3>
+        <p>Cuando realices una reserva, aparecerá aquí</p>
+        <button mat-raised-button color="primary" (click)="createNewBooking()">
+          <mat-icon>add</mat-icon>
+          Crear mi primera reserva
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Bookings List -->
+  <div *ngIf="!loading() && !error() && hasBookings()" class="bookings-list">
+    <mat-card *ngFor="let booking of bookings(); trackBy: trackByBookingId" 
+              class="booking-card" 
+              [class.upcoming]="isUpcomingBooking(booking)"
+              [class.past]="isPastBooking(booking)">
+      
+      <mat-card-header>
+        <div class="booking-header">
+          <div class="booking-number">
+            <strong>#{{ booking.bookingNumber }}</strong>
+            <mat-chip [color]="getStatusColor(booking.status)" selected>
+              {{ getStatusLabel(booking.status) }}
+            </mat-chip>
+          </div>
+          
+          <div class="booking-actions">
+            <button mat-icon-button [matMenuTriggerFor]="bookingMenu" 
+                    [disabled]="loading()">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            
+            <mat-menu #bookingMenu="matMenu">
+              <button mat-menu-item (click)="viewBookingDetails(booking)">
+                <mat-icon>visibility</mat-icon>
+                Ver detalles
+              </button>
+              
+              <button mat-menu-item 
+                      (click)="sendBookingConfirmation(booking)"
+                      [disabled]="!canResendConfirmation(booking)">
+                <mat-icon>email</mat-icon>
+                Reenviar confirmación
+              </button>
+              
+              <mat-divider></mat-divider>
+              
+              <button mat-menu-item 
+                      (click)="openCancellationDialog(booking)"
+                      [disabled]="!canCancelBooking(booking)"
+                      class="cancel-action">
+                <mat-icon color="warn">cancel</mat-icon>
+                Cancelar reserva
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="booking-details">
+          <!-- Hotel Info -->
+          <div class="detail-section">
+            <div class="detail-icon">
+              <mat-icon>hotel</mat-icon>
+            </div>
+            <div class="detail-content">
+              <h4>{{ booking.hotel.name }}</h4>
+              <p class="location">{{ booking.hotel.location }}</p>
+            </div>
+          </div>
+
+          <!-- Room Info -->
+          <div class="detail-section">
+            <div class="detail-icon">
+              <mat-icon>bed</mat-icon>
+            </div>
+            <div class="detail-content">
+              <h4>{{ booking.room.roomType }}</h4>
+              <p>{{ booking.numberOfGuests }} huésped(es) • {{ booking.numberOfNights }} noche(s)</p>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="detail-section">
+            <div class="detail-icon">
+              <mat-icon>calendar_today</mat-icon>
+            </div>
+            <div class="detail-content">
+              <h4>{{ formatDateRange(booking) }}</h4>
+              <p *ngIf="isUpcomingBooking(booking)" class="upcoming-text">
+                <mat-icon inline>access_time</mat-icon>
+                {{ getDaysUntilCheckIn(booking) }} día(s) hasta check-in
+              </p>
+            </div>
+          </div>
+
+          <!-- Payment Info -->
+          <div class="detail-section">
+            <div class="detail-icon">
+              <mat-icon>payment</mat-icon>
+            </div>
+            <div class="detail-content">
+              <h4>${{ booking.priceBreakdown.total | number:'1.0-0' }}</h4>
+              <p>
+                <mat-chip [color]="getPaymentStatusColor(booking.payment?.status || PaymentStatus.PENDING)" 
+                          selected 
+                          class="payment-chip">
+                  {{ getPaymentStatusLabel(booking.payment?.status || PaymentStatus.PENDING) }}
+                </mat-chip>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Info -->
+        <div class="guest-info">
+          <mat-icon>person</mat-icon>
+          <span>{{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</span>
+          <span class="separator">•</span>
+          <span>{{ booking.guestInfo.email }}</span>
+        </div>
+
+        <!-- Special Requests -->
+        <div *ngIf="booking.specialRequests" class="special-requests">
+          <mat-icon>note</mat-icon>
+          <p>{{ booking.specialRequests }}</p>
+        </div>
+
+        <!-- Cancellation Info -->
+        <div *ngIf="booking.cancellation" class="cancellation-info">
+          <mat-icon color="warn">cancel</mat-icon>
+          <div class="cancellation-details">
+            <p><strong>Cancelada el:</strong> {{ formatDisplayDate(booking.cancellation.cancelledAt) }}</p>
+            <p *ngIf="booking.cancellation.reason">
+              <strong>Motivo:</strong> {{ booking.cancellation.reason }}
+            </p>
+            <p *ngIf="booking.cancellation.refundAmount">
+              <strong>Reembolso:</strong> ${{ booking.cancellation.refundAmount | number:'1.0-0' }}
+            </p>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <!-- Quick Actions Footer -->
+      <mat-card-actions class="booking-actions-footer" align="end">
+        <button mat-button (click)="viewBookingDetails(booking)">
+          <mat-icon>visibility</mat-icon>
+          Ver detalles
+        </button>
+        
+        <button mat-button 
+                color="warn" 
+                (click)="openCancellationDialog(booking)"
+                [disabled]="!canCancelBooking(booking)"
+                *ngIf="canCancelBooking(booking)">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator *ngIf="hasBookings() && !loading()"
+                 [length]="totalBookings()"
+                 [pageSize]="pageSize()"
+                 [pageIndex]="currentPage()"
+                 [pageSizeOptions]="[5, 10, 20, 50]"
+                 (page)="onPageChange($event)"
+                 showFirstLastButtons>
+  </mat-paginator>
+</div>
+import { Component, OnInit, inject, computed, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+
+@Component({
+  selector: 'app-header',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
+})
+export class HeaderComponent implements OnInit {
+  // Navigation menu items
+  navigationItems = [
+    { label: 'inicio', route: '/', exact: true },
+    { label: 'hoteles', route: '/hoteles', exact: false }
+  ];
+
+  // Available languages
+  languages = [
+    { code: 'ES', name: 'Español' },
+    { code: 'EN', name: 'English' }
+  ];
+
+  // Available currencies
+  currencies = [
+    { code: 'COP', name: 'Peso Colombiano' },
+    { code: 'USD', name: 'Dólar Americano' }
+  ];
+
+  selectedLanguage = this.languages[0];
+  selectedCurrency = this.currencies[0];
+  isLanguageDropdownOpen = false;
+  isMobileMenuOpen = false;
+
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  readonly isAuthenticated = computed(() => this.authService.isAuthenticated());
+  readonly userInfo = computed(() => this.authService.user());
+
+  ngOnInit(): void {}
+
+  // Language dropdown methods
+  toggleLanguageDropdown(): void {
+    this.isLanguageDropdownOpen = !this.isLanguageDropdownOpen;
+  }
+
+  selectLanguage(language: any): void {
+    this.selectedLanguage = language;
+    this.isLanguageDropdownOpen = false;
+    console.log('Idioma seleccionado:', language);
+  }
+
+  // Currency methods
+  cycleCurrency(): void {
+    const currentIndex = this.currencies.findIndex(c => c.code === this.selectedCurrency.code);
+    const nextIndex = (currentIndex + 1) % this.currencies.length;
+    this.selectedCurrency = this.currencies[nextIndex];
+    console.log('Moneda cambiada a:', this.selectedCurrency);
+  }
+
+  // Mobile menu methods
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
+  // Navigation methods
+  onNavigate(route: string): void {
+    this.closeMobileMenu();
+    this.router.navigate([route]);
+  }
+
+  onLoginClick(): void {
+    if (this.authService.isAuthenticated()) {
+      this.authService.logout();
+    } else {
+      this.authService.login();
+    }
+  }
+
+  // Close dropdowns when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    if (this.isLanguageDropdownOpen) {
+      this.isLanguageDropdownOpen = false;
+    }
+  }
+}
+<header class="header">
+  <div class="header-container">
+    <div class="logo">
+      <a routerLink="/" class="logo-link" (click)="closeMobileMenu()">
+        <div class="logo-icon">
+          <img src="assets/fala-logo.png" alt="El Refugi Fala Logo" class="logo-image">
+        </div>
+        <div class="logo-text">
+          <h1>EL REFUGI</h1>
+          <p>FALA</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Navigation Desktop -->
+    <nav class="navigation hidden-mobile">
+      <a 
+        *ngFor="let item of navigationItems"
+        [routerLink]="item.route" 
+        class="nav-link" 
+        routerLinkActive="active" 
+        [routerLinkActiveOptions]="{exact: item.exact}"
+        (click)="onNavigate(item.route)">
+        {{ item.label }}
+      </a>
+      
+      <a *ngIf="isAuthenticated()" 
+         routerLink="/mis-reservas" 
+         class="nav-link" 
+         routerLinkActive="active">
+        mis reservas
+      </a>
+    </nav>
+
+    <!-- Right side - Language, Currency, User -->
+    <div class="header-right">
+      <!-- Language & Currency -->
+      <div class="locale-info hidden-mobile">
+        <!-- Language Dropdown -->
+        <div class="language-selector" (click)="toggleLanguageDropdown()">
+          <div class="language">
+            <span class="globe-icon">🌐</span>
+            <span>{{ selectedLanguage.code }}</span>
+            <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
+          </div>
+          
+          <!-- Language Dropdown Menu -->
+          <div class="language-dropdown" *ngIf="isLanguageDropdownOpen">
+            <div 
+              *ngFor="let language of languages"
+              class="language-option"
+              [class.selected]="language.code === selectedLanguage.code"
+              (click)="selectLanguage(language); $event.stopPropagation()">
+              {{ language.name }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Currency -->
+        <div class="currency" (click)="cycleCurrency()" title="Cambiar moneda">
+          {{ selectedCurrency.code }}
+        </div>
+      </div>
+      
+      <div *ngIf="isAuthenticated()" class="user-info hidden-mobile">
+        <span class="user-name">{{ userInfo()?.firstName || 'Usuario' }}</span>
+      </div>
+      
+      <!-- Login/Logout Button -->
+      <button 
+        class="login-btn btn-secondary" 
+        (click)="onLoginClick()">
+        {{ isAuthenticated() ? 'cerrar sesión' : 'iniciar sesión' }}
+      </button>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-btn visible-mobile" (click)="toggleMobileMenu()">
+        <span class="hamburger-icon" [class.open]="isMobileMenuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-navigation" [class.open]="isMobileMenuOpen">
+    <div class="mobile-nav-content">
+      <!-- Mobile Navigation Links -->
+      <div class="mobile-nav-links">
+        <a 
+          *ngFor="let item of navigationItems"
+          [routerLink]="item.route" 
+          class="mobile-nav-link" 
+          routerLinkActive="active" 
+          [routerLinkActiveOptions]="{exact: item.exact}"
+          (click)="onNavigate(item.route)">
+          {{ item.label }}
+        </a>
+        
+        <a *ngIf="isAuthenticated()" 
+           routerLink="/mis-reservas" 
+           class="mobile-nav-link" 
+           routerLinkActive="active"
+           (click)="onNavigate('/mis-reservas')">
+          mis reservas
+        </a>
+      </div>
+
+      <!-- Mobile User Info -->
+      <div *ngIf="isAuthenticated()" class="mobile-user-info">
+        <p>Hola, {{ userInfo()?.firstName || 'Usuario' }}</p>
+      </div>
+
+      <!-- Mobile Locale Info -->
+      <div class="mobile-locale-info">
+        <div class="mobile-language" (click)="toggleLanguageDropdown()">
+          <span class="globe-icon">🌐</span>
+          <span>{{ selectedLanguage.name }}</span>
+          <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
+        </div>
+        
+        <div class="mobile-currency" (click)="cycleCurrency()">
+          Moneda: {{ selectedCurrency.code }}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Overlay -->
+  <div 
+    class="mobile-overlay" 
+    *ngIf="isMobileMenuOpen" 
+    (click)="closeMobileMenu()">
+  </div>
+</header>
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-footer',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './footer.component.html',
+  styleUrls: ['./footer.component.scss']
+})
+export class FooterComponent {
+  currentYear: number = new Date().getFullYear();
+  
+  // Contact information
+  contactInfo = {
+    phone: '+57 3197809676',
+    email: 'info@elrefugifala.com',
+    address: 'bogotá, colombia'
+  };
+
+  // Navigation links
+  navigationLinks = [
+    { label: 'inicio', route: '/' },
+    { label: 'hoteles', route: '/hoteles' },
+    { label: 'nosotros', route: '/nosotros' },
+    { label: 'contacto', route: '/contacto' }
+  ];
+
+  // Support links
+  supportLinks = [
+    { label: 'ayuda', route: '/ayuda' },
+    { label: 'términos y condiciones', route: '/terminos' },
+    { label: 'política de privacidad', route: '/privacidad' },
+    { label: 'política de cancelación', route: '/cancelacion' }
+  ];
+
+  // Social media links
+  socialMedia = [
+    { icon: '📘', name: 'Facebook', url: 'https://facebook.com' },
+    { icon: '📷', name: 'Instagram', url: 'https://instagram.com' },
+    { icon: '🐦', name: 'Twitter', url: 'https://twitter.com' },
+    { icon: '💼', name: 'LinkedIn', url: 'https://linkedin.com' }
+  ];
+
+  onNavigate(route: string): void {
+    console.log('Navegando a:', route);
+    // Aquí implementaré la navegación con Router
+  }
+
+  onSocialClick(social: any): void {
+    console.log('Abriendo red social:', social.name);
+    // Aquí abriré la URL en una nueva pestaña
+    // window.open(social.url, '_blank');
+  }
+}
+<footer class="footer">
+  <div class="footer-container">
+    <!-- Main Footer Content -->
+    <div class="footer-grid">
+      <!-- Logo and Description -->
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <div class="logo-icon">
+            <img src="assets/fala-logo.png" alt="El Refugi Fala Logo" class="logo-image">
+          </div>
+          <div class="logo-text">
+            <h4>EL REFUGI FALA</h4>
+          </div>
+        </div>
+        <p class="brand-description">
+          tu refugio perfecto en los destinos más hermosos de colombia.
+          experiencias únicas que recordarás para siempre.
+        </p>
+      </div>
+
+      <!-- Navigation Links Column -->
+      <div class="footer-column">
+        <h5 class="column-title">enlaces</h5>
+        <ul class="footer-links">
+          <li *ngFor="let link of navigationLinks">
+            <span 
+              class="footer-link" 
+              (click)="onNavigate(link.route)">
+              {{ link.label }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Support Links Column -->
+      <div class="footer-column">
+        <h5 class="column-title">soporte</h5>
+        <ul class="footer-links">
+          <li *ngFor="let link of supportLinks">
+            <span 
+              class="footer-link" 
+              (click)="onNavigate(link.route)">
+              {{ link.label }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact Column -->
+      <div class="footer-column">
+        <h5 class="column-title">contacto</h5>
+        <div class="contact-info">
+          <p class="contact-item">
+            <span class="contact-icon">📞</span>
+            {{ contactInfo.phone }}
+          </p>
+          <p class="contact-item">
+            <span class="contact-icon">✉️</span>
+            {{ contactInfo.email }}
+          </p>
+          <p class="contact-item">
+            <span class="contact-icon">📍</span>
+            {{ contactInfo.address }}
+          </p>
+        </div>
+        
+        <!-- Social Media -->
+        <div class="social-media">
+          <h6 class="social-title">síguenos</h6>
+          <div class="social-links">
+            <span 
+              *ngFor="let social of socialMedia"
+              class="social-link" 
+              [title]="social.name"
+              (click)="onSocialClick(social)">
+              {{ social.icon }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="footer-bottom">
+      <div class="bottom-accent"></div>
+      <p class="copyright">
+        &copy; {{ currentYear }} el refugi fala - una app hecha con 🩷 - todos los derechos reservados
+      </p>
+    </div>
+  </div>
+</footer>
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-navigation',
+  imports: [],
+  templateUrl: './navigation.html',
+  styleUrl: './navigation.scss'
+})
+export class Navigation {
+
+}
+<p>navigation works!</p>
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-button',
+  imports: [],
+  templateUrl: './button.html',
+  styleUrl: './button.scss'
+})
+export class Button {
+
+}
+<p>button works!</p>
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-input',
+  imports: [],
+  templateUrl: './input.html',
+  styleUrl: './input.scss'
+})
+export class Input {
+
+}
+<p>input works!</p>
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-loading',
+  imports: [],
+  templateUrl: './loading.html',
+  styleUrl: './loading.scss'
+})
+export class Loading {
+
+}
+<p>loading works!</p>
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-modal',
+  imports: [],
+  templateUrl: './modal.html',
+  styleUrl: './modal.scss'
+})
+export class Modal {
+
+}
+<p>modal works!</p>
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { HeaderComponent } from './shared/layout/header/header.component';
+import { FooterComponent } from './shared/layout/footer/footer.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    RouterOutlet, 
+    HeaderComponent, 
+    FooterComponent
+  ],
+  template: `
+    <div class="app-container">
+      <!-- Header -->
+      <app-header></app-header>
+      
+      <!-- Main Content -->
+      <main class="main-content">
+        <router-outlet></router-outlet>
+      </main>
+      
+      <!-- Footer -->
+      <app-footer></app-footer>
+    </div>
+  `,
+  styles: [`
+    .app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #f8fafc;
+    }
+
+    .main-content {
+      flex: 1;
+    }
+  `]
+})
+export class AppComponent {
+  title = 'el-refugi-fala';
+}
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
+<!-- * * * * * * * to get started with your project! * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+<style>
+  :host {
+    --bright-blue: oklch(51.01% 0.274 263.83);
+    --electric-violet: oklch(53.18% 0.28 296.97);
+    --french-violet: oklch(47.66% 0.246 305.88);
+    --vivid-pink: oklch(69.02% 0.277 332.77);
+    --hot-red: oklch(61.42% 0.238 15.34);
+    --orange-red: oklch(63.32% 0.24 31.68);
+
+    --gray-900: oklch(19.37% 0.006 300.98);
+    --gray-700: oklch(36.98% 0.014 302.71);
+    --gray-400: oklch(70.9% 0.015 304.04);
+
+    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
+      180deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
+      90deg,
+      var(--orange-red) 0%,
+      var(--vivid-pink) 50%,
+      var(--electric-violet) 100%
+    );
+
+    --pill-accent: var(--bright-blue);
+
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    font-size: 3.125rem;
+    color: var(--gray-900);
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.125rem;
+    margin: 0;
+    font-family: "Inter Tight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+      "Segoe UI Symbol";
+  }
+
+  p {
+    margin: 0;
+    color: var(--gray-700);
+  }
+
+  main {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: inherit;
+    position: relative;
+  }
+
+  .angular-logo {
+    max-width: 9.2rem;
+  }
+
+  .content {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 700px;
+    margin-bottom: 3rem;
+  }
+
+  .content h1 {
+    margin-top: 1.75rem;
+  }
+
+  .content p {
+    margin-top: 1.5rem;
+  }
+
+  .divider {
+    width: 1px;
+    background: var(--red-to-pink-to-purple-vertical-gradient);
+    margin-inline: 0.5rem;
+  }
+
+  .pill-group {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    --pill-accent: var(--bright-blue);
+    background: color-mix(in srgb, var(--pill-accent) 5%, transparent);
+    color: var(--pill-accent);
+    padding-inline: 0.75rem;
+    padding-block: 0.375rem;
+    border-radius: 2.75rem;
+    border: 0;
+    transition: background 0.3s ease;
+    font-family: var(--inter-font);
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 1.4rem;
+    letter-spacing: -0.00875rem;
+    text-decoration: none;
+  }
+
+  .pill:hover {
+    background: color-mix(in srgb, var(--pill-accent) 15%, transparent);
+  }
+
+  .pill-group .pill:nth-child(6n + 1) {
+    --pill-accent: var(--bright-blue);
+  }
+  .pill-group .pill:nth-child(6n + 2) {
+    --pill-accent: var(--electric-violet);
+  }
+  .pill-group .pill:nth-child(6n + 3) {
+    --pill-accent: var(--french-violet);
+  }
+
+  .pill-group .pill:nth-child(6n + 4),
+  .pill-group .pill:nth-child(6n + 5),
+  .pill-group .pill:nth-child(6n + 6) {
+    --pill-accent: var(--hot-red);
+  }
+
+  .pill-group svg {
+    margin-inline-start: 0.25rem;
+  }
+
+  .social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.73rem;
+    margin-top: 1.5rem;
+  }
+
+  .social-links path {
+    transition: fill 0.3s ease;
+    fill: var(--gray-400);
+  }
+
+  .social-links a:hover svg path {
+    fill: var(--gray-900);
+  }
+
+  @media screen and (max-width: 650px) {
+    .content {
+      flex-direction: column;
+      width: max-content;
+    }
+
+    .divider {
+      height: 1px;
+      width: 100%;
+      background: var(--red-to-pink-to-purple-horizontal-gradient);
+      margin-block: 1.5rem;
+    }
+  }
+</style>
+
+<main class="main">
+  <div class="content">
+    <div class="left-side">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 982 239"
+        fill="none"
+        class="angular-logo"
+      >
+        <g clip-path="url(#a)">
+          <path
+            fill="url(#b)"
+            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+          />
+          <path
+            fill="url(#c)"
+            d="M388.676 191.625h30.849L363.31 31.828h-35.758l-56.215 159.797h30.848l13.174-39.356h60.061l13.256 39.356Zm-65.461-62.675 21.602-64.311h1.227l21.602 64.311h-44.431Zm126.831-7.527v70.202h-28.23V71.839h27.002v20.374h1.392c2.782-6.71 7.2-12.028 13.255-15.956 6.056-3.927 13.584-5.89 22.503-5.89 8.264 0 15.465 1.8 21.684 5.318 6.137 3.518 10.964 8.673 14.319 15.382 3.437 6.71 5.074 14.81 4.992 24.383v76.175h-28.23v-71.92c0-8.019-2.046-14.237-6.219-18.819-4.173-4.5-9.819-6.791-17.102-6.791-4.91 0-9.328 1.063-13.174 3.272-3.846 2.128-6.792 5.237-9.001 9.328-2.046 4.009-3.191 8.918-3.191 14.728ZM589.233 239c-10.147 0-18.82-1.391-26.103-4.091-7.282-2.7-13.092-6.382-17.511-10.964-4.418-4.582-7.528-9.655-9.164-15.219l25.448-6.136c1.145 2.372 2.782 4.663 4.991 6.954 2.209 2.291 5.155 4.255 8.837 5.81 3.683 1.554 8.428 2.291 14.074 2.291 8.019 0 14.647-1.964 19.884-5.81 5.237-3.845 7.856-10.227 7.856-19.064v-22.665h-1.391c-1.473 2.946-3.601 5.892-6.383 9.001-2.782 3.109-6.464 5.645-10.965 7.691-4.582 2.046-10.228 3.109-17.101 3.109-9.165 0-17.511-2.209-25.039-6.545-7.446-4.337-13.42-10.883-17.757-19.474-4.418-8.673-6.628-19.473-6.628-32.565 0-13.091 2.21-24.301 6.628-33.383 4.419-9.082 10.311-15.955 17.839-20.7 7.528-4.746 15.874-7.037 25.039-7.037 7.037 0 12.846 1.145 17.347 3.518 4.582 2.373 8.182 5.236 10.883 8.51 2.7 3.272 4.746 6.382 6.137 9.327h1.554v-19.8h27.821v121.749c0 10.228-2.454 18.737-7.364 25.447-4.91 6.709-11.538 11.7-20.048 15.055-8.509 3.355-18.165 4.991-28.884 4.991Zm.245-71.266c5.974 0 11.047-1.473 15.302-4.337 4.173-2.945 7.446-7.118 9.573-12.519 2.21-5.482 3.274-12.027 3.274-19.637 0-7.609-1.064-14.155-3.274-19.8-2.127-5.646-5.318-10.064-9.491-13.255-4.174-3.11-9.329-4.746-15.384-4.746s-11.537 1.636-15.792 4.91c-4.173 3.272-7.365 7.772-9.492 13.418-2.128 5.727-3.191 12.191-3.191 19.392 0 7.2 1.063 13.745 3.273 19.228 2.127 5.482 5.318 9.736 9.573 12.764 4.174 3.027 9.41 4.582 15.629 4.582Zm141.56-26.51V71.839h28.23v119.786h-27.412v-21.273h-1.227c-2.7 6.709-7.119 12.191-13.338 16.446-6.137 4.255-13.747 6.382-22.748 6.382-7.855 0-14.81-1.718-20.783-5.237-5.974-3.518-10.72-8.591-14.075-15.382-3.355-6.709-5.073-14.891-5.073-24.464V71.839h28.312v71.921c0 7.609 2.046 13.664 6.219 18.083 4.173 4.5 9.655 6.709 16.365 6.709 4.173 0 8.183-.982 12.111-3.028 3.927-2.045 7.118-5.072 9.655-9.082 2.537-4.091 3.764-9.164 3.764-15.218Zm65.707-109.395v159.796h-28.23V31.828h28.23Zm44.841 162.169c-7.61 0-14.402-1.391-20.457-4.091-6.055-2.7-10.883-6.791-14.32-12.109-3.518-5.319-5.237-11.946-5.237-19.801 0-6.791 1.228-12.355 3.765-16.773 2.536-4.419 5.891-7.937 10.228-10.637 4.337-2.618 9.164-4.664 14.647-6.055 5.4-1.391 11.046-2.373 16.856-3.027 7.037-.737 12.683-1.391 17.102-1.964 4.337-.573 7.528-1.555 9.574-2.782 1.963-1.309 3.027-3.273 3.027-5.973v-.491c0-5.891-1.718-10.391-5.237-13.664-3.518-3.191-8.51-4.828-15.056-4.828-6.955 0-12.356 1.473-16.447 4.5-4.009 3.028-6.71 6.546-8.183 10.719l-26.348-3.764c2.046-7.282 5.483-13.336 10.31-18.328 4.746-4.909 10.638-8.59 17.511-11.045 6.955-2.455 14.565-3.682 22.912-3.682 5.809 0 11.537.654 17.265 2.045s10.965 3.6 15.711 6.71c4.746 3.109 8.51 7.282 11.455 12.6 2.864 5.318 4.337 11.946 4.337 19.883v80.184h-27.166v-16.446h-.9c-1.719 3.355-4.092 6.464-7.201 9.328-3.109 2.864-6.955 5.237-11.619 6.955-4.828 1.718-10.229 2.536-16.529 2.536Zm7.364-20.701c5.646 0 10.556-1.145 14.729-3.354 4.173-2.291 7.364-5.237 9.655-9.001 2.292-3.763 3.355-7.854 3.355-12.273v-14.155c-.9.737-2.373 1.391-4.5 2.046-2.128.654-4.419 1.145-7.037 1.636-2.619.491-5.155.9-7.692 1.227-2.537.328-4.746.655-6.628.901-4.173.572-8.019 1.472-11.292 2.781-3.355 1.31-5.973 3.11-7.855 5.401-1.964 2.291-2.864 5.318-2.864 8.918 0 5.237 1.882 9.164 5.728 11.782 3.682 2.782 8.51 4.091 14.401 4.091Zm64.643 18.328V71.839h27.412v19.965h1.227c2.21-6.955 5.974-12.274 11.292-16.038 5.319-3.763 11.456-5.645 18.329-5.645 1.555 0 3.355.082 5.237.163 1.964.164 3.601.328 4.91.573v25.938c-1.227-.41-3.109-.819-5.646-1.146a58.814 58.814 0 0 0-7.446-.49c-5.155 0-9.738 1.145-13.829 3.354-4.091 2.209-7.282 5.236-9.655 9.164-2.373 3.927-3.519 8.427-3.519 13.5v70.448h-28.312ZM222.077 39.192l-8.019 125.923L137.387 0l84.69 39.192Zm-53.105 162.825-57.933 33.056-57.934-33.056 11.783-28.556h92.301l11.783 28.556ZM111.039 62.675l30.357 73.803H80.681l30.358-73.803ZM7.937 165.115 0 39.192 84.69 0 7.937 165.115Z"
+          />
+        </g>
+        <defs>
+          <radialGradient
+            id="c"
+            cx="0"
+            cy="0"
+            r="1"
+            gradientTransform="rotate(118.122 171.182 60.81) scale(205.794)"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#FF41F8" />
+            <stop offset=".707" stop-color="#FF41F8" stop-opacity=".5" />
+            <stop offset="1" stop-color="#FF41F8" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient
+            id="b"
+            x1="0"
+            x2="982"
+            y1="192"
+            y2="192"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop stop-color="#F0060B" />
+            <stop offset="0" stop-color="#F0070C" />
+            <stop offset=".526" stop-color="#CC26D5" />
+            <stop offset="1" stop-color="#7702FF" />
+          </linearGradient>
+          <clipPath id="a"><path fill="#fff" d="M0 0h982v239H0z" /></clipPath>
+        </defs>
+      </svg>
+      <h1>Hello, {{ title() }}</h1>
+      <p>Congratulations! Your app is running. 🎉</p>
+    </div>
+    <div class="divider" role="separator" aria-label="Divider"></div>
+    <div class="right-side">
+      <div class="pill-group">
+        @for (item of [
+          { title: 'Explore the Docs', link: 'https://angular.dev' },
+          { title: 'Learn with Tutorials', link: 'https://angular.dev/tutorials' },
+          { title: 'Prompt and best practices for AI', link: 'https://angular.dev/ai/develop-with-ai'},
+          { title: 'CLI Docs', link: 'https://angular.dev/tools/cli' },
+          { title: 'Angular Language Service', link: 'https://angular.dev/tools/language-service' },
+          { title: 'Angular DevTools', link: 'https://angular.dev/tools/devtools' },
+        ]; track item.title) {
+          <a
+            class="pill"
+            [href]="item.link"
+            target="_blank"
+            rel="noopener"
+          >
+            <span>{{ item.title }}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="14"
+              viewBox="0 -960 960 960"
+              width="14"
+              fill="currentColor"
+            >
+              <path
+                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z"
+              />
+            </svg>
+          </a>
+        }
+      </div>
+      <div class="social-links">
+        <a
+          href="https://github.com/angular/angular"
+          aria-label="Github"
+          target="_blank"
+          rel="noopener"
+        >
+          <svg
+            width="25"
+            height="24"
+            viewBox="0 0 25 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            alt="Github"
+          >
+            <path
+              d="M12.3047 0C5.50634 0 0 5.50942 0 12.3047C0 17.7423 3.52529 22.3535 8.41332 23.9787C9.02856 24.0946 9.25414 23.7142 9.25414 23.3871C9.25414 23.0949 9.24389 22.3207 9.23876 21.2953C5.81601 22.0377 5.09414 19.6444 5.09414 19.6444C4.53427 18.2243 3.72524 17.8449 3.72524 17.8449C2.61064 17.082 3.81137 17.0973 3.81137 17.0973C5.04697 17.1835 5.69604 18.3647 5.69604 18.3647C6.79321 20.2463 8.57636 19.7029 9.27978 19.3881C9.39052 18.5924 9.70736 18.0499 10.0591 17.7423C7.32641 17.4347 4.45429 16.3765 4.45429 11.6618C4.45429 10.3185 4.9311 9.22133 5.72065 8.36C5.58222 8.04931 5.16694 6.79833 5.82831 5.10337C5.82831 5.10337 6.85883 4.77319 9.2121 6.36459C10.1965 6.09082 11.2424 5.95546 12.2883 5.94931C13.3342 5.95546 14.3801 6.09082 15.3644 6.36459C17.7023 4.77319 18.7328 5.10337 18.7328 5.10337C19.3942 6.79833 18.9789 8.04931 18.8559 8.36C19.6403 9.22133 20.1171 10.3185 20.1171 11.6618C20.1171 16.3888 17.2409 17.4296 14.5031 17.7321C14.9338 18.1012 15.3337 18.8559 15.3337 20.0084C15.3337 21.6552 15.3183 22.978 15.3183 23.3779C15.3183 23.7009 15.5336 24.0854 16.1642 23.9623C21.0871 22.3484 24.6094 17.7341 24.6094 12.3047C24.6094 5.50942 19.0999 0 12.3047 0Z"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://twitter.com/angular"
+          aria-label="Twitter"
+          target="_blank"
+          rel="noopener"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            alt="Twitter"
+          >
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+            />
+          </svg>
+        </a>
+        <a
+          href="https://www.youtube.com/channel/UCbn1OgGei-DV7aSRo_HaAiw"
+          aria-label="Youtube"
+          target="_blank"
+          rel="noopener"
+        >
+          <svg
+            width="29"
+            height="20"
+            viewBox="0 0 29 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            alt="Youtube"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M27.4896 1.52422C27.9301 1.96749 28.2463 2.51866 28.4068 3.12258C29.0004 5.35161 29.0004 10 29.0004 10C29.0004 10 29.0004 14.6484 28.4068 16.8774C28.2463 17.4813 27.9301 18.0325 27.4896 18.4758C27.0492 18.9191 26.5 19.2389 25.8972 19.4032C23.6778 20 14.8068 20 14.8068 20C14.8068 20 5.93586 20 3.71651 19.4032C3.11363 19.2389 2.56449 18.9191 2.12405 18.4758C1.68361 18.0325 1.36732 17.4813 1.20683 16.8774C0.613281 14.6484 0.613281 10 0.613281 10C0.613281 10 0.613281 5.35161 1.20683 3.12258C1.36732 2.51866 1.68361 1.96749 2.12405 1.52422C2.56449 1.08095 3.11363 0.76113 3.71651 0.596774C5.93586 0 14.8068 0 14.8068 0C14.8068 0 23.6778 0 25.8972 0.596774C26.5 0.76113 27.0492 1.08095 27.4896 1.52422ZM19.3229 10L11.9036 5.77905V14.221L19.3229 10Z"
+            />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+
+
+<router-outlet />
+import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
+
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
+  },
+  
+  {
+    path: 'hoteles',
+    loadComponent: () => import('./pages/hotels/hotels.component').then(m => m.HotelsComponent)
+  },
+
+  {
+    path: 'hotel/:id/rooms',
+    loadComponent: () => import('./features/hotels/hotel-rooms/hotel.rooms.component').then(m => m.HotelRoomsComponent)
+  },
+
+  
+  {
+    path: 'booking',
+    loadComponent: () => import('./pages/booking/booking.component').then(m => m.BookingComponent),
+    canActivate: [AuthGuard],
+    canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true]
+  },
+
+  {
+    path: 'mis-reservas',
+    loadComponent: () => import('./pages/booking-list/booking-list.component').then(m => m.BookingListComponent),
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: 'booking/confirmation/:id',
+    loadComponent: () => import('./features/booking/booking-confirmation/booking-confirmation.component')
+      .then(m => m.BookingConfirmationComponent),
+    canActivate: [AuthGuard]
+  },
+
+  {
+    path: '**',
+    redirectTo: ''
+  }
+];
