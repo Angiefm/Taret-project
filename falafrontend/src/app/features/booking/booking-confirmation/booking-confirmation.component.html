@@ -1,73 +1,77 @@
-@defer (on viewport) {
-  <div class="booking-confirmation" *ngIf="bookingResponseReadonly()?.success && bookingResponseReadonly()?.data as booking">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>🎉 ¡Reserva confirmada!</mat-card-title>
-        <mat-card-subtitle>Número de reserva: <b>{{ booking.bookingNumber }}</b></mat-card-subtitle>
-      </mat-card-header>
+<div class="booking-confirmation" *ngIf="bookingResponseReadonly()?.success && bookingResponseReadonly()?.data as booking">
+  <mat-card class="booking-confirmation__card">
+    
+    <mat-card-header class="booking-confirmation__header">
+      <mat-card-title class="booking-confirmation__title">🎉 ¡Reserva confirmada!</mat-card-title>
+      <mat-card-subtitle class="booking-confirmation__subtitle">
+        Número de reserva: <b>{{ booking.bookingNumber }}</b>
+      </mat-card-subtitle>
+    </mat-card-header>
 
-      <mat-card-content>
-        <!-- Hotel y habitación -->
-        <section>
-          <h3>{{ booking.hotel.name }}</h3>
-          <p>{{ booking.hotel.location }}</p>
-          <p>Habitación: {{ booking.room.roomType }} ({{ booking.room.bedDetails }})</p>
-          <p>Capacidad: {{ booking.room.capacity }} huéspedes</p>
-        </section>
+    <mat-card-content class="booking-confirmation__content">
+      <!-- Hotel y habitación -->
+      <section class="booking-confirmation__section booking-confirmation__section--hotel">
+        <h3 class="booking-confirmation__hotel-name">{{ booking.hotel.name }}</h3>
+        <p class="booking-confirmation__hotel-location">{{ booking.hotel.location }}</p>
+        <p class="booking-confirmation__room">
+          Habitación: {{ booking.room.roomType }} ({{ booking.room.bedDetails }})
+        </p>
+        <p class="booking-confirmation__capacity">
+          Capacidad: {{ booking.room.capacity }} huéspedes
+        </p>
+      </section>
 
-        <mat-divider></mat-divider>
+      <mat-divider class="booking-confirmation__divider"></mat-divider>
 
-        <!-- Fechas -->
-        <section>
-          <p><b>Check-In:</b> {{ booking.checkInDate | date:'fullDate' }}</p>
-          <p><b>Check-Out:</b> {{ booking.checkOutDate | date:'fullDate' }}</p>
-          <p><b>Noches:</b> {{ booking.numberOfNights }}</p>
-          <p><b>Huéspedes:</b> {{ booking.numberOfGuests }}</p>
-        </section>
+      <!-- Fechas -->
+      <section class="booking-confirmation__section booking-confirmation__section--dates">
+        <p class="booking-confirmation__date"><b>Check-In:</b> {{ booking.checkInDate | date:'fullDate' }}</p>
+        <p class="booking-confirmation__date"><b>Check-Out:</b> {{ booking.checkOutDate | date:'fullDate' }}</p>
+        <p class="booking-confirmation__nights"><b>Noches:</b> {{ booking.numberOfNights }}</p>
+        <p class="booking-confirmation__guests"><b>Huéspedes:</b> {{ booking.numberOfGuests }}</p>
+      </section>
 
-        <mat-divider></mat-divider>
+      <mat-divider class="booking-confirmation__divider"></mat-divider>
 
-        <!-- Precios -->
-        <section>
-          <p><b>Tarifa habitación:</b> {{ booking.priceBreakdown.subtotal | currency:'COP' }}</p>
-          <p><b>Impuestos:</b> {{ booking.priceBreakdown.taxes | currency:'COP' }}</p>
-          <p><b>Tarifas:</b> {{ booking.priceBreakdown.fees | currency:'COP' }}</p>
-          <h3>Total: {{ booking.priceBreakdown.total | currency:'COP' }}</h3>
-        </section>
+      <!-- Precios -->
+      <section class="booking-confirmation__section booking-confirmation__section--prices">
+        <p class="booking-confirmation__price"><b>Tarifa habitación:</b> {{ booking.priceBreakdown.subtotal | currency:'COP' }}</p>
+        <p class="booking-confirmation__price"><b>Impuestos:</b> {{ booking.priceBreakdown.taxes | currency:'COP' }}</p>
+        <p class="booking-confirmation__price"><b>Tarifas:</b> {{ booking.priceBreakdown.fees | currency:'COP' }}</p>
+        <h3 class="booking-confirmation__total">Total: {{ booking.priceBreakdown.total | currency:'COP' }}</h3>
+      </section>
 
-        <mat-divider></mat-divider>
+      <mat-divider class="booking-confirmation__divider"></mat-divider>
 
-        <!-- Huésped -->
-        <section>
-          <p><b>Nombre:</b> {{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</p>
-          <p><b>Email:</b> {{ booking.guestInfo.email }}</p>
-          <p><b>Teléfono:</b> {{ booking.guestInfo.phone }}</p>
-          <p *ngIf="booking.specialRequests"><b>Petición especial:</b> {{ booking.specialRequests }}</p>
-        </section>
-      </mat-card-content>
-
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="goToMyBookings()">Ver mis reservas</button>
-        <button mat-button (click)="goToHome()">Volver al inicio</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-} @placeholder {
-  <p>preparando confirmación de la reserva...</p>
-} @loading {
-  <p>cargando detalles de la reserva...</p>
-} @error {
-  <p>no se pudo cargar la confirmación.</p>
-}
-
-<div *ngIf="!bookingResponseReadonly()?.success && bookingResponseReadonly()">
-  <mat-card>
-    <mat-card-title>Error</mat-card-title>
-    <mat-card-content>
-      <p>{{ bookingResponseReadonly()?.message || 'No se pudo confirmar la reserva.' }}</p>
+      <!-- Huésped -->
+      <section class="booking-confirmation__section booking-confirmation__section--guest">
+        <p class="booking-confirmation__guest"><b>Nombre:</b> {{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</p>
+        <p class="booking-confirmation__guest"><b>Email:</b> {{ booking.guestInfo.email }}</p>
+        <p class="booking-confirmation__guest"><b>Teléfono:</b> {{ booking.guestInfo.phone }}</p>
+        <p *ngIf="booking.specialRequests" class="booking-confirmation__guest-request">
+          <b>Petición especial:</b> {{ booking.specialRequests }}
+        </p>
+      </section>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-button (click)="goToHome()">Volver al inicio</button>
+
+    <mat-card-actions class="booking-confirmation__actions">
+      <button mat-raised-button color="primary" class="booking-confirmation__btn booking-confirmation__btn--primary" (click)="goToMyBookings()">Ver mis reservas</button>
+      <button mat-button class="booking-confirmation__btn booking-confirmation__btn--secondary" (click)="goToHome()">Volver al inicio</button>
+    </mat-card-actions>
+  </mat-card>
+</div>
+
+<!-- Estado de error -->
+<div class="booking-confirmation booking-confirmation--error" *ngIf="!bookingResponseReadonly()?.success && bookingResponseReadonly()">
+  <mat-card class="booking-confirmation__card">
+    <mat-card-title class="booking-confirmation__title">Error</mat-card-title>
+    <mat-card-content class="booking-confirmation__content">
+      <p class="booking-confirmation__message">
+        {{ bookingResponseReadonly()?.message || 'No se pudo confirmar la reserva.' }}
+      </p>
+    </mat-card-content>
+    <mat-card-actions class="booking-confirmation__actions">
+      <button mat-button class="booking-confirmation__btn booking-confirmation__btn--secondary" (click)="goToHome()">Volver al inicio</button>
     </mat-card-actions>
   </mat-card>
 </div>

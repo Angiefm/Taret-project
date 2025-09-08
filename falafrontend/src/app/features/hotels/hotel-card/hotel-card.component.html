@@ -1,19 +1,19 @@
 <div class="hotel-card">
   <!-- placeholder de imagen del hotel -->
-  <div class="image-container">
-    <div class="image-placeholder">
-      <div class="placeholder-content">
-        <div class="placeholder-icon"></div>
-        <p>imagen del hotel</p>
+  <div class="hotel-card__image">
+    <div class="hotel-card__image-placeholder">
+      <div class="hotel-card__placeholder-content">
+        <div class="hotel-card__placeholder-icon"></div>
+        <p class="hotel-card__placeholder-text">imagen del hotel</p>
       </div>
     </div>
     
     <!-- badge de rating -->
-    <div class="rating-badge">
-      <span class="star">⭐</span>
-      <span class="rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
+    <div class="hotel-card__rating-badge">
+      <span class="hotel-card__star">⭐</span>
+      <span class="hotel-card__rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
     </div>
-  </div>
+</div>
 
   <!-- información del hotel -->
   <div class="hotel-info">
