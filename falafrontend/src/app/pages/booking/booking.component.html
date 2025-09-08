@@ -1,4 +1,3 @@
-<!-- src/app/pages/booking/booking.component.html -->
 <div class="booking-container">
   <div class="booking-header">
     <h1 class="booking-title">
@@ -27,36 +26,44 @@
                 <mat-label>Nombre</mat-label>
                 <input matInput formControlName="firstName" placeholder="Ingrese su nombre">
                 <mat-icon matSuffix>person</mat-icon>
-                <mat-error *ngIf="guestForm.get('firstName')?.invalid && guestForm.get('firstName')?.touched">
-                  El nombre es requerido (mín. 2 caracteres)
-                </mat-error>
+                @if (guestForm.get('firstName')?.invalid && guestForm.get('firstName')?.touched) {
+                  <mat-error>
+                    El nombre es requerido (mín. 2 caracteres)
+                  </mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Apellido</mat-label>
                 <input matInput formControlName="lastName" placeholder="Ingrese su apellido">
                 <mat-icon matSuffix>person_outline</mat-icon>
-                <mat-error *ngIf="guestForm.get('lastName')?.invalid && guestForm.get('lastName')?.touched">
-                  El apellido es requerido (mín. 2 caracteres)
-                </mat-error>
+                @if (guestForm.get('lastName')?.invalid && guestForm.get('lastName')?.touched) {
+                  <mat-error>
+                    El apellido es requerido (mín. 2 caracteres)
+                  </mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Teléfono</mat-label>
                 <input matInput formControlName="phone" placeholder="+57 300 123 4567">
                 <mat-icon matSuffix>phone</mat-icon>
-                <mat-error *ngIf="guestForm.get('phone')?.invalid && guestForm.get('phone')?.touched">
-                  Teléfono inválido o requerido
-                </mat-error>
+                @if (guestForm.get('phone')?.invalid && guestForm.get('phone')?.touched) {
+                  <mat-error>
+                    Teléfono inválido o requerido
+                  </mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline">
                 <mat-label>Correo Electrónico</mat-label>
                 <input matInput formControlName="email" type="email" placeholder="ejemplo@correo.com">
                 <mat-icon matSuffix>email</mat-icon>
-                <mat-error *ngIf="guestForm.get('email')?.invalid && guestForm.get('email')?.touched">
-                  Email inválido o requerido
-                </mat-error>
+                @if (guestForm.get('email')?.invalid && guestForm.get('email')?.touched) {
+                  <mat-error>
+                    Email inválido o requerido
+                  </mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="full-width">
@@ -77,7 +84,6 @@
         </form>
       </mat-step>
 
-
       <!-- Paso Confirmación -->
       <mat-step label="Confirmación">
         @defer (on viewport) {
@@ -94,7 +100,9 @@
                   <p><strong>Nombre:</strong> {{ guestForm.get('firstName')?.value }} {{ guestForm.get('lastName')?.value }}</p>
                   <p><strong>Teléfono:</strong> {{ guestForm.get('phone')?.value }}</p>
                   <p><strong>Email:</strong> {{ guestForm.get('email')?.value }}</p>
-                  <p *ngIf="guestForm.get('requests')?.value"><strong>Solicitudes:</strong> {{ guestForm.get('requests')?.value }}</p>
+                  @if (guestForm.get('requests')?.value) {
+                    <p><strong>Solicitudes:</strong> {{ guestForm.get('requests')?.value }}</p>
+                  }
                 </div>
       
                 <div class="booking-info">
@@ -121,9 +129,13 @@
                 Anterior
               </button>
               <button mat-raised-button color="primary" (click)="submitBooking()" [disabled]="!canSubmit() || isSubmitting()">
-                <mat-icon *ngIf="!isSubmitting()">done</mat-icon>
-                <span *ngIf="!isSubmitting()">Confirmar Reserva</span>
-                <mat-spinner *ngIf="isSubmitting()" diameter="20"></mat-spinner>
+                @if (!isSubmitting()) {
+                  <mat-icon>done</mat-icon>
+                  <span>Confirmar Reserva</span>
+                }
+                @if (isSubmitting()) {
+                  <mat-spinner diameter="20"></mat-spinner>
+                }
               </button>
             </div>
           </div>
@@ -140,7 +152,7 @@
   </div>
 
   <!-- Dialog de éxito -->
-  <ng-container *ngIf="showSuccessDialog()">
+  @if (showSuccessDialog()) {
     <div class="success-overlay" (click)="closeSuccessDialog()">
       <div class="success-dialog" (click)="$event.stopPropagation()">
         <div class="success-content">
@@ -154,5 +166,5 @@
         </div>
       </div>
     </div>
-  </ng-container>
+  }
 </div>

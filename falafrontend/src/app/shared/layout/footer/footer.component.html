@@ -22,13 +22,15 @@
       <div class="footer-column">
         <h5 class="column-title">enlaces</h5>
         <ul class="footer-links">
-          <li *ngFor="let link of navigationLinks">
-            <span 
-              class="footer-link" 
-              (click)="onNavigate(link.route)">
-              {{ link.label }}
-            </span>
-          </li>
+          @for (link of navigationLinks; track link.route) {
+            <li>
+              <span 
+                class="footer-link" 
+                (click)="onNavigate(link.route)">
+                {{ link.label }}
+              </span>
+            </li>
+          }
         </ul>
       </div>
 
@@ -36,13 +38,15 @@
       <div class="footer-column">
         <h5 class="column-title">soporte</h5>
         <ul class="footer-links">
-          <li *ngFor="let link of supportLinks">
-            <span 
-              class="footer-link" 
-              (click)="onNavigate(link.route)">
-              {{ link.label }}
-            </span>
-          </li>
+          @for (link of supportLinks; track link.route) {
+            <li>
+              <span 
+                class="footer-link" 
+                (click)="onNavigate(link.route)">
+                {{ link.label }}
+              </span>
+            </li>
+          }
         </ul>
       </div>
 
@@ -68,13 +72,14 @@
         <div class="social-media">
           <h6 class="social-title">síguenos</h6>
           <div class="social-links">
-            <span 
-              *ngFor="let social of socialMedia"
-              class="social-link" 
-              [title]="social.name"
-              (click)="onSocialClick(social)">
-              {{ social.icon }}
-            </span>
+            @for (social of socialMedia; track social.name) {
+              <span 
+                class="social-link" 
+                [title]="social.name"
+                (click)="onSocialClick(social)">
+                {{ social.icon }}
+              </span>
+            }
           </div>
         </div>
       </div>

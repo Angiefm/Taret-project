@@ -12,7 +12,6 @@
     <div class="rating-badge">
       <span class="star">⭐</span>
       <span class="rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
-
     </div>
   </div>
 
@@ -33,13 +32,18 @@
 
     <!-- amenidades -->
     <div class="amenities">
-      <div class="amenity-tag" *ngFor="let amenity of getDisplayAmenities()">
-        <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
-        <span class="amenity-text">{{ amenity }}</span>
-      </div>
-      <span *ngIf="hotel.amenities.length > 3" class="more-amenities">
-        +{{ hotel.amenities.length - 3 }} más
-      </span>
+      @for (amenity of getDisplayAmenities(); track amenity) {
+        <div class="amenity-tag">
+          <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
+          <span class="amenity-text">{{ amenity }}</span>
+        </div>
+      }
+
+      @if (hotel.amenities.length > 3) {
+        <span class="more-amenities">
+          +{{ hotel.amenities.length - 3 }} más
+        </span>
+      }
     </div>
 
     <div class="hotel-stats">
@@ -56,18 +60,15 @@
     <!-- precio y botones de acción -->
     <div class="bottom-section">
       <div class="price-section">
-  <span class="price" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0; else sinPrecio">
-    {{ hotel.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
-  </span>
-  <span class="price-period" *ngIf="hotel.minPrice !== undefined && hotel.minPrice > 0">
-    / noche desde
-  </span>
-
-  <ng-template #sinPrecio>
-    <span class="price muted">consulta precio</span>
-  </ng-template>
-</div>
-
+        @if (hotel.minPrice !== undefined && hotel.minPrice > 0) {
+          <span class="price">
+            {{ hotel.minPrice | currency:'COP':'symbol-narrow':'1.0-0' }}
+          </span>
+          <span class="price-period">/ noche desde</span>
+        } @else {
+          <span class="price muted">consulta precio</span>
+        }
+      </div>
       
       <div class="action-buttons">
         <button 

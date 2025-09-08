@@ -12,16 +12,17 @@
 
     <!-- Search Form -->
     <div class="search-form">
-      <div *ngIf="error" class="error-message">
-        <span class="error-icon">⚠️</span>
-        <span class="error-text">{{ error }}</span>
-        <button 
-          *ngIf="isConnectionError()" 
-          class="retry-btn"
-          (click)="onReloadHotels()">
-          🔄 reintentar
-        </button>
-      </div>
+      @if (error) {
+        <div class="error-message">
+          <span class="error-icon">⚠️</span>
+          <span class="error-text">{{ error }}</span>
+          @if (isConnectionError()) {
+            <button class="retry-btn" (click)="onReloadHotels()">
+              🔄 reintentar
+            </button>
+          }
+        </div>
+      }
 
       <div class="search-grid">
         <!-- Destination -->
@@ -94,8 +95,12 @@
           class="search-btn" 
           (click)="onSearch()"
           [disabled]="loading">
-          <span class="search-icon" *ngIf="!loading">🔍</span>
-          <div class="loading-spinner-sm" *ngIf="loading"></div>
+          @if (!loading) {
+            <span class="search-icon">🔍</span>
+          }
+          @if (loading) {
+            <div class="loading-spinner-sm"></div>
+          }
           <span>{{ loading ? 'buscando...' : 'buscar hoteles' }}</span>
         </button>
 
@@ -129,44 +134,57 @@
     </div>
 
     <!-- Hotels Grid -->
-    <div class="hotels-grid" *ngIf="!loading && featuredHotels.length > 0">
-      <app-hotel-card
-        *ngFor="let hotel of featuredHotels"
-        [hotel]="hotel"
-        (viewRoomsClicked)="onViewHotelRooms($event)">
-      </app-hotel-card>
-    </div>
+    @if (!loading && featuredHotels.length > 0) {
+      <div class="hotels-grid">
+        @for (hotel of featuredHotels; track hotel.id) {
+          <app-hotel-card
+            [hotel]="hotel"
+            (viewRoomsClicked)="onViewHotelRooms($event)">
+          </app-hotel-card>
+        }
+      </div>
+    }
 
     <!-- Loading State -->
-    <div *ngIf="loading" class="loading-state">
-      <div class="loading-spinner"></div>
-      <p>{{ searchCriteria.destination ? 'buscando hoteles en ' + searchCriteria.destination + '...' : 'cargando hoteles...' }}</p>
-    </div>
+    @if (loading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>{{ searchCriteria.destination ? 'buscando hoteles en ' + searchCriteria.destination + '...' : 'cargando hoteles...' }}</p>
+      </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="!loading && featuredHotels.length === 0 && !error" class="empty-state">
-      <div class="empty-icon">🏨</div>
-      <h3>no se encontraron hoteles</h3>
-      <p *ngIf="searchCriteria.destination">
-        no hay hoteles disponibles en <strong>{{ searchCriteria.destination }}</strong> 
-        con los criterios seleccionados
-      </p>
-      <p *ngIf="!searchCriteria.destination">
-        no hay hoteles disponibles en este momento
-      </p>
-      <button class="retry-btn" (click)="onClearSearch()">
-        🔄 ver todos los hoteles
-      </button>
-    </div>
+    @if (!loading && featuredHotels.length === 0 && !error) {
+      <div class="empty-state">
+        <div class="empty-icon">🏨</div>
+        <h3>no se encontraron hoteles</h3>
+        @if (searchCriteria.destination) {
+          <p>
+            no hay hoteles disponibles en <strong>{{ searchCriteria.destination }}</strong> 
+            con los criterios seleccionados
+          </p>
+        }
+        @if (!searchCriteria.destination) {
+          <p>
+            no hay hoteles disponibles en este momento
+          </p>
+        }
+        <button class="retry-btn" (click)="onClearSearch()">
+          🔄 ver todos los hoteles
+        </button>
+      </div>
+    }
 
     <!-- Error State -->
-    <div *ngIf="!loading && error && featuredHotels.length === 0" class="error-state">
-      <div class="error-icon">❌</div>
-      <h3>oops! algo salió mal</h3>
-      <p>{{ error }}</p>
-      <button class="retry-btn" (click)="onReloadHotels()">
-        🔄 reintentar
-      </button>
-    </div>
+    @if (!loading && error && featuredHotels.length === 0) {
+      <div class="error-state">
+        <div class="error-icon">❌</div>
+        <h3>oops! algo salió mal</h3>
+        <p>{{ error }}</p>
+        <button class="retry-btn" (click)="onReloadHotels()">
+          🔄 reintentar
+        </button>
+      </div>
+    }
   </div>
 </section>

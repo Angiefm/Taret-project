@@ -27,9 +27,11 @@
           <mat-form-field appearance="outline">
             <mat-label>Estado</mat-label>
             <mat-select formControlName="status">
-              <mat-option *ngFor="let status of bookingStatuses" [value]="status.value">
-                {{ status.label }}
-              </mat-option>
+              @for (status of bookingStatuses; track status.value) {
+                <mat-option [value]="status.value">
+                  {{ status.label }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
 
@@ -63,203 +65,220 @@
   </mat-card>
 
   <!-- Loading State -->
-  <div *ngIf="loading()" class="loading-container">
-    <mat-spinner></mat-spinner>
-    <p>Cargando reservas...</p>
-  </div>
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Cargando reservas...</p>
+    </div>
+  }
 
   <!-- Error State -->
-  <mat-card *ngIf="error() && !loading()" class="error-card">
-    <mat-card-content>
-      <div class="error-content">
-        <mat-icon color="warn">error_outline</mat-icon>
-        <div class="error-text">
-          <h3>Error cargando reservas</h3>
-          <p>{{ error() }}</p>
-          <button mat-button color="primary" (click)="refreshBookings()">
-            <mat-icon>refresh</mat-icon>
-            Reintentar
-          </button>
-        </div>
-      </div>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Empty State -->
-  <mat-card *ngIf="!loading() && !error() && !hasBookings()" class="empty-card">
-    <mat-card-content>
-      <div class="empty-content">
-        <mat-icon class="empty-icon">book_online</mat-icon>
-        <h3>No tienes reservas</h3>
-        <p>Cuando realices una reserva, aparecerá aquí</p>
-        <button mat-raised-button color="primary" (click)="createNewBooking()">
-          <mat-icon>add</mat-icon>
-          Crear mi primera reserva
-        </button>
-      </div>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- Bookings List -->
-  <div *ngIf="!loading() && !error() && hasBookings()" class="bookings-list">
-    <mat-card *ngFor="let booking of bookings(); trackBy: trackByBookingId" 
-              class="booking-card" 
-              [class.upcoming]="isUpcomingBooking(booking)"
-              [class.past]="isPastBooking(booking)">
-      
-      <mat-card-header>
-        <div class="booking-header">
-          <div class="booking-number">
-            <strong>#{{ booking.bookingNumber }}</strong>
-            <mat-chip [color]="getStatusColor(booking.status)" selected>
-              {{ getStatusLabel(booking.status) }}
-            </mat-chip>
-          </div>
-          
-          <div class="booking-actions">
-            <button mat-icon-button [matMenuTriggerFor]="bookingMenu" 
-                    [disabled]="loading()">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            
-            <mat-menu #bookingMenu="matMenu">
-              <button mat-menu-item (click)="viewBookingDetails(booking)">
-                <mat-icon>visibility</mat-icon>
-                Ver detalles
-              </button>
-              
-              <button mat-menu-item 
-                      (click)="sendBookingConfirmation(booking)"
-                      [disabled]="!canResendConfirmation(booking)">
-                <mat-icon>email</mat-icon>
-                Reenviar confirmación
-              </button>
-              
-              <mat-divider></mat-divider>
-              
-              <button mat-menu-item 
-                      (click)="openCancellationDialog(booking)"
-                      [disabled]="!canCancelBooking(booking)"
-                      class="cancel-action">
-                <mat-icon color="warn">cancel</mat-icon>
-                Cancelar reserva
-              </button>
-            </mat-menu>
-          </div>
-        </div>
-      </mat-card-header>
-
+  @if (error() && !loading()) {
+    <mat-card class="error-card">
       <mat-card-content>
-        <div class="booking-details">
-          <!-- Hotel Info -->
-          <div class="detail-section">
-            <div class="detail-icon">
-              <mat-icon>hotel</mat-icon>
-            </div>
-            <div class="detail-content">
-              <h4>{{ booking.hotel.name }}</h4>
-              <p class="location">{{ booking.hotel.location }}</p>
-            </div>
-          </div>
-
-          <!-- Room Info -->
-          <div class="detail-section">
-            <div class="detail-icon">
-              <mat-icon>bed</mat-icon>
-            </div>
-            <div class="detail-content">
-              <h4>{{ booking.room.roomType }}</h4>
-              <p>{{ booking.numberOfGuests }} huésped(es) • {{ booking.numberOfNights }} noche(s)</p>
-            </div>
-          </div>
-
-          <!-- Dates -->
-          <div class="detail-section">
-            <div class="detail-icon">
-              <mat-icon>calendar_today</mat-icon>
-            </div>
-            <div class="detail-content">
-              <h4>{{ formatDateRange(booking) }}</h4>
-              <p *ngIf="isUpcomingBooking(booking)" class="upcoming-text">
-                <mat-icon inline>access_time</mat-icon>
-                {{ getDaysUntilCheckIn(booking) }} día(s) hasta check-in
-              </p>
-            </div>
-          </div>
-
-          <!-- Payment Info -->
-          <div class="detail-section">
-            <div class="detail-icon">
-              <mat-icon>payment</mat-icon>
-            </div>
-            <div class="detail-content">
-              <h4>${{ booking.priceBreakdown.total | number:'1.0-0' }}</h4>
-              <p>
-                <mat-chip [color]="getPaymentStatusColor(booking.payment?.status || PaymentStatus.PENDING)" 
-                          selected 
-                          class="payment-chip">
-                  {{ getPaymentStatusLabel(booking.payment?.status || PaymentStatus.PENDING) }}
-                </mat-chip>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Guest Info -->
-        <div class="guest-info">
-          <mat-icon>person</mat-icon>
-          <span>{{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</span>
-          <span class="separator">•</span>
-          <span>{{ booking.guestInfo.email }}</span>
-        </div>
-
-        <!-- Special Requests -->
-        <div *ngIf="booking.specialRequests" class="special-requests">
-          <mat-icon>note</mat-icon>
-          <p>{{ booking.specialRequests }}</p>
-        </div>
-
-        <!-- Cancellation Info -->
-        <div *ngIf="booking.cancellation" class="cancellation-info">
-          <mat-icon color="warn">cancel</mat-icon>
-          <div class="cancellation-details">
-            <p><strong>Cancelada el:</strong> {{ formatDisplayDate(booking.cancellation.cancelledAt) }}</p>
-            <p *ngIf="booking.cancellation.reason">
-              <strong>Motivo:</strong> {{ booking.cancellation.reason }}
-            </p>
-            <p *ngIf="booking.cancellation.refundAmount">
-              <strong>Reembolso:</strong> ${{ booking.cancellation.refundAmount | number:'1.0-0' }}
-            </p>
+        <div class="error-content">
+          <mat-icon color="warn">error_outline</mat-icon>
+          <div class="error-text">
+            <h3>Error cargando reservas</h3>
+            <p>{{ error() }}</p>
+            <button mat-button color="primary" (click)="refreshBookings()">
+              <mat-icon>refresh</mat-icon>
+              Reintentar
+            </button>
           </div>
         </div>
       </mat-card-content>
-
-      <!-- Quick Actions Footer -->
-      <mat-card-actions class="booking-actions-footer" align="end">
-        <button mat-button (click)="viewBookingDetails(booking)">
-          <mat-icon>visibility</mat-icon>
-          Ver detalles
-        </button>
-        
-        <button mat-button 
-                color="warn" 
-                (click)="openCancellationDialog(booking)"
-                [disabled]="!canCancelBooking(booking)"
-                *ngIf="canCancelBooking(booking)">
-          <mat-icon>cancel</mat-icon>
-          Cancelar
-        </button>
-      </mat-card-actions>
     </mat-card>
-  </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && !hasBookings()) {
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <div class="empty-content">
+          <mat-icon class="empty-icon">book_online</mat-icon>
+          <h3>No tienes reservas</h3>
+          <p>Cuando realices una reserva, aparecerá aquí</p>
+          <button mat-raised-button color="primary" (click)="createNewBooking()">
+            <mat-icon>add</mat-icon>
+            Crear mi primera reserva
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <!-- Bookings List -->
+  @if (!loading() && !error() && hasBookings()) {
+    <div class="bookings-list">
+      @for (booking of bookings(); track booking.id) {
+        <mat-card class="booking-card" 
+                  [class.upcoming]="isUpcomingBooking(booking)"
+                  [class.past]="isPastBooking(booking)">
+        
+          <mat-card-header>
+            <div class="booking-header">
+              <div class="booking-number">
+                <strong>#{{ booking.bookingNumber }}</strong>
+                <mat-chip [color]="getStatusColor(booking.status)" selected>
+                  {{ getStatusLabel(booking.status) }}
+                </mat-chip>
+              </div>
+              
+              <div class="booking-actions">
+                <button mat-icon-button [matMenuTriggerFor]="bookingMenu" 
+                        [disabled]="loading()">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                
+                <mat-menu #bookingMenu="matMenu">
+                  <button mat-menu-item (click)="viewBookingDetails(booking)">
+                    <mat-icon>visibility</mat-icon>
+                    Ver detalles
+                  </button>
+                  
+                  <button mat-menu-item 
+                          (click)="sendBookingConfirmation(booking)"
+                          [disabled]="!canResendConfirmation(booking)">
+                    <mat-icon>email</mat-icon>
+                    Reenviar confirmación
+                  </button>
+                  
+                  <mat-divider></mat-divider>
+                  
+                  <button mat-menu-item 
+                          (click)="openCancellationDialog(booking)"
+                          [disabled]="!canCancelBooking(booking)"
+                          class="cancel-action">
+                    <mat-icon color="warn">cancel</mat-icon>
+                    Cancelar reserva
+                  </button>
+                </mat-menu>
+              </div>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="booking-details">
+              <!-- Hotel Info -->
+              <div class="detail-section">
+                <div class="detail-icon">
+                  <mat-icon>hotel</mat-icon>
+                </div>
+                <div class="detail-content">
+                  <h4>{{ booking.hotel.name }}</h4>
+                  <p class="location">{{ booking.hotel.location }}</p>
+                </div>
+              </div>
+
+              <!-- Room Info -->
+              <div class="detail-section">
+                <div class="detail-icon">
+                  <mat-icon>bed</mat-icon>
+                </div>
+                <div class="detail-content">
+                  <h4>{{ booking.room.roomType }}</h4>
+                  <p>{{ booking.numberOfGuests }} huésped(es) • {{ booking.numberOfNights }} noche(s)</p>
+                </div>
+              </div>
+
+              <!-- Dates -->
+              <div class="detail-section">
+                <div class="detail-icon">
+                  <mat-icon>calendar_today</mat-icon>
+                </div>
+                <div class="detail-content">
+                  <h4>{{ formatDateRange(booking) }}</h4>
+                  @if (isUpcomingBooking(booking)) {
+                    <p class="upcoming-text">
+                      <mat-icon inline>access_time</mat-icon>
+                      {{ getDaysUntilCheckIn(booking) }} día(s) hasta check-in
+                    </p>
+                  }
+                </div>
+              </div>
+
+              <!-- Payment Info -->
+              <div class="detail-section">
+                <div class="detail-icon">
+                  <mat-icon>payment</mat-icon>
+                </div>
+                <div class="detail-content">
+                  <h4>${{ booking.priceBreakdown.total | number:'1.0-0' }}</h4>
+                  <p>
+                    <mat-chip [color]="getPaymentStatusColor(booking.payment?.status || PaymentStatus.PENDING)" 
+                              selected 
+                              class="payment-chip">
+                      {{ getPaymentStatusLabel(booking.payment?.status || PaymentStatus.PENDING) }}
+                    </mat-chip>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Guest Info -->
+            <div class="guest-info">
+              <mat-icon>person</mat-icon>
+              <span>{{ booking.guestInfo.firstName }} {{ booking.guestInfo.lastName }}</span>
+              <span class="separator">•</span>
+              <span>{{ booking.guestInfo.email }}</span>
+            </div>
+
+            <!-- Special Requests -->
+            @if (booking.specialRequests) {
+              <div class="special-requests">
+                <mat-icon>note</mat-icon>
+                <p>{{ booking.specialRequests }}</p>
+              </div>
+            }
+
+            <!-- Cancellation Info -->
+            @if (booking.cancellation) {
+              <div class="cancellation-info">
+                <mat-icon color="warn">cancel</mat-icon>
+                <div class="cancellation-details">
+                  <p><strong>Cancelada el:</strong> {{ formatDisplayDate(booking.cancellation.cancelledAt) }}</p>
+                  @if (booking.cancellation.reason) {
+                    <p><strong>Motivo:</strong> {{ booking.cancellation.reason }}</p>
+                  }
+                  @if (booking.cancellation.refundAmount) {
+                    <p><strong>Reembolso:</strong> ${{ booking.cancellation.refundAmount | number:'1.0-0' }}</p>
+                  }
+                </div>
+              </div>
+            }
+          </mat-card-content>
+
+          <!-- Quick Actions Footer -->
+          <mat-card-actions class="booking-actions-footer" align="end">
+            <button mat-button (click)="viewBookingDetails(booking)">
+              <mat-icon>visibility</mat-icon>
+              Ver detalles
+            </button>
+            
+            @if (canCancelBooking(booking)) {
+              <button mat-button 
+                      color="warn" 
+                      (click)="openCancellationDialog(booking)">
+                <mat-icon>cancel</mat-icon>
+                Cancelar
+              </button>
+            }
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
 
   <!-- Pagination -->
-  <mat-paginator *ngIf="hasBookings() && !loading()"
-                 [length]="totalBookings()"
-                 [pageSize]="pageSize()"
-                 [pageIndex]="currentPage()"
-                 [pageSizeOptions]="[5, 10, 20, 50]"
-                 (page)="onPageChange($event)"
-                 showFirstLastButtons>
-  </mat-paginator>
+  @if (hasBookings() && !loading()) {
+    <mat-paginator [length]="totalBookings()"
+                   [pageSize]="pageSize()"
+                   [pageIndex]="currentPage()"
+                   [pageSizeOptions]="[5, 10, 20, 50]"
+                   (page)="onPageChange($event)"
+                   showFirstLastButtons>
+    </mat-paginator>
+  }
 </div>
+

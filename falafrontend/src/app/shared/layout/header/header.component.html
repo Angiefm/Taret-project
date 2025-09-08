@@ -14,22 +14,25 @@
 
     <!-- Navigation Desktop -->
     <nav class="navigation hidden-mobile">
-      <a 
-        *ngFor="let item of navigationItems"
-        [routerLink]="item.route" 
-        class="nav-link" 
-        routerLinkActive="active" 
-        [routerLinkActiveOptions]="{exact: item.exact}"
-        (click)="onNavigate(item.route)">
-        {{ item.label }}
-      </a>
-      
-      <a *ngIf="isAuthenticated()" 
-         routerLink="/mis-reservas" 
-         class="nav-link" 
-         routerLinkActive="active">
-        mis reservas
-      </a>
+      @for (item of navigationItems; track item.route) {
+        <a 
+          [routerLink]="item.route" 
+          class="nav-link" 
+          routerLinkActive="active" 
+          [routerLinkActiveOptions]="{exact: item.exact}"
+          (click)="onNavigate(item.route)">
+          {{ item.label }}
+        </a>
+      }
+
+      @if (isAuthenticated()) {
+        <a 
+          routerLink="/mis-reservas" 
+          class="nav-link" 
+          routerLinkActive="active">
+          mis reservas
+        </a>
+      }
     </nav>
 
     <!-- Right side - Language, Currency, User -->
@@ -45,15 +48,18 @@
           </div>
           
           <!-- Language Dropdown Menu -->
-          <div class="language-dropdown" *ngIf="isLanguageDropdownOpen">
-            <div 
-              *ngFor="let language of languages"
-              class="language-option"
-              [class.selected]="language.code === selectedLanguage.code"
-              (click)="selectLanguage(language); $event.stopPropagation()">
-              {{ language.name }}
+          @if (isLanguageDropdownOpen) {
+            <div class="language-dropdown">
+              @for (language of languages; track language.code) {
+                <div 
+                  class="language-option"
+                  [class.selected]="language.code === selectedLanguage.code"
+                  (click)="selectLanguage(language); $event.stopPropagation()">
+                  {{ language.name }}
+                </div>
+              }
             </div>
-          </div>
+          }
         </div>
 
         <!-- Currency -->
@@ -62,9 +68,11 @@
         </div>
       </div>
       
-      <div *ngIf="isAuthenticated()" class="user-info hidden-mobile">
-        <span class="user-name">{{ userInfo()?.firstName || 'Usuario' }}</span>
-      </div>
+      @if (isAuthenticated()) {
+        <div class="user-info hidden-mobile">
+          <span class="user-name">{{ userInfo()?.firstName || 'Usuario' }}</span>
+        </div>
+      }
       
       <!-- Login/Logout Button -->
       <button 
@@ -89,29 +97,34 @@
     <div class="mobile-nav-content">
       <!-- Mobile Navigation Links -->
       <div class="mobile-nav-links">
-        <a 
-          *ngFor="let item of navigationItems"
-          [routerLink]="item.route" 
-          class="mobile-nav-link" 
-          routerLinkActive="active" 
-          [routerLinkActiveOptions]="{exact: item.exact}"
-          (click)="onNavigate(item.route)">
-          {{ item.label }}
-        </a>
+        @for (item of navigationItems; track item.route) {
+          <a 
+            [routerLink]="item.route" 
+            class="mobile-nav-link" 
+            routerLinkActive="active" 
+            [routerLinkActiveOptions]="{exact: item.exact}"
+            (click)="onNavigate(item.route)">
+            {{ item.label }}
+          </a>
+        }
         
-        <a *ngIf="isAuthenticated()" 
-           routerLink="/mis-reservas" 
-           class="mobile-nav-link" 
-           routerLinkActive="active"
-           (click)="onNavigate('/mis-reservas')">
-          mis reservas
-        </a>
+        @if (isAuthenticated()) {
+          <a 
+            routerLink="/mis-reservas" 
+            class="mobile-nav-link" 
+            routerLinkActive="active"
+            (click)="onNavigate('/mis-reservas')">
+            mis reservas
+          </a>
+        }
       </div>
 
       <!-- Mobile User Info -->
-      <div *ngIf="isAuthenticated()" class="mobile-user-info">
-        <p>Hola, {{ userInfo()?.firstName || 'Usuario' }}</p>
-      </div>
+      @if (isAuthenticated()) {
+        <div class="mobile-user-info">
+          <p>Hola, {{ userInfo()?.firstName || 'Usuario' }}</p>
+        </div>
+      }
 
       <!-- Mobile Locale Info -->
       <div class="mobile-locale-info">
@@ -129,9 +142,10 @@
   </nav>
 
   <!-- Mobile Overlay -->
-  <div 
-    class="mobile-overlay" 
-    *ngIf="isMobileMenuOpen" 
-    (click)="closeMobileMenu()">
-  </div>
+  @if (isMobileMenuOpen) {
+    <div 
+      class="mobile-overlay" 
+      (click)="closeMobileMenu()">
+    </div>
+  }
 </header>

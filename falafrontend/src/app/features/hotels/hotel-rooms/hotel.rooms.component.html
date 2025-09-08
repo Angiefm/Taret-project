@@ -1,219 +1,251 @@
 <div class="hotel-rooms-container">
   <!-- encabezado del hotel -->
-  <div class="hotel-header" *ngIf="hotel() && !loading()">
-    <div class="hotel-info">
-      <h1 class="hotel-title">{{ hotel()?.name }}</h1>
-      <p class="hotel-location">
-        <span class="location-icon">📍</span>
-        {{ hotel()?.location }}
-      </p>
-      <!-- resumen de busqueda -->
-      <div class="search-summary" *ngIf="searchCriteria.checkIn && searchCriteria.checkOut">
-        <p class="search-dates">
-          <span class="date-icon">📅</span>
-          {{ formatDateRange() }} • {{ calculateNights() }} noche(s) • {{ searchCriteria.guests }} huésped(es)
+  @if (hotel() && !loading()) {
+    <div class="hotel-header">
+      <div class="hotel-info">
+        <h1 class="hotel-title">{{ hotel()?.name }}</h1>
+        <p class="hotel-location">
+          <span class="location-icon">📍</span>
+          {{ hotel()?.location }}
         </p>
+        <!-- resumen de busqueda -->
+        @if (searchCriteria.checkIn && searchCriteria.checkOut) {
+          <div class="search-summary">
+            <p class="search-dates">
+              <span class="date-icon">📅</span>
+              {{ formatDateRange() }} • {{ calculateNights() }} noche(s) • {{ searchCriteria.guests }} huésped(es)
+            </p>
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 
   <!-- filtros de habitaciones -->
-  <div class="room-filters" *ngIf="!loading()">
-    <h3>filtrar habitaciones</h3>
-    
-    <form class="filters-form">
-      <!-- filtro tipo de habitacion -->
-      <div class="filter-group">
-        <label class="filter-label">tipo</label>
-        <div class="filter-wrapper">
-          <span class="filter-icon">🏨</span>
-          <select class="filter-select" 
-                  [(ngModel)]="roomTypeFilter" 
-                  (change)="onFilterChange()"
-                  name="roomType">
-            <option *ngFor="let type of roomTypes" [value]="type.value">
-              {{ type.label }}
-            </option>
-          </select>
+  @if (!loading()) {
+    <div class="room-filters">
+      <h3>filtrar habitaciones</h3>
+      
+      <form class="filters-form">
+        <!-- filtro tipo de habitacion -->
+        <div class="filter-group">
+          <label class="filter-label">tipo</label>
+          <div class="filter-wrapper">
+            <span class="filter-icon">🏨</span>
+            <select class="filter-select" 
+                    [(ngModel)]="roomTypeFilter" 
+                    (change)="onFilterChange()"
+                    name="roomType">
+              @for (type of roomTypes; track type.value) {
+                <option [value]="type.value">
+                  {{ type.label }}
+                </option>
+              }
+            </select>
+          </div>
         </div>
-      </div>
 
-      <!-- filtro precio minimo -->
-      <div class="filter-group">
-        <label class="filter-label">precio mínimo</label>
-        <div class="filter-wrapper">
-          <span class="filter-icon">💰</span>
-          <input type="number" 
-                 class="filter-input"
-                 [(ngModel)]="priceFilter.min" 
-                 (change)="onFilterChange()"
-                 placeholder="0"
-                 name="minPrice">
+        <!-- filtro precio minimo -->
+        <div class="filter-group">
+          <label class="filter-label">precio mínimo</label>
+          <div class="filter-wrapper">
+            <span class="filter-icon">💰</span>
+            <input type="number" 
+                   class="filter-input"
+                   [(ngModel)]="priceFilter.min" 
+                   (change)="onFilterChange()"
+                   placeholder="0"
+                   name="minPrice">
+          </div>
         </div>
-      </div>
 
-      <!-- filtro precio maximo -->
-      <div class="filter-group">
-        <label class="filter-label">precio máximo</label>
-        <div class="filter-wrapper">
-          <span class="filter-icon">💳</span>
-          <input type="number" 
-                 class="filter-input"
-                 [(ngModel)]="priceFilter.max" 
-                 (change)="onFilterChange()"
-                 placeholder="300000"
-                 name="maxPrice">
+        <!-- filtro precio maximo -->
+        <div class="filter-group">
+          <label class="filter-label">precio máximo</label>
+          <div class="filter-wrapper">
+            <span class="filter-icon">💳</span>
+            <input type="number" 
+                   class="filter-input"
+                   [(ngModel)]="priceFilter.max" 
+                   (change)="onFilterChange()"
+                   placeholder="300000"
+                   name="maxPrice">
+          </div>
         </div>
-      </div>
 
-      <!-- botones de accion -->
-      <div class="filter-actions">
-        <button type="button" 
-                class="btn btn-ghost" 
-                (click)="clearFilters()">
-          <span>🗑️</span>
-          <span>limpiar</span>
-        </button>
-      </div>
-    </form>
+        <!-- botones de accion -->
+        <div class="filter-actions">
+          <button type="button" 
+                  class="btn btn-ghost" 
+                  (click)="clearFilters()">
+            <span>🗑️</span>
+            <span>limpiar</span>
+          </button>
+        </div>
+      </form>
 
-    <!-- conteo de resultados -->
-    <p class="results-count">
-      mostrando {{ filteredRooms().length }} de {{ rooms().length }} habitaciones
-    </p>
-  </div>
+      <!-- conteo de resultados -->
+      <p class="results-count">
+        mostrando {{ filteredRooms().length }} de {{ rooms().length }} habitaciones
+      </p>
+    </div>
+  }
 
   <!-- estado cargando -->
-  <div *ngIf="loading()" class="loading-state">
-    <div class="loading-spinner"></div>
-    <p>cargando habitaciones disponibles...</p>
-  </div>
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>cargando habitaciones disponibles...</p>
+    </div>
+  }
 
   <!-- estado error -->
-  <div *ngIf="error() && !loading()" class="error-state">
-    <div class="error-icon">❌</div>
-    <h3>oops! algo salio mal</h3>
-    <p>{{ error() }}</p>
-    <button class="btn btn-primary" (click)="onRetryLoad()">
-      🔄 reintentar
-    </button>
-  </div>
+  @if (error() && !loading()) {
+    <div class="error-state">
+      <div class="error-icon">❌</div>
+      <h3>oops! algo salio mal</h3>
+      <p>{{ error() }}</p>
+      <button class="btn btn-primary" (click)="onRetryLoad()">
+        🔄 reintentar
+      </button>
+    </div>
+  }
 
   <!-- estado sin resultados filtrados -->
-  <div *ngIf="!loading() && !error() && filteredRooms().length === 0 && rooms().length > 0" class="empty-rooms">
-    <div class="empty-icon">🔍</div>
-    <h3>no hay habitaciones con esos filtros</h3>
-    <p>intenta ajustar los criterios de busqueda</p>
-    <button class="btn btn-primary" (click)="clearFilters()">
-      🗑️ ver todas las habitaciones
-    </button>
-  </div>
+  @if (!loading() && !error() && filteredRooms().length === 0 && rooms().length > 0) {
+    <div class="empty-rooms">
+      <div class="empty-icon">🔍</div>
+      <h3>no hay habitaciones con esos filtros</h3>
+      <p>intenta ajustar los criterios de busqueda</p>
+      <button class="btn btn-primary" (click)="clearFilters()">
+        🗑️ ver todas las habitaciones
+      </button>
+    </div>
+  }
 
   <!-- estado sin habitaciones -->
-  <div *ngIf="!loading() && !error() && rooms().length === 0" class="no-rooms">
-    <div class="empty-icon">🏨</div>
-    <h3>no hay habitaciones disponibles</h3>
-    <p *ngIf="searchCriteria.checkIn && searchCriteria.checkOut">
-      no hay habitaciones disponibles para las fechas seleccionadas
-    </p>
-    <p *ngIf="!searchCriteria.checkIn || !searchCriteria.checkOut">
-      este hotel no tiene habitaciones disponibles
-    </p>
-    <button class="btn btn-primary" (click)="goToHome()">
-      🏠 buscar otros hoteles
-    </button>
-  </div>
+  @if (!loading() && !error() && rooms().length === 0) {
+    <div class="no-rooms">
+      <div class="empty-icon">🏨</div>
+      <h3>no hay habitaciones disponibles</h3>
+      @if (searchCriteria.checkIn && searchCriteria.checkOut) {
+        <p>
+          no hay habitaciones disponibles para las fechas seleccionadas
+        </p>
+      } @else {
+        <p>
+          este hotel no tiene habitaciones disponibles
+        </p>
+      }
+      <button class="btn btn-primary" (click)="goToHome()">
+        🏠 buscar otros hoteles
+      </button>
+    </div>
+  }
 
   <!-- grid de habitaciones -->
   @defer (on viewport) {
-    <div class="rooms-grid" *ngIf="!loading() && !error() && filteredRooms().length > 0">
-      <div *ngFor="let room of filteredRooms()" class="room-card">
-        
-        <!-- imagen habitacion -->
-        <div class="room-image">
-          <div class="image-placeholder">
-            <div class="placeholder-content">
-              <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
-              <p>imagen de habitacion</p>
-            </div>
-          </div>
-          
-          <!-- badge habitacion -->
-          <div class="room-badge">
-            <span>{{ room.roomType }}</span>
-          </div>
-        </div>
-  
-        <!-- contenido habitacion -->
-        <div class="room-content">
-          <!-- header -->
-          <div class="room-header">
-            <h4 class="room-title">{{ room.roomType }}</h4>
-            <div class="room-capacity">
-              <span class="capacity-icon">👤</span>
-              <span>{{ room.capacity }} huésped(es)</span>
-            </div>
-          </div>
-  
-          <!-- detalles habitacion -->
-          <div class="room-details">
-            <p class="bed-details" *ngIf="room.bedDetails">
-              <span class="bed-icon">🛏️</span>
-              {{ room.bedDetails }}
-            </p>
-          </div>
-  
-          <!-- amenidades -->
-          <div class="room-amenities" *ngIf="room.amenities && room.amenities.length > 0">
-            <div class="amenity-tag" *ngFor="let amenity of room.amenities.slice(0, 4)">
-              <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
-              <span class="amenity-text">{{ amenity }}</span>
-            </div>
-            <span *ngIf="room.amenities.length > 4" class="more-amenities">
-              +{{ room.amenities.length - 4 }} más
-            </span>
-          </div>
-  
-          <!-- footer habitacion -->
-          <div class="room-footer">
-            <div class="price-section">
-              <div class="price-info">
-                <span class="price">{{ formatPrice(room.pricePerNight) }}</span>
-                <span class="price-period">/ noche</span>
+    @if (!loading() && !error() && filteredRooms().length > 0) {
+      <div class="rooms-grid">
+        @for (room of filteredRooms(); track room.id) {
+          <div class="room-card">
+            
+            <!-- imagen habitacion -->
+            <div class="room-image">
+              <div class="image-placeholder">
+                <div class="placeholder-content">
+                  <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
+                  <p>imagen de habitacion</p>
+                </div>
               </div>
-              <div *ngIf="searchCriteria.checkIn && searchCriteria.checkOut" class="total-price">
-                <span class="total-label">total {{ calculateNights() }} noche(s):</span>
-                <span class="total-amount">{{ formatPrice(room.pricePerNight * calculateNights()) }}</span>
+              
+              <!-- badge habitacion -->
+              <div class="room-badge">
+                <span>{{ room.roomType }}</span>
               </div>
             </div>
-  
-            <div class="room-actions">
-              <button class="btn btn-primary room-book-btn" 
-                      (click)="onBookRoom(room)"
-                      [attr.aria-label]="'reservar habitacion ' + room.roomType">
-                <span class="btn-icon">📝</span>
-                <span>reservar</span>
-              </button>
+    
+            <!-- contenido habitacion -->
+            <div class="room-content">
+              <!-- header -->
+              <div class="room-header">
+                <h4 class="room-title">{{ room.roomType }}</h4>
+                <div class="room-capacity">
+                  <span class="capacity-icon">👤</span>
+                  <span>{{ room.capacity }} huésped(es)</span>
+                </div>
+              </div>
+    
+              <!-- detalles habitacion -->
+              @if (room.bedDetails) {
+                <div class="room-details">
+                  <p class="bed-details">
+                    <span class="bed-icon">🛏️</span>
+                    {{ room.bedDetails }}
+                  </p>
+                </div>
+              }
+    
+              <!-- amenidades -->
+              @if (room.amenities && room.amenities.length > 0) {
+                <div class="room-amenities">
+                  @for (amenity of room.amenities.slice(0, 4); track amenity) {
+                    <div class="amenity-tag">
+                      <span class="amenity-icon">{{ getAmenityIcon(amenity) }}</span>
+                      <span class="amenity-text">{{ amenity }}</span>
+                    </div>
+                  }
+                  @if (room.amenities.length > 4) {
+                    <span class="more-amenities">
+                      +{{ room.amenities.length - 4 }} más
+                    </span>
+                  }
+                </div>
+              }
+    
+              <!-- footer habitacion -->
+              <div class="room-footer">
+                <div class="price-section">
+                  <div class="price-info">
+                    <span class="price">{{ formatPrice(room.pricePerNight) }}</span>
+                    <span class="price-period">/ noche</span>
+                  </div>
+                  @if (searchCriteria.checkIn && searchCriteria.checkOut) {
+                    <div class="total-price">
+                      <span class="total-label">total {{ calculateNights() }} noche(s):</span>
+                      <span class="total-amount">{{ formatPrice(room.pricePerNight * calculateNights()) }}</span>
+                    </div>
+                  }
+                </div>
+    
+                <div class="room-actions">
+                  <button class="btn btn-primary room-book-btn" 
+                          (click)="onBookRoom(room)"
+                          [attr.aria-label]="'reservar habitacion ' + room.roomType">
+                    <span class="btn-icon">📝</span>
+                    <span>reservar</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        }
       </div>
-    </div>
+    }
   } @placeholder {
-    <!-- lo que se muestra antes de activar el defer -->
     <p>las habitaciones aparecerán en breve...</p>
   } @loading {
-    <!-- lo que se muestra después del trigger mientras carga -->
     <p>cargando habitaciones...</p>
   } @error {
-    <!-- lo que se muestra si falla -->
     <p>no se pudo cargar la lista de habitaciones.</p>
   }
 
   <!-- boton volver a hoteles -->
-  <div class="back-section" *ngIf="!loading()">
-    <button class="btn btn-ghost" (click)="goBackToHotels()">
-      <span>← volver a hoteles</span>
-    </button>
-  </div>
+  @if (!loading()) {
+    <div class="back-section">
+      <button class="btn btn-ghost" (click)="goBackToHotels()">
+        <span>← volver a hoteles</span>
+      </button>
+    </div>
+  }
 </div>
