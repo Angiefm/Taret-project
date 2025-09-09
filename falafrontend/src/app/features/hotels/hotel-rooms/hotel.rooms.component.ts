@@ -36,13 +36,38 @@ export class HotelRoomsComponent implements OnInit, OnDestroy {
   private readonly loadingSignal = signal<boolean>(false);
   private readonly errorSignal = signal<string | null>(null);
 
-  // propiedades para filtros
+  // inputs de filtros (valores que cambia el usuario en el form)
   roomTypeFilter: string = '';
   priceFilter = { min: 0, max: 0 };
   amenityFilter: string = '';
 
+  // filtros activos
+  private activeFilters = signal({
+    roomType: '',
+    min: 0,
+    max: 0
+  });
+
   // computed para tener habitaciones filtradas
-  filteredRooms = computed(() => this.applyFilters());
+  filteredRooms = computed(() => {
+    let rooms = this.roomsSignal();
+
+    const { roomType, min, max } = this.activeFilters();
+
+    if (roomType) {
+      rooms = rooms.filter(r => r.roomType === roomType);
+    }
+
+    if (min > 0) {
+      rooms = rooms.filter(r => r.pricePerNight >= min);
+    }
+
+    if (max > 0) {
+      rooms = rooms.filter(r => r.pricePerNight <= max);
+    }
+
+    return rooms;
+  });
 
   // expongo mis señales de solo lectura
   readonly hotel = this.hotelSignal.asReadonly();
@@ -164,42 +189,26 @@ export class HotelRoomsComponent implements OnInit, OnDestroy {
     };
   }
 
-  private applyFilters(): Room[] {
-    // aplico filtros a las habitaciones
-    let rooms = this.roomsSignal();
-    
-    if (this.roomTypeFilter) {
-      rooms = rooms.filter(room => room.roomType === this.roomTypeFilter);
-    }
-    
-    const minPrice = Number(this.priceFilter.min) || 0;
-    const maxPrice = Number(this.priceFilter.max) || 0;
-    
-    if (minPrice > 0) {
-      rooms = rooms.filter(room => room.pricePerNight >= minPrice);
-    }
-    
-    if (maxPrice > 0) {
-      rooms = rooms.filter(room => room.pricePerNight <= maxPrice);
-    }
-    
-    return rooms;
-  }
-
-  onFilterChange(): void {
-    // loggeo cambios de filtros
-    console.log('filtros aplicados:', {
+  applyFiltersClick(): void {
+    this.activeFilters.set({
       roomType: this.roomTypeFilter,
-      priceRange: this.priceFilter,
-      totalRooms: this.roomsSignal().length,
-      filteredCount: this.applyFilters().length
+      min: Number(this.priceFilter.min) || 0,
+      max: Number(this.priceFilter.max) || 0
     });
+    console.log('Filtros aplicados:', this.activeFilters());
   }
 
   clearFilters(): void {
     // limpio filtros y reinicio precio
     this.roomTypeFilter = '';
-    this.amenityFilter = '';
+    this.priceFilter = { min: 0, max: 0 };
+
+    this.activeFilters.set({
+      roomType: '',
+      min: 0,
+      max: 0
+    });
+
     this.initializePriceFilter();
     console.log('filtros limpiados');
   }

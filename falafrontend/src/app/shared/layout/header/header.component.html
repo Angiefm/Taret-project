@@ -7,7 +7,7 @@
         </div>
         <div class="logo-text">
           <h1>EL REFUGI</h1>
-          <p>FALA</p>
+          <p>FALA - A.B</p>
         </div>
       </a>
     </div>
@@ -26,58 +26,26 @@
       }
 
       @if (isAuthenticated()) {
-        <a 
-          routerLink="/mis-reservas" 
-          class="nav-link" 
-          routerLinkActive="active">
+        <a routerLink="/mis-reservas" class="nav-link" routerLinkActive="active">
           mis reservas
         </a>
       }
     </nav>
 
-    <!-- Right side - Language, Currency, User -->
+    <!-- Right side - Currency fixed + User -->
     <div class="header-right">
-      <!-- Language & Currency -->
-      <div class="locale-info hidden-mobile">
-        <!-- Language Dropdown -->
-        <div class="language-selector" (click)="toggleLanguageDropdown()">
-          <div class="language">
-            <span class="globe-icon">🌐</span>
-            <span>{{ selectedLanguage.code }}</span>
-            <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
-          </div>
-          
-          <!-- Language Dropdown Menu -->
-          @if (isLanguageDropdownOpen) {
-            <div class="language-dropdown">
-              @for (language of languages; track language.code) {
-                <div 
-                  class="language-option"
-                  [class.selected]="language.code === selectedLanguage.code"
-                  (click)="selectLanguage(language); $event.stopPropagation()">
-                  {{ language.name }}
-                </div>
-              }
-            </div>
-          }
-        </div>
-
-        <!-- Currency -->
-        <div class="currency" (click)="cycleCurrency()" title="Cambiar moneda">
-          {{ selectedCurrency.code }}
-        </div>
+      <div class="currency-label hidden-mobile">
+        Moneda: COP
       </div>
       
       @if (isAuthenticated()) {
         <div class="user-info hidden-mobile">
-          <span class="user-name">{{ userInfo()?.firstName || 'Usuario' }}</span>
+          <span class="user-name">Holi, {{ userInfo()?.firstName || 'Usuario' }} 💚 </span>
         </div>
       }
       
       <!-- Login/Logout Button -->
-      <button 
-        class="login-btn btn-secondary" 
-        (click)="onLoginClick()">
+      <button class="login-btn btn-secondary" (click)="onLoginClick()">
         {{ isAuthenticated() ? 'cerrar sesión' : 'iniciar sesión' }}
       </button>
 
@@ -95,7 +63,6 @@
   <!-- Mobile Navigation -->
   <nav class="mobile-navigation" [class.open]="isMobileMenuOpen">
     <div class="mobile-nav-content">
-      <!-- Mobile Navigation Links -->
       <div class="mobile-nav-links">
         @for (item of navigationItems; track item.route) {
           <a 
@@ -109,11 +76,7 @@
         }
         
         @if (isAuthenticated()) {
-          <a 
-            routerLink="/mis-reservas" 
-            class="mobile-nav-link" 
-            routerLinkActive="active"
-            (click)="onNavigate('/mis-reservas')">
+          <a routerLink="/mis-reservas" class="mobile-nav-link" routerLinkActive="active" (click)="onNavigate('/mis-reservas')">
             mis reservas
           </a>
         }
@@ -126,26 +89,15 @@
         </div>
       }
 
-      <!-- Mobile Locale Info -->
-      <div class="mobile-locale-info">
-        <div class="mobile-language" (click)="toggleLanguageDropdown()">
-          <span class="globe-icon">🌐</span>
-          <span>{{ selectedLanguage.name }}</span>
-          <span class="chevron" [class.rotated]="isLanguageDropdownOpen">▼</span>
-        </div>
-        
-        <div class="mobile-currency" (click)="cycleCurrency()">
-          Moneda: {{ selectedCurrency.code }}
-        </div>
+      <!-- Mobile Currency fixed -->
+      <div class="mobile-currency">
+        Moneda: COP
       </div>
     </div>
   </nav>
 
   <!-- Mobile Overlay -->
   @if (isMobileMenuOpen) {
-    <div 
-      class="mobile-overlay" 
-      (click)="closeMobileMenu()">
-    </div>
+    <div class="mobile-overlay" (click)="closeMobileMenu()"></div>
   }
 </header>

@@ -341,12 +341,13 @@ export class BookingListComponent implements OnInit, OnDestroy {
 
   formatDisplayDate(date: Date | string): string {
     const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('es-CO', {
+    return new Intl.DateTimeFormat('es-CO', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
-    });
+      day: 'numeric',
+      timeZone: 'UTC'
+    }).format(dateObj);
   }
 
   private formatDate(date: Date | string | null): string {

@@ -275,3 +275,35 @@ $color-white: #ffffff;
     padding: 0 0.5rem;
   }
 }
+
+.clear-btn {
+  background-color: transparent;
+  color: $color-secondary; // rosa coral
+  border: 2px solid $color-secondary;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  @include transition();
+  display: inline-flex; // se ajusta al contenido
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: 0.025em;
+  width: auto; // 👈 importante, no ocupar todo el ancho
+  min-width: 120px; // 👈 opcional, para que no quede demasiado pequeño
+  margin-top: 1rem;
+
+  &:hover {
+    background-color: $color-secondary;
+    color: $color-white;
+    transform: translateY(-2px);
+    @include shadow('hover');
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

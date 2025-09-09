@@ -1,6 +1,8 @@
 $header-bg: #06374b; // azul petróleo oscuro
 $header-text-primary: #ffffff; // gris claro
 $header-accent: #fb7185; // rosa coral
+$header-accent-user: #71a3e5;
+$header-accent-cop: #fbff00;
 $header-accent-dark: #f43f5e; // rosa más oscuro
 $header-height: 5rem;
 $mobile-breakpoint: 768px;
@@ -91,6 +93,7 @@ $z-mobile-overlay: 115;
   font-family: 'Oregano', cursive;
   font-size: 1rem;
   font-weight: normal;
+  color: #fda4b1;
 }
 
 
@@ -374,6 +377,21 @@ $z-mobile-overlay: 115;
     display: block;
   }
 }
+
+/* Currency label (desktop + mobile) */
+.currency-label,
+.mobile-currency {
+  color: $header-accent-cop; // rosa coral fijo
+  font-weight: 500;
+}
+
+/* User info */
+.user-info .user-name,
+.mobile-user-info p {
+  color: $header-accent-user; // rosa coral fijo
+  font-weight: 600;
+}
+
 
 @media (max-width: 480px) {
   .logo-icon {

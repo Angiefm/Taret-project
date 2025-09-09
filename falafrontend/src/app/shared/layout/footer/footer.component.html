@@ -9,7 +9,7 @@
             <img src="assets/fala-logo.png" alt="El Refugi Fala Logo" class="logo-image">
           </div>
           <div class="logo-text">
-            <h4>EL REFUGI FALA</h4>
+            <h4>EL REFUGI FALA A.B</h4>
           </div>
         </div>
         <p class="brand-description">
@@ -23,22 +23,6 @@
         <h5 class="column-title">enlaces</h5>
         <ul class="footer-links">
           @for (link of navigationLinks; track link.route) {
-            <li>
-              <span 
-                class="footer-link" 
-                (click)="onNavigate(link.route)">
-                {{ link.label }}
-              </span>
-            </li>
-          }
-        </ul>
-      </div>
-
-      <!-- Support Links Column -->
-      <div class="footer-column">
-        <h5 class="column-title">soporte</h5>
-        <ul class="footer-links">
-          @for (link of supportLinks; track link.route) {
             <li>
               <span 
                 class="footer-link" 
@@ -89,7 +73,7 @@
     <div class="footer-bottom">
       <div class="bottom-accent"></div>
       <p class="copyright">
-        &copy; {{ currentYear }} el refugi fala - una app hecha con 🩷 - todos los derechos reservados
+        &copy; {{ currentYear }} el refugi fala - una app hecha con 🩷 - todos los derechos reservados <3 A.B
       </p>
     </div>
   </div>

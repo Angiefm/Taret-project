@@ -1,26 +1,37 @@
 <div class="hotel-card">
-  <!-- placeholder de imagen del hotel -->
+  <!-- contenedor de imagen -->
   <div class="hotel-card__image">
-    <div class="hotel-card__image-placeholder">
-      <div class="hotel-card__placeholder-content">
-        <div class="hotel-card__placeholder-icon"></div>
-        <p class="hotel-card__placeholder-text">imagen del hotel</p>
+    <img
+      *ngIf="hotel.imageUrls && hotel.imageUrls.length > 0; else noImage"
+      [src]="hotel.imageUrls[0]"
+      alt="Imagen de {{ hotel.name }}"
+      class="hotel-card__img"
+    />
+
+    <ng-template #noImage>
+      <div class="hotel-card__image-placeholder">
+        <div class="hotel-card__placeholder-content">
+          <div class="hotel-card__placeholder-icon"></div>
+          <p class="hotel-card__placeholder-text">sin imagen</p>
+        </div>
       </div>
-    </div>
-    
+    </ng-template>
+
     <!-- badge de rating -->
     <div class="hotel-card__rating-badge">
       <span class="hotel-card__star">⭐</span>
-      <span class="hotel-card__rating-value">{{ hotel.rating | number:'1.1-1' }}</span>
+      <span class="hotel-card__rating-value">
+        {{ hotel.rating | number:'1.1-1' }}
+      </span>
     </div>
-</div>
+  </div>
 
   <!-- información del hotel -->
   <div class="hotel-info">
-    <!-- nombre del hotel -->
+        <!-- nombre del hotel -->
     <h3 class="hotel-name">{{ hotel.name }}</h3>
-    
-    <!-- ubicación -->
+
+        <!-- ubicación -->
     <div class="location">
       <span class="location-icon">📍</span>
       <span class="location-text">{{ hotel.location }}</span>
@@ -30,7 +41,7 @@
       <p>{{ hotel.description }}</p>
     </div>
 
-    <!-- amenidades -->
+        <!-- amenidades -->
     <div class="amenities">
       @for (amenity of getDisplayAmenities(); track amenity) {
         <div class="amenity-tag">
@@ -57,7 +68,6 @@
       </div>
     </div>
 
-    <!-- precio y botones de acción -->
     <div class="bottom-section">
       <div class="price-section">
         @if (hotel.minPrice !== undefined && hotel.minPrice > 0) {
@@ -69,7 +79,7 @@
           <span class="price muted">consulta precio</span>
         }
       </div>
-      
+
       <div class="action-buttons">
         <button 
           class="btn btn-primary view-rooms-btn" 

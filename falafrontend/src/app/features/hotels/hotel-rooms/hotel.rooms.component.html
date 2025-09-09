@@ -34,7 +34,6 @@
             <span class="filter-icon">🏨</span>
             <select class="filter-select" 
                     [(ngModel)]="roomTypeFilter" 
-                    (change)="onFilterChange()"
                     name="roomType">
               @for (type of roomTypes; track type.value) {
                 <option [value]="type.value">
@@ -44,7 +43,7 @@
             </select>
           </div>
         </div>
-
+        
         <!-- filtro precio minimo -->
         <div class="filter-group">
           <label class="filter-label">precio mínimo</label>
@@ -53,12 +52,11 @@
             <input type="number" 
                    class="filter-input"
                    [(ngModel)]="priceFilter.min" 
-                   (change)="onFilterChange()"
                    placeholder="0"
                    name="minPrice">
           </div>
         </div>
-
+        
         <!-- filtro precio maximo -->
         <div class="filter-group">
           <label class="filter-label">precio máximo</label>
@@ -67,7 +65,6 @@
             <input type="number" 
                    class="filter-input"
                    [(ngModel)]="priceFilter.max" 
-                   (change)="onFilterChange()"
                    placeholder="300000"
                    name="maxPrice">
           </div>
@@ -81,6 +78,14 @@
             <span>🗑️</span>
             <span>limpiar</span>
           </button>
+          
+          <button type="button"
+                  class="btn btn-primary"
+                  (click)="applyFiltersClick()">
+            <span>🔍</span>
+            <span>aplicar</span>
+          </button>
+
         </div>
       </form>
 
@@ -152,12 +157,20 @@
             
             <!-- imagen habitacion -->
             <div class="room-image">
-              <div class="image-placeholder">
-                <div class="placeholder-content">
-                  <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
-                  <p>imagen de habitacion</p>
-                </div>
-              </div>
+                <img *ngIf="room.imageUrls && room.imageUrls.length > 0; else noImage"
+                     [src]="room.imageUrls[0]"
+                     alt="Imagen de la habitación {{ room.roomType }}"
+                     class="room-img"/>
+              
+                <!-- placeholder si no hay imagen -->
+                <ng-template #noImage>
+                  <div class="image-placeholder">
+                    <div class="placeholder-content">
+                      <span class="room-type-icon">{{ getRoomTypeIcon(room.roomType) }}</span>
+                      <p>sin imagen</p>
+                    </div>
+                  </div>
+                </ng-template>
               
               <!-- badge habitacion -->
               <div class="room-badge">

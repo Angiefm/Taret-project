@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
@@ -10,7 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class FooterComponent {
   currentYear: number = new Date().getFullYear();
-  
+
   // Contact information
   contactInfo = {
     phone: '+57 3197809676',
@@ -18,20 +19,10 @@ export class FooterComponent {
     address: 'bogotá, colombia'
   };
 
-  // Navigation links
+  // Navigation links (solo inicio y hoteles)
   navigationLinks = [
     { label: 'inicio', route: '/' },
-    { label: 'hoteles', route: '/hoteles' },
-    { label: 'nosotros', route: '/nosotros' },
-    { label: 'contacto', route: '/contacto' }
-  ];
-
-  // Support links
-  supportLinks = [
-    { label: 'ayuda', route: '/ayuda' },
-    { label: 'términos y condiciones', route: '/terminos' },
-    { label: 'política de privacidad', route: '/privacidad' },
-    { label: 'política de cancelación', route: '/cancelacion' }
+    { label: 'hoteles', route: '/hoteles' }
   ];
 
   // Social media links
@@ -42,14 +33,13 @@ export class FooterComponent {
     { icon: '💼', name: 'LinkedIn', url: 'https://linkedin.com' }
   ];
 
+  constructor(private router: Router) {}
+
   onNavigate(route: string): void {
-    console.log('Navegando a:', route);
-    // Aquí implementaré la navegación con Router
+    this.router.navigate([route]); // navegación real
   }
 
   onSocialClick(social: any): void {
-    console.log('Abriendo red social:', social.name);
-    // Aquí abriré la URL en una nueva pestaña
-    // window.open(social.url, '_blank');
+    window.open(social.url, '_blank'); // abre red social en nueva pestaña
   }
 }

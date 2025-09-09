@@ -45,20 +45,20 @@ export class BookingConfirmationComponent implements OnInit {
   }
 
   private loadBooking(id: string): void {
-    this.bookingService.getBookingById(id).subscribe({
-      next: (res) => {
-        console.log('Respuesta del backend:', res);
-        this.bookingResponseSignal.set(res);
-      },
-      error: (err) => {
-        console.error('Error cargando la reserva:', err);
-        this.bookingResponseSignal.set({
-          success: false,
-          message: 'No se pudo cargar la reserva.'
-        });
-      }
-    });
-  }
+  this.bookingService.getBookingById(id).subscribe({
+    next: (res) => {
+      console.log('Respuesta del backend:', res);
+      this.bookingResponseSignal.set(res);
+    },
+    error: (err) => {
+      console.error('Error cargando la reserva:', err);
+      this.bookingResponseSignal.set({
+        success: false,
+        message: 'No se pudo cargar la reserva.'
+      });
+    }
+  });
+}
 
   goToMyBookings(): void {
     this.router.navigate(['/mis-reservas']);
@@ -67,4 +67,26 @@ export class BookingConfirmationComponent implements OnInit {
   goToHome(): void {
     this.router.navigate(['/']);
   }
+
+  formatBookingDate(dateString: string | Date): string {
+    if (!dateString) return 'Fecha no disponible';
+  
+    let dateStr: string;
+    if (typeof dateString === 'string') {
+      dateStr = dateString.split('T')[0];
+    } else {
+      dateStr = dateString.toISOString().split('T')[0];
+    }
+  
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const localDate = new Date(year, month - 1, day, 12, 0, 0);
+  
+    return new Intl.DateTimeFormat('es-CO', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric'
+    }).format(localDate);
+  }
+
 }

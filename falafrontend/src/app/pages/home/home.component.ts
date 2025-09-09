@@ -120,7 +120,7 @@ export class HomeComponent implements OnInit { //onInit para inicializar cuando 
     this.hotelService.getAllHotels().subscribe({
       next: (hotels) => {
         console.log('hoteles cargados desde API:', hotels);
-        this.featuredHotels = hotels;
+        this.featuredHotels = hotels.filter(h => h.rating > 4);
         this.loading = false;
         
         if (hotels.length === 0) {

@@ -126,6 +126,10 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
       acceptTerms: [false, Validators.requiredTrue]
     });
   }
+    private toDateOnly(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
   private handleRouteParams(): void {
     this.route.queryParams
@@ -133,8 +137,8 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
       .subscribe(params => {
         if (params['hotelId']) this.bookingForm.patchValue({ hotelId: params['hotelId'] });
         if (params['roomId']) this.bookingForm.patchValue({ roomId: params['roomId'] });
-        if (params['checkIn']) this.bookingForm.patchValue({ checkInDate: new Date(params['checkIn']) });
-        if (params['checkOut']) this.bookingForm.patchValue({ checkOutDate: new Date(params['checkOut']) });
+        if (params['checkIn']) this.bookingForm.patchValue({ checkInDate: this.toDateOnly(params['checkIn']) });
+        if (params['checkOut']) this.bookingForm.patchValue({ checkOutDate: this.toDateOnly(params['checkOut']) });
         if (params['guests']) this.bookingForm.patchValue({ numberOfGuests: parseInt(params['guests']) });
       });
   }
@@ -181,8 +185,8 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     },
     hotelId: this.bookingForm.get('hotelId')?.value,
     roomId: this.bookingForm.get('roomId')?.value,
-    checkInDate: this.formatDate(checkIn),
-    checkOutDate: this.formatDate(checkOut),
+    checkInDate: this.bookingService.formatDateOnly(checkIn),
+    checkOutDate: this.bookingService.formatDateOnly(checkOut),
     numberOfGuests: this.bookingForm.get('numberOfGuests')?.value,
     specialRequests: this.guestForm.value.requests || ''
   };
@@ -241,13 +245,6 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.router.navigate(['/']);
   }
 
-  private formatDate(date: Date): string {
-    if (!date) return '';
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}T12:00:00.000Z`;
-  }
   
   formatDateRange(): string {
     const checkIn = this.bookingForm.get('checkInDate')?.value;
@@ -258,6 +255,6 @@ export class BookingComponent implements OnInit, OnDestroy, CanComponentDeactiva
     const checkInDate = checkIn instanceof Date ? checkIn : new Date(checkIn);
     const checkOutDate = checkOut instanceof Date ? checkOut : new Date(checkOut);
   
-    return `${this.formatDate(checkInDate)} - ${this.formatDate(checkOutDate)}`;
+  return `${this.bookingService.formatDateOnly(checkInDate)} - ${this.bookingService.formatDateOnly(checkOutDate)}`;
   }
 }

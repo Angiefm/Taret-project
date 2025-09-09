@@ -286,13 +286,16 @@ export class BookingService {
     };
   }
 
-  private formatDateOnly(date: Date | string): string {
-    const d = new Date(date);
-    const year = d.getUTCFullYear();
-    const month = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+  public formatDateOnly(date: Date | string): string {
+  if (typeof date === 'string') {
+    return date;
   }
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
   private extractErrorMessage(error: any): string {
     if (error.error?.message) {
